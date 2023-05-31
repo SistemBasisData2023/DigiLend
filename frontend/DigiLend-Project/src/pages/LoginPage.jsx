@@ -1,14 +1,17 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 import React from "react";
 import digilendLogo from "../assets/logo-no-background.png";
 import Background from "../components/background/background.jsx";
 import { AiFillEyeInvisible, AiFillEye, AiFillCheckCircle } from "react-icons/ai";
+import { useLocation } from "react-router-dom";
 
 const LoginPage = () => {
   const [username, setUsername] = useState("");
   const [pass, setPass] = useState("");
   const [open, setOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(""); // State untuk menyimpan opsi yang dipilih
+  const location = useLocation();
 
   const handleClick = (option) => {
     setSelectedOption(option);
@@ -29,11 +32,24 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="w-full h-screen">
+    <motion.div className="w-full h-screen" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
       <Background></Background>
       <div className="flex flex-col md:flex-row items-center md:justify-around mx-auto h-screen">
         <img src={digilendLogo} className="lg:h-[380px] md:h-[280px] h-[160px]" alt="Digilend" />
-        <div className="bg-[#FAFAFA] sm:mr-24 backdrop-blur-sm rounded-2xl min-w-[20rem] min-h-[24rem] sm:w-[26rem] sm:h-[30rem] border-2 shadow-2xl border-solid border-opacity-100">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{
+            duration: 0.3,
+            ease: [0, 0.71, 0.2, 1.01],
+            scale: {
+              type: "spring",
+              damping: 5,
+              stiffness: 100,
+              restDelta: 0.001,
+            },
+          }}
+          className="bg-[#FAFAFA] sm:mr-24 backdrop-blur-sm rounded-2xl min-w-[20rem] min-h-[24rem] sm:w-[26rem] sm:h-[30rem] border-2 shadow-2xl border-solid border-opacity-100">
           <div className="my-5 space-y-4 sm:p-8">
             <h1 className="text-2xl sm:text-3xl font-bold leading-tight tracking-tight text-info text-center font-Montserrat">Choose Account Type</h1>
             <div className="flex flex-row justify-center space-x-5">
@@ -100,7 +116,7 @@ const LoginPage = () => {
               <div className="flex justify-center items-center">
                 <p className="sm:p-1.5 p-1 text-sm text-center font-Montserrat text-gray-500">
                   No account?
-                  <a href="#" onClick={() => alert("clicked")} className="font-Montserrat ml-1 mr-7 text-info hover:underline">
+                  <a href="/register" className="font-Montserrat ml-1 mr-7 text-info hover:underline">
                     Register
                   </a>
                 </p>
@@ -110,9 +126,9 @@ const LoginPage = () => {
               </div>
             </form>
           </div>
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

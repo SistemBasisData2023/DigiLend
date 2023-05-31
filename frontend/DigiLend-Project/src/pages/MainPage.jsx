@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import digilendLogo from "../assets/logo-no-background.png";
 import homeImage from "../assets/home-image.png";
@@ -41,7 +42,18 @@ const MainPage = () => {
             </button>
           </div>
         </div>
-        <img src={homeImage} alt="Home" className="my-auto" />
+        <motion.img
+          src={homeImage}
+          alt="Home"
+          className="my-auto"
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{
+            duration: 0.8,
+            delay: 0.5,
+            ease: [0, 0.71, 0.2, 1.01],
+          }}
+        />
       </div>
     </div>
   );
