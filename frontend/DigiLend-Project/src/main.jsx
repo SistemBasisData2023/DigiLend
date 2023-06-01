@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import { AnimatePresence } from "framer-motion";
 import App from "./App.jsx";
 import "./index.css";
-import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements, useLocation } from "react-router-dom";
+import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from "react-router-dom";
 import LoginPage from "./pages/LoginPage.jsx";
 import MainPage from "./pages/MainPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";

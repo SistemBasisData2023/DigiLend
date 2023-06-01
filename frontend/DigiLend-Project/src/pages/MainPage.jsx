@@ -1,10 +1,10 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { FaArrowCircleDown, FaClipboardList } from "react-icons/fa";
 import digilendLogo from "../assets/logo-no-background.png";
 import homeImage from "../assets/home-image.png";
-import { FaArrowCircleDown, FaClipboardList } from "react-icons/fa";
-import { TextAnimation } from "../components/animation/TextAnimation";
+import { TextAnimation } from "../components/animation/TextAnimation.jsx";
 
 const MainPage = () => {
   const navigate = useNavigate();

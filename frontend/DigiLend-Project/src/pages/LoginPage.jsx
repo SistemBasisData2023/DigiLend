@@ -1,17 +1,14 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
-import React from "react";
+import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
 import digilendLogo from "../assets/logo-no-background.png";
 import Background from "../components/background/background.jsx";
-import { AiFillEyeInvisible, AiFillEye, AiFillCheckCircle } from "react-icons/ai";
-import { useLocation } from "react-router-dom";
 
 const LoginPage = () => {
   const [username, setUsername] = useState("");
   const [pass, setPass] = useState("");
   const [open, setOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(""); // State untuk menyimpan opsi yang dipilih
-  const location = useLocation();
+  const [selectedOption, setSelectedOption] = useState("labAssistant"); // State untuk menyimpan opsi yang dipilih
 
   const handleClick = (option) => {
     setSelectedOption(option);
@@ -30,7 +27,6 @@ const LoginPage = () => {
       // Opsi tidak valid, mungkin perlu menampilkan pesan kesalahan
     }
   };
-
   return (
     <motion.div className="w-full h-screen" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
       <Background></Background>
