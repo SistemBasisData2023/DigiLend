@@ -5,33 +5,56 @@ import Background from "../components/background/background.jsx";
 import digilendLogo from "../assets/logo-no-background.png";
 import assistant from "../assets/Laboratory-Assistant.png";
 import practician from "../assets/Practician.png";
+import secure from "../assets/Secure.png";
 
 const RegisterPage = () => {
-  const [name, setName] = useState("");
-  const [studentId, setStudentId] = useState("");
-  const [major, setMajor] = useState("");
-  const [batch, setBatch] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [selectedOption, setSelectedOption] = useState("labAssistant");
-  const [username, setUsername] = useState("");
-  const [pass, setPass] = useState("");
+  const [formData, setFormData] = useState({
+    name: "",
+    studentId: "",
+    major: "",
+    batch: 0,
+    phoneNumber: "",
+    roleId: 0,
+    groupId: "",
+    assistantCode: "",
+    username: "",
+    password: "",
+  });
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: name === "roleId" || name === "batch" ? Number(value) : value,
+    }));
+  };
+
+  const handleStudentIdChange = (event) => {
+    const inputValue = event.target.value.replace(/\D/g, "");
+    handleChange({ target: { name: "studentId", value: inputValue } });
+  };
+
+  const handlePhoneNumberChange = (event) => {
+    const inputValue = event.target.value.replace(/\D/g, "");
+    handleChange({ target: { name: "phoneNumber", value: inputValue } });
+  };
+
+  const handleClick = (option) => {
+    option === "labAssistant" && handleChange({ target: { name: "roleId", value: "0" } });
+    option === "practician" && handleChange({ target: { name: "roleId", value: "1" } });
+  };
+
   const [open, setOpen] = useState(false); // State untuk menyimpan opsi yang dipilih
+
+  const toggle = () => {
+    setOpen(!open);
+  };
+
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = 3; // Jumlah total halaman pada carousel
   const isPreviousDisabled = currentPage === 1;
   const isNextDisabled = currentPage === totalPages;
 
-  const handleClick = (option) => {
-    setSelectedOption(option);
-  };
-  const handleStudentIdChange = (event) => {
-    const inputValue = event.target.value.replace(/\D/g, "");
-    setStudentId(inputValue);
-  };
-  const handlePhoneNumberChange = (event) => {
-    const inputValue = event.target.value.replace(/\D/g, "");
-    setPhoneNumber(inputValue);
-  };
   const handlePreviousPage = () => {
     setCurrentPage((prevPage) => prevPage - 1);
   };
@@ -40,8 +63,28 @@ const RegisterPage = () => {
     setCurrentPage((prevPage) => prevPage + 1);
   };
 
-  const toggle = () => {
-    setOpen(!open);
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    // Lakukan pengiriman data ke backend
+    // Misalnya, menggunakan fetch atau axios
+
+    // Contoh menggunakan fetch
+    fetch("URL_BACKEND", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        // Tanggapi respon dari backend
+        console.log(data);
+      })
+      .catch((error) => {
+        // Tangani kesalahan jika terjadi
+        console.error(error);
+      });
   };
 
   return (
@@ -62,14 +105,14 @@ const RegisterPage = () => {
               restDelta: 0.001,
             },
           }}
-          className="bg-[#FAFAFA] sm:mr-24 backdrop-blur-sm rounded-2xl w-4/5 h-[25rem] sm:w-[45rem] sm:h-[30rem] border-2 shadow-2xl border-solid border-opacity-100">
+          className="bg-[#FAFAFA] sm:mr-24 backdrop-blur-sm rounded-2xl w-4/5 h-[25rem] sm:w-[45rem] sm:h-[33rem] border-2 shadow-2xl border-solid border-opacity-100">
           <div className="my-5 space-y-4 sm:p-8">
             <h1 className="text-3xl sm:text-5xl font-bold leading-tight tracking-tight text-info text-center font-Montserrat">Register Account</h1>
             {currentPage === 1 && (
-              <div className="flex flex-row justify-center md:gap-10 gap-4 md:h-64 pt-4 md:m-0 m-2">
+              <div className="flex flex-row justify-center md:gap-10 gap-4 md:h-72 pt-4 md:m-0 m-2">
                 <div
                   className={`flex flex-col justify-center items-center border-2 hover:border-[#B8C1F9] w-full p-4 rounded-2xl md:text-xl text-lg text-black font-bold cursor-pointer ${
-                    selectedOption === "labAssistant" ? "bg-[#B8C1F9] text-white" : ""
+                    formData.roleId === 0 ? "bg-[#B8C1F9] text-white" : ""
                   }`}
                   onClick={() => handleClick("labAssistant")}>
                   <img src={assistant} alt="Lab Assistant" className="md:h-5/6 w-fit" />
@@ -77,7 +120,7 @@ const RegisterPage = () => {
                 </div>
                 <div
                   className={`flex flex-col justify-center items-center border-2 hover:border-[#B8C1F9] w-full p-4 rounded-2xl md:text-xl text-lg text-black font-bold cursor-pointer ${
-                    selectedOption === "practician" ? "bg-[#B8C1F9] text-white" : ""
+                    formData.roleId === 1 ? "bg-[#B8C1F9] text-white" : ""
                   }`}
                   onClick={() => handleClick("practician")}>
                   <img src={practician} alt="Practician" className="md:h-5/6 w-fit" />
@@ -88,13 +131,13 @@ const RegisterPage = () => {
             {currentPage === 2 && (
               <div className="space-y-4 pt-3 p-3 sm:p-0">
                 <div className="flex">
-                  <input type="text" placeholder="Full Name" value={name} onChange={(e) => setName(e.target.value)} className="input input-bordered input-info w-full bg-white border-2 text-black" />
+                  <input type="text" placeholder="Full Name" name="name" value={formData.name} onChange={handleChange} className="input input-bordered input-info w-full bg-white border-2 text-black" />
                 </div>
                 <div className="flex">
-                  <input type="text" value={studentId} onChange={handleStudentIdChange} placeholder="Student ID Number" className="input input-bordered input-info w-full bg-white border-2 text-black" />{" "}
+                  <input type="text" placeholder="Student ID Number" name="studentId" value={formData.studentId} onChange={handleStudentIdChange} className="input input-bordered input-info w-full bg-white border-2 text-black" />{" "}
                 </div>
                 <div className="flex justify-between space-x-2 md:space-x-0">
-                  <select value={major} onChange={(e) => setMajor(e.target.value)} className="select select-info w-1/2 md:w-full max-w-xs bg-white border-2 text-black font-normal">
+                  <select name="major" value={formData.major} onChange={handleChange} className="select select-info w-1/2 md:w-full max-w-xs bg-white border-2 text-black font-normal">
                     <option disabled selected>
                       Major
                     </option>
@@ -102,7 +145,7 @@ const RegisterPage = () => {
                     <option>Computer Engineering</option>
                     <option>Biomedical Engineering</option>
                   </select>
-                  <select value={batch} onChange={(e) => setBatch(e.target.value)} className="select select-info w-2/5 md:w-full max-w-xs bg-white border-2 text-black font-normal">
+                  <select name="batch" value={formData.batch} onChange={handleChange} className="select select-info w-2/5 md:w-full max-w-xs bg-white border-2 text-black font-normal">
                     <option disabled selected>
                       Batch
                     </option>
@@ -115,12 +158,73 @@ const RegisterPage = () => {
                   </select>
                 </div>
                 <div className="flex">
-                  <input type="text" value={phoneNumber} onChange={handlePhoneNumberChange} placeholder="Phone Number" className="input input-bordered input-info w-full bg-white border-2 text-black" />
+                  <input type="text" placeholder="Phone Number" name="phoneNumber" value={formData.phoneNumber} onChange={handlePhoneNumberChange} className="input input-bordered input-info w-full bg-white border-2 text-black" />
+                </div>
+                <div className="flex">
+                  {formData.roleId === 0 ? (
+                    <input type="text" placeholder="Lab Assistant Code" name="assistantCode" value={formData.assistantCode} onChange={handleChange} className="input input-bordered input-info w-full bg-white border-2 text-black" />
+                  ) : (
+                    <input type="text" placeholder="Group ID" name="groupId" value={formData.groupId} onChange={handleChange} className="input input-bordered input-info w-full bg-white border-2 text-black" />
+                  )}
                 </div>
               </div>
             )}
-            {currentPage === 3 && <div>halo</div>}
-            <div className="flex flex-row absolute bottom-0 md:py-6 md:p-0 p-3 text-4xl md:text-5xl gap-4">
+            {currentPage === 3 && (
+              <div className="space-y-4 pt-3">
+                <div className="flex flex-row items-center justify-center">
+                  <img src={secure} alt="Register" className="md:h-28 h-14" />
+                </div>
+                <div className="flex justify-center">
+                  <input
+                    type="text"
+                    name="username"
+                    id="username"
+                    placeholder="Username"
+                    className="input input-bordered input-info w-full md:w-5/6 bg-white border-2 text-black text-xl mx-5 md:mx-0"
+                    required=""
+                    value={formData.username}
+                    onChange={handleChange}
+                    onKeyUp={(e) => {
+                      if (e.target.value !== "") {
+                        e.target.classList.add("border-2");
+                      } else {
+                        e.target.classList.remove("border-2");
+                      }
+                    }}
+                  />
+                </div>
+                <div>
+                  <div className="relative flex justify-center">
+                    <input
+                      type={open === false ? "password" : "text"}
+                      name="password"
+                      id="password"
+                      placeholder="Password"
+                      className="input input-bordered input-info w-full md:w-5/6 bg-white border-2 text-black text-xl mx-5 md:mx-0"
+                      required=""
+                      value={formData.password}
+                      onChange={handleChange}
+                      onKeyUp={(e) => {
+                        if (e.target.value !== "") {
+                          e.target.classList.add("border-2");
+                        } else {
+                          e.target.classList.remove("border-2");
+                        }
+                      }}
+                    />
+                    <button type="button" className="text-3xl absolute bottom-[20%] right-[12%]" onClick={toggle}>
+                      {open === false ? <AiFillEye /> : <AiFillEyeInvisible />}
+                    </button>
+                  </div>
+                </div>
+                <div className="flex justify-end mr-5 md:mr-9">
+                  <button className="button btn btn-info md:w-32 md:h-8 rounded-3xl md:text-lg text-md font-Inter text-white" onClick={handleSubmit}>
+                    REGISTER
+                  </button>
+                </div>
+              </div>
+            )}
+            <div className="flex flex-row absolute bottom-0 md:py-6 md:p-0 p-3 text-4xl md:text-5xl gap-2 md:gap-4">
               <motion.div
                 whileHover={!isPreviousDisabled ? { scale: 1.2 } : {}}
                 whileTap={!isPreviousDisabled ? { scale: 0.9 } : {}}
@@ -136,9 +240,16 @@ const RegisterPage = () => {
                 <AiFillRightCircle className={`cursor-pointer text-info ${isNextDisabled ? "opacity-50" : ""}`} />
               </motion.div>
             </div>
+            <p className="absolute bottom-0 right-0 md:p-10 py-6 text-[0.7rem] md:text-lg font-Montserrat text-gray-500">
+              Already have Account?
+              <a href="/login" className="font-Montserrat ml-1 mr-7 text-info hover:underline">
+                Log In
+              </a>
+            </p>
           </div>
         </motion.div>
       </div>
+      <pre>{JSON.stringify(formData, null, 2)}</pre>
     </motion.div>
   );
 };
