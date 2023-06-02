@@ -5,13 +5,22 @@ import digilendLogo from "../assets/logo-no-background.png";
 import Background from "../components/background/background.jsx";
 
 const LoginPage = () => {
-  const [username, setUsername] = useState("");
-  const [pass, setPass] = useState("");
+  const [formData, setFormData] = useState({
+    idakun: 0,
+    username: "",
+    password: "",
+  });
   const [open, setOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState("labAssistant"); // State untuk menyimpan opsi yang dipilih
-
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
+  };
   const handleClick = (option) => {
-    setSelectedOption(option);
+    option === "labAssistant" && handleChange({ target: { name: "idakun", value: 0 } });
+    option === "practician" && handleChange({ target: { name: "idakun", value: 1 } });
   };
 
   const toggle = () => {
@@ -19,9 +28,9 @@ const LoginPage = () => {
   };
   const handleSubmit = (e) => {
     e.preventDefault;
-    if (selectedOption === "labAssistant") {
+    if (formData.idakun === 0) {
       // Tindakan untuk Lab Assistant
-    } else if (selectedOption === "practician") {
+    } else if (formData.idakun === 1) {
       // Tindakan untuk Practician
     } else {
       // Opsi tidak valid, mungkin perlu menampilkan pesan kesalahan
@@ -50,18 +59,19 @@ const LoginPage = () => {
             <h1 className="text-2xl sm:text-3xl font-bold leading-tight tracking-tight text-info text-center font-Montserrat">Choose Account Type</h1>
             <div className="flex flex-row justify-center space-x-5">
               <div
-                className={`flex justify-center border-2 hover:border-[#B8C1F9] w-40 p-4 rounded-2xl text-xl text-black font-bold cursor-pointer ${selectedOption === "labAssistant" ? "bg-[#B8C1F9] text-white" : ""}`}
+                className={`flex justify-center border-2 hover:border-[#B8C1F9] w-40 p-4 rounded-2xl text-xl text-black font-bold cursor-pointer ${formData.idakun === 0 ? "bg-[#B8C1F9] text-white" : ""}`}
                 onClick={() => handleClick("labAssistant")}>
                 Lab Assistant
               </div>
+
               <div
-                className={`flex justify-center border-2 hover:border-[#B8C1F9] w-40 p-4 rounded-2xl text-xl text-black font-bold cursor-pointer ${selectedOption === "practician" ? "bg-[#B8C1F9] text-white" : ""}`}
+                className={`flex justify-center border-2 hover:border-[#B8C1F9] w-40 p-4 rounded-2xl text-xl text-black font-bold cursor-pointer ${formData.idakun === 1 ? "bg-[#B8C1F9] text-white" : ""}`}
                 onClick={() => handleClick("practician")}>
                 Practician
               </div>
             </div>
             <div>
-              <h2 className="flex justify-center font-semibold">{selectedOption === "labAssistant" ? "Hello Lab Assistant!" : "Hello Practician!"}</h2>
+              <h2 className="flex justify-center font-semibold">{formData.idakun === 0 ? "Hello Lab Assistant!" : "Hello Practician!"}</h2>
               <h2 className="flex justify-center font-semibold">Please fill out the form below to get started</h2>
             </div>
             <form className="space-y-4 pt-3" action="#" onSubmit={handleSubmit}>
@@ -73,8 +83,8 @@ const LoginPage = () => {
                   className="input input-bordered input-info w-full max-w-xs bg-gray-50 placeholder:text-lg placeholder:sm:text-xl text-gray-900 font-Inter px-5 sm:px-8 sm:text-xl rounded-full"
                   placeholder="Username"
                   required=""
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  value={formData.username}
+                  onChange={handleChange}
                   onKeyUp={(e) => {
                     if (e.target.value !== "") {
                       e.target.classList.add("border-2");
@@ -94,8 +104,8 @@ const LoginPage = () => {
                     placeholder="Password"
                     className="input input-bordered input-info w-full max-w-xs bg-gray-50 placeholder:text-lg placeholder:sm:text-xl text-gray-900 font-Inter px-5 sm:px-8 sm:text-xl rounded-full"
                     required=""
-                    value={pass}
-                    onChange={(e) => setPass(e.target.value)}
+                    value={formData.password}
+                    onChange={handleChange}
                     onKeyUp={(e) => {
                       if (e.target.value !== "") {
                         e.target.classList.add("border-2");
@@ -124,6 +134,7 @@ const LoginPage = () => {
           </div>
         </motion.div>
       </div>
+      <pre>{JSON.stringify(formData, null, 2)}</pre>
     </motion.div>
   );
 };

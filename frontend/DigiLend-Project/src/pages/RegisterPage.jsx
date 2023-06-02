@@ -9,14 +9,14 @@ import secure from "../assets/Secure.png";
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
-    name: "",
-    studentId: "",
-    major: "",
-    batch: 0,
-    phoneNumber: "",
-    roleId: 0,
-    groupId: "",
-    assistantCode: "",
+    nama: "",
+    npm: "",
+    jurusan: "Electrical Engineering",
+    angkatan: 2018,
+    telepon: "",
+    idakun: 0,
+    idkelompok: "",
+    kode_aslab: "",
     username: "",
     password: "",
   });
@@ -25,23 +25,23 @@ const RegisterPage = () => {
     const { name, value } = event.target;
     setFormData((prevFormData) => ({
       ...prevFormData,
-      [name]: name === "roleId" || name === "batch" ? Number(value) : value,
+      [name]: name === "idakun" || name === "angkatan" ? Number(value) : value,
     }));
   };
 
   const handleStudentIdChange = (event) => {
     const inputValue = event.target.value.replace(/\D/g, "");
-    handleChange({ target: { name: "studentId", value: inputValue } });
+    handleChange({ target: { name: "npm", value: inputValue } });
   };
 
   const handlePhoneNumberChange = (event) => {
     const inputValue = event.target.value.replace(/\D/g, "");
-    handleChange({ target: { name: "phoneNumber", value: inputValue } });
+    handleChange({ target: { name: "telepon", value: inputValue } });
   };
 
   const handleClick = (option) => {
-    option === "labAssistant" && handleChange({ target: { name: "roleId", value: "0" } });
-    option === "practician" && handleChange({ target: { name: "roleId", value: "1" } });
+    option === "labAssistant" && handleChange({ target: { name: "idakun", value: "0" } });
+    option === "practician" && handleChange({ target: { name: "idakun", value: "1" } });
   };
 
   const [open, setOpen] = useState(false); // State untuk menyimpan opsi yang dipilih
@@ -112,7 +112,7 @@ const RegisterPage = () => {
               <div className="flex flex-row justify-center md:gap-10 gap-4 md:h-72 pt-4 md:m-0 m-2">
                 <div
                   className={`flex flex-col justify-center items-center border-2 hover:border-[#B8C1F9] w-full p-4 rounded-2xl md:text-xl text-lg text-black font-bold cursor-pointer ${
-                    formData.roleId === 0 ? "bg-[#B8C1F9] text-white" : ""
+                    formData.idakun === 0 ? "bg-[#B8C1F9] text-white" : ""
                   }`}
                   onClick={() => handleClick("labAssistant")}>
                   <img src={assistant} alt="Lab Assistant" className="md:h-5/6 w-fit" />
@@ -120,7 +120,7 @@ const RegisterPage = () => {
                 </div>
                 <div
                   className={`flex flex-col justify-center items-center border-2 hover:border-[#B8C1F9] w-full p-4 rounded-2xl md:text-xl text-lg text-black font-bold cursor-pointer ${
-                    formData.roleId === 1 ? "bg-[#B8C1F9] text-white" : ""
+                    formData.idakun === 1 ? "bg-[#B8C1F9] text-white" : ""
                   }`}
                   onClick={() => handleClick("practician")}>
                   <img src={practician} alt="Practician" className="md:h-5/6 w-fit" />
@@ -131,13 +131,13 @@ const RegisterPage = () => {
             {currentPage === 2 && (
               <div className="space-y-4 pt-3 p-3 sm:p-0">
                 <div className="flex">
-                  <input type="text" placeholder="Full Name" name="name" value={formData.name} onChange={handleChange} className="input input-bordered input-info w-full bg-white border-2 text-black" />
+                  <input type="text" placeholder="Full Name" name="nama" value={formData.nama} onChange={handleChange} className="input input-bordered input-info w-full bg-white border-2 text-black" />
                 </div>
                 <div className="flex">
-                  <input type="text" placeholder="Student ID Number" name="studentId" value={formData.studentId} onChange={handleStudentIdChange} className="input input-bordered input-info w-full bg-white border-2 text-black" />{" "}
+                  <input type="text" placeholder="Student ID Number" name="npm" value={formData.npm} onChange={handleStudentIdChange} className="input input-bordered input-info w-full bg-white border-2 text-black" />{" "}
                 </div>
                 <div className="flex justify-between space-x-2 md:space-x-0">
-                  <select name="major" value={formData.major} onChange={handleChange} className="select select-info w-1/2 md:w-full max-w-xs bg-white border-2 text-black font-normal">
+                  <select name="jurusan" value={formData.jurusan} onChange={handleChange} className="select select-info w-1/2 md:w-full max-w-xs bg-white border-2 text-black font-normal">
                     <option disabled selected>
                       Major
                     </option>
@@ -145,7 +145,7 @@ const RegisterPage = () => {
                     <option>Computer Engineering</option>
                     <option>Biomedical Engineering</option>
                   </select>
-                  <select name="batch" value={formData.batch} onChange={handleChange} className="select select-info w-2/5 md:w-full max-w-xs bg-white border-2 text-black font-normal">
+                  <select name="angkatan" value={formData.angkatan} onChange={handleChange} className="select select-info w-2/5 md:w-full max-w-xs bg-white border-2 text-black font-normal">
                     <option disabled selected>
                       Batch
                     </option>
@@ -158,13 +158,13 @@ const RegisterPage = () => {
                   </select>
                 </div>
                 <div className="flex">
-                  <input type="text" placeholder="Phone Number" name="phoneNumber" value={formData.phoneNumber} onChange={handlePhoneNumberChange} className="input input-bordered input-info w-full bg-white border-2 text-black" />
+                  <input type="text" placeholder="Phone Number" name="telepon" value={formData.telepon} onChange={handlePhoneNumberChange} className="input input-bordered input-info w-full bg-white border-2 text-black" />
                 </div>
                 <div className="flex">
-                  {formData.roleId === 0 ? (
-                    <input type="text" placeholder="Lab Assistant Code" name="assistantCode" value={formData.assistantCode} onChange={handleChange} className="input input-bordered input-info w-full bg-white border-2 text-black" />
+                  {formData.idakun === 0 ? (
+                    <input type="text" placeholder="Lab Assistant Code" name="kode_aslab" value={formData.kode_aslab} onChange={handleChange} className="input input-bordered input-info w-full bg-white border-2 text-black" />
                   ) : (
-                    <input type="text" placeholder="Group ID" name="groupId" value={formData.groupId} onChange={handleChange} className="input input-bordered input-info w-full bg-white border-2 text-black" />
+                    <input type="text" placeholder="Group ID" name="idkelompok" value={formData.idkelompok} onChange={handleChange} className="input input-bordered input-info w-full bg-white border-2 text-black" />
                   )}
                 </div>
               </div>
