@@ -40,8 +40,13 @@ const RegisterPage = () => {
   };
 
   const handleClick = (option) => {
-    option === "labAssistant" && handleChange({ target: { name: "idakun", value: "0" } });
-    option === "practician" && handleChange({ target: { name: "idakun", value: "1" } });
+    if (option === "labAssistant") {
+      handleChange({ target: { name: "idakun", value: 0 } });
+      handleChange({ target: { name: "idkelompok", value: "" } });
+    } else if (option === "practician") {
+      handleChange({ target: { name: "idakun", value: 1 } });
+      handleChange({ target: { name: "kode_aslab", value: "" } });
+    }
   };
 
   const [open, setOpen] = useState(false); // State untuk menyimpan opsi yang dipilih
@@ -249,7 +254,6 @@ const RegisterPage = () => {
           </div>
         </motion.div>
       </div>
-      <pre>{JSON.stringify(formData, null, 2)}</pre>
     </motion.div>
   );
 };
