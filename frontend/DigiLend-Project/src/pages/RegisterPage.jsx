@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { motion } from "framer-motion";
 import { AiFillEyeInvisible, AiFillEye, AiFillRightCircle, AiFillLeftCircle } from "react-icons/ai";
 import Background from "../components/background/background.jsx";
@@ -14,8 +15,9 @@ const RegisterPage = () => {
     jurusan: "Electrical Engineering",
     angkatan: 2018,
     telepon: "",
-    idakun: 0,
-    idkelompok: "",
+    id_akun: 0,
+    nama_kelompok: "",
+    tahun_ajaran: "",
     kode_aslab: "",
     username: "",
     password: "",
@@ -25,7 +27,7 @@ const RegisterPage = () => {
     const { name, value } = event.target;
     setFormData((prevFormData) => ({
       ...prevFormData,
-      [name]: name === "idakun" || name === "angkatan" ? Number(value) : value,
+      [name]: name === "id_akun" || name === "angkatan" ? Number(value) : value,
     }));
   };
 
@@ -41,12 +43,32 @@ const RegisterPage = () => {
 
   const handleClick = (option) => {
     if (option === "labAssistant") {
-      handleChange({ target: { name: "idakun", value: 0 } });
-      handleChange({ target: { name: "idkelompok", value: "" } });
+      handleChange({ target: { name: "id_akun", value: 0 } });
+      handleChange({ target: { name: "nama_kelompok", value: "" } });
     } else if (option === "practician") {
-      handleChange({ target: { name: "idakun", value: 1 } });
+      handleChange({ target: { name: "id_akun", value: 1 } });
       handleChange({ target: { name: "kode_aslab", value: "" } });
     }
+  };
+
+  const [groupList, setGroupList] = useState([]);
+  const [tahunAjaran, setTahunAjaran] = useState([]);
+
+  useEffect(() => {
+    getGroupData();
+    getTahunAjaranData();
+  }, []);
+
+  const getGroupData = async () => {
+    const { data } = await axios.get(`https://jsonplaceholder.typicode.com/users`);
+    setGroupList(data);
+    console.log(data);
+  };
+
+  const getTahunAjaranData = async () => {
+    const { data } = await axios.get(`https://jsonplaceholder.typicode.com/todos`);
+    setTahunAjaran(data);
+    console.log(data);
   };
 
   const [open, setOpen] = useState(false); // State untuk menyimpan opsi yang dipilih
@@ -110,14 +132,14 @@ const RegisterPage = () => {
               restDelta: 0.001,
             },
           }}
-          className="bg-[#FAFAFA] sm:mr-24 backdrop-blur-sm rounded-2xl w-4/5 h-[25rem] sm:w-[45rem] sm:h-[33rem] border-2 shadow-2xl border-solid border-opacity-100">
+          className="bg-[#FAFAFA] md:mr-24 backdrop-blur-sm rounded-2xl w-4/5 h-[25rem] sm:w-[45rem] sm:h-[33rem] border-2 shadow-2xl border-solid border-opacity-100">
           <div className="my-5 space-y-4 sm:p-8">
             <h1 className="text-3xl sm:text-5xl font-bold leading-tight tracking-tight text-info text-center font-Montserrat">Register Account</h1>
             {currentPage === 1 && (
               <div className="flex flex-row justify-center md:gap-10 gap-4 md:h-72 pt-4 md:m-0 m-2">
                 <div
                   className={`flex flex-col justify-center items-center border-2 hover:border-[#B8C1F9] w-full p-4 rounded-2xl md:text-xl text-lg text-black font-bold cursor-pointer ${
-                    formData.idakun === 0 ? "bg-[#B8C1F9] text-white" : ""
+                    formData.id_akun === 0 ? "bg-[#B8C1F9] text-white" : ""
                   }`}
                   onClick={() => handleClick("labAssistant")}>
                   <img src={assistant} alt="Lab Assistant" className="md:h-5/6 w-fit" />
@@ -125,7 +147,7 @@ const RegisterPage = () => {
                 </div>
                 <div
                   className={`flex flex-col justify-center items-center border-2 hover:border-[#B8C1F9] w-full p-4 rounded-2xl md:text-xl text-lg text-black font-bold cursor-pointer ${
-                    formData.idakun === 1 ? "bg-[#B8C1F9] text-white" : ""
+                    formData.id_akun === 1 ? "bg-[#B8C1F9] text-white" : ""
                   }`}
                   onClick={() => handleClick("practician")}>
                   <img src={practician} alt="Practician" className="md:h-5/6 w-fit" />
@@ -165,19 +187,36 @@ const RegisterPage = () => {
                 <div className="flex">
                   <input type="text" placeholder="Phone Number" name="telepon" value={formData.telepon} onChange={handlePhoneNumberChange} className="input input-bordered input-info w-full bg-white border-2 text-black" />
                 </div>
-                <div className="flex">
-                  {formData.idakun === 0 ? (
+                {formData.id_akun === 0 ? (
+                  <div className="flex">
                     <input type="text" placeholder="Lab Assistant Code" name="kode_aslab" value={formData.kode_aslab} onChange={handleChange} className="input input-bordered input-info w-full bg-white border-2 text-black" />
-                  ) : (
-                    <input type="text" placeholder="Group ID" name="idkelompok" value={formData.idkelompok} onChange={handleChange} className="input input-bordered input-info w-full bg-white border-2 text-black" />
-                  )}
-                </div>
+                  </div>
+                ) : (
+                  <div className="flex justify-between space-x-2 md:space-x-0">
+                    <select name="nama_kelompok" value={formData.nama_kelompok} onChange={handleChange} className="select select-info w-1/2 md:w-full max-w-xs bg-white border-2 text-black font-normal">
+                      <option disabled selected>
+                        Group Id
+                      </option>
+                      {groupList.map((groupData) => (
+                        <option key={groupData.id}>{groupData.name}</option>
+                      ))}
+                    </select>
+                    <select name="tahun_ajaran" value={formData.tahun_ajaran} onChange={handleChange} className="select select-info w-2/5 md:w-full max-w-xs bg-white border-2 text-black font-normal">
+                      <option disabled selected>
+                        Academic Year
+                      </option>
+                      {tahunAjaran.map((getTahunAjaranData) => (
+                        <option key={getTahunAjaranData.id}>{getTahunAjaranData.title}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
               </div>
             )}
             {currentPage === 3 && (
               <div className="space-y-4 pt-3">
                 <div className="flex flex-row items-center justify-center">
-                  <img src={secure} alt="Register" className="md:h-28 h-14" />
+                  <img src={secure} alt="Register" className="sm:h-28 h-14" />
                 </div>
                 <div className="flex justify-center">
                   <input

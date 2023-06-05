@@ -8,6 +8,7 @@ import LoginPage from "./pages/LoginPage.jsx";
 import MainPage from "./pages/MainPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
 import ErrorPage from "./pages/ErrorPage.jsx";
+import ItemListPage from "./pages/ItemListPage.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -15,6 +16,7 @@ const router = createBrowserRouter(
       <Route index element={<MainPage />} />
       <Route path="login" element={<LoginPage />} />
       <Route path="register" element={<RegisterPage />} />
+      <Route path="item-list" element={<ItemListPage />} />
       <Route path="*" element={<ErrorPage />} />
     </Route>
   )

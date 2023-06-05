@@ -54,7 +54,7 @@ const LoginPage = () => {
               restDelta: 0.001,
             },
           }}
-          className="bg-[#FAFAFA] sm:mr-24 backdrop-blur-sm rounded-2xl min-w-[20rem] min-h-[24rem] sm:w-[26rem] sm:h-[30rem] border-2 shadow-2xl border-solid border-opacity-100">
+          className="bg-[#FAFAFA] md:mr-24 backdrop-blur-sm rounded-2xl min-w-[20rem] min-h-[24rem] sm:w-[26rem] sm:h-[30rem] border-2 shadow-2xl border-solid border-opacity-100">
           <div className="my-5 space-y-4 sm:p-8">
             <h1 className="text-2xl sm:text-3xl font-bold leading-tight tracking-tight text-info text-center font-Montserrat">Choose Account Type</h1>
             <div className="flex flex-row justify-center space-x-5">
