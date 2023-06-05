@@ -26,9 +26,9 @@ Praktikan dan asisten dapat melihat dan mengedit detail akun mereka masing-masin
 
 ## Getting Started
 
-To get started with TixOnline, follow these simple steps:
+To get started with DigLend, follow these simple steps:
 
-1. Clone the repository: `git clone [link]`
+1. Clone the repository: `git clone https://github.com/SistemBasisData2023/DigiLend`
 2. Install dependencies: `npm install`
 3. Start the application: `npm start`
 4. Visit `http://localhost:3000` in your browser to access DigLend.
