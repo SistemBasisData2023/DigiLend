@@ -1,5 +1,3 @@
-![Logo](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/th5xamgrr6se0x5ro4g6.png)
-
 # DigLend
 
 Sistem Peminjaman Barang adalah sebuah proyek yang bertujuan untuk mempermudah proses peminjaman dan pengembalian barang di lingkungan praktikum atau laboratorium. Proyek ini dirancang untuk memastikan kegiatan peminjaman barang menjadi lebih terstruktur, mudah dilacak, dan efisien.
