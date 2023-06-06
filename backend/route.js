@@ -206,6 +206,7 @@ module.exports = (app, pool) => {
 
             const getBarangQuery = `
             SELECT * FROM barang
+            ORDER BY nama_barang ASC
             `;
 
             const getBarangResult = await client.query(getBarangQuery);
@@ -594,50 +595,23 @@ module.exports = (app, pool) => {
       }
     });  
 
-    app.get('/kelompok', async (req, res) => {
+    app.get('/nama_kelompok', async (req, res) => {
       try {
         const client = await pool.connect();
     
-        const query = `
+        const getKelompokQuery = `
           SELECT nama_kelompok FROM kelompok
-          WHERE id_kelompok <> 0
-          ORDER BY semester, nama_kelompok
         `;
-        const result = await client.query(query);
+        const kelompokResult = await client.query(getKelompokQuery);
+        const kelompok = kelompokResult.rows.map(row => row.nama_kelompok);
     
-        const namaKelompok = result.rows.map((row) => row.nama_kelompok);
-    
-        res.status(200).json(namaKelompok);
+        res.status(200).json(kelompok);
         client.release();
       } catch (error) {
-        console.error('Kesalahan saat mendapatkan data nama_kelompok:', error);
+        console.error('Kesalahan saat mengambil data kelompok:', error);
         res.status(500).json({ error: 'Terjadi kesalahan server' });
       }
-    });   
-  
-    app.get('/kelompok/:nama_kelompok', async (req, res) => {
-        try {
-          const { nama_kelompok } = req.body;
-          const client = await pool.connect();
-      
-          const query = `
-            SELECT id_kelompok FROM kelompok WHERE nama_kelompok = $1
-          `;
-          const result = await client.query(query, [nama_kelompok]);
-      
-          if (result.rows.length === 0) {
-            res.status(404).json({ error: 'Kelompok tidak ditemukan' });
-          } else {
-            const id_kelompok = result.rows[0].id_kelompok;
-            res.status(200).json({ id_kelompok });
-          }
-      
-          client.release();
-        } catch (error) {
-          console.error('Kesalahan saat mendapatkan data id_kelompok:', error);
-          res.status(500).json({ error: 'Terjadi kesalahan server' });
-        }
-    });
+    });    
 
     app.put('/kelompok/:id_kelompok', async (req, res) => {
       const { id_kelompok } = req.body;
