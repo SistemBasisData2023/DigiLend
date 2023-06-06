@@ -1,11 +1,11 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <h1 align="center">Welcome to DigLend</h1>
+  <h1 align="center">Welcome to DigiLend</h1>
 </div>
-RestoMatic is An advanced platform for efficient and easy-to-use loan management.
+DigiLend is An advanced platform for efficient and easy-to-use loan management.
 
-# DigLend
+# DigiLend
 
 Sistem Peminjaman Barang adalah sebuah proyek yang bertujuan untuk mempermudah proses peminjaman dan pengembalian barang di lingkungan praktikum atau laboratorium. Proyek ini dirancang untuk memastikan kegiatan peminjaman barang menjadi lebih terstruktur, mudah dilacak, dan efisien.
 
@@ -49,13 +49,13 @@ Halaman profil memungkinkan praktikan dan asisten untuk melihat dan mengedit det
 
 ## Getting Started
 
-To get started with DigLend, follow these simple steps:
+To get started with DigiLend, follow these simple steps:
 
 
 1. Clone the repository: `git clone https://github.com/SistemBasisData2023/DigiLend`
 2. Install dependencies: `npm install`
 3. Start the application: `npm start`
-4. Visit `http://localhost:3000` in your browser to access DigLend.
+4. Visit `http://localhost:3000` in your browser to access DigiLend.
 
 ## Technologies Used
 
@@ -73,7 +73,7 @@ To get started with DigLend, follow these simple steps:
 
 ## Tabel
 
-The following are tables that is used in DigLend's database.
+The following are tables that is used in DigiLend's database.
 
 ### 1. `Praktikan`
 
