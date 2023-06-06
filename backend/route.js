@@ -13,6 +13,10 @@ module.exports = (app, pool) => {
         res.status(401).json({ error: 'Akses ditolak' });
       }
     };   
+    
+    ///                  ///
+    /// REGISTER & LOGIN ///
+    ///                  ///
 
     app.post('/register', async (req, res) => {
         const { id_role, nama, npm, username, password, nama_kelompok, kode_aslab } = req.body;
@@ -143,38 +147,9 @@ module.exports = (app, pool) => {
         }
     });
 
-
-    app.post('/kelompok', async (req, res) => {
-        const { id_asisten, tahun1, tahun2, nama_kelompok, semester } = req.body;
-
-        // Validasi tahun2 harus lebih besar dari tahun1
-        if (tahun2 <= tahun1) {
-            return res.status(400).json({ error: 'Tahun kedua harus lebih besar dari tahun pertama' });
-        }
-
-        try {
-            const client = await pool.connect();
-
-            // Gabungkan tahun1 dan tahun2 menjadi format <tahun1>/<tahun2>
-            const tahunAjaran = `${tahun1}/${tahun2}`;
-
-            // Insert data ke tabel kelompok
-            const insertKelompokQuery = `
-            INSERT INTO kelompok (id_kelompok, id_asisten, nama_kelompok, semester, tahun_ajaran)
-            VALUES (nextval('id_kelompok_sequence'), $1, $2, $3, $4)
-            RETURNING id_kelompok
-            `;
-            const insertKelompokValues = [id_asisten, nama_kelompok, semester, tahunAjaran];
-            const insertKelompokResult = await client.query(insertKelompokQuery, insertKelompokValues);
-            const kelompokId = insertKelompokResult.rows[0].id_kelompok;
-
-            res.status(201).json({ message: 'Data kelompok berhasil ditambahkan', id_kelompok: kelompokId });
-            client.release();
-        } catch (error) {
-            console.error('Kesalahan saat menambahkan data kelompok:', error);
-            res.status(500).json({ error: 'Terjadi kesalahan server' });
-        }
-    });
+    ///        ///
+    /// Barang ///
+    ///        ///
 
     app.post('/barang', async (req, res) => {
         const { harga, jumlah_tersedia } = req.body;
@@ -245,7 +220,7 @@ module.exports = (app, pool) => {
     });
 
     app.get('/barang/:id_barang', async (req, res) => {
-        const { id_barang } = req.params;
+        const { id_barang } = req.body;
 
         try {
             const client = await pool.connect();
@@ -269,7 +244,11 @@ module.exports = (app, pool) => {
             console.error('Kesalahan saat mendapatkan data barang:', error);
             res.status(500).json({ error: 'Terjadi kesalahan server' });
         }
-    });
+    });    
+
+    ///            ///
+    /// PEMINJAMAN ///
+    ///            ///
 
     app.post('/peminjaman', async (req, res) => {
         const { id_barang, jumlah_dipinjam, id_praktikan } = req.body;
@@ -298,7 +277,7 @@ module.exports = (app, pool) => {
     app.get('/peminjaman', async (req, res) => {
         try {
             const client = await pool.connect();
-            const query = 'SELECT * FROM peminjaman';
+            const query = 'SELECT * FROM peminjaman ORDER BY waktu_peminjaman DESC';
             const result = await client.query(query);
             const peminjaman = result.rows;
             res.status(200).json(peminjaman);
@@ -309,7 +288,6 @@ module.exports = (app, pool) => {
         }
     });
 
-
     app.get('/peminjaman/:id_praktikan', async (req, res) => {
         const { id_praktikan } = req.body;
 
@@ -317,7 +295,7 @@ module.exports = (app, pool) => {
             const client = await pool.connect();
 
             const query = `
-            SELECT * FROM peminjaman WHERE id_praktikan = $1
+            SELECT * FROM peminjaman WHERE id_praktikan = $1 ORDER BY waktu_peminjaman DESC
             `;
             const values = [id_praktikan];
 
@@ -377,7 +355,11 @@ module.exports = (app, pool) => {
         console.error('Kesalahan saat menghapus data peminjaman:', error);
         res.status(500).json({ error: 'Terjadi kesalahan server' });
       }
-    });
+    });    
+
+    ///              ///
+    /// PENGEMBALIAN ///
+    ///              ///
 
     app.post('/pengembalian', async (req, res) => {
       const { id_peminjaman, jumlah_dikembalikan, bukti_pembayaran, waktu_pengembalian } = req.body;
@@ -453,7 +435,7 @@ module.exports = (app, pool) => {
             const client = await pool.connect();
 
             // Ambil semua data pengembalian
-            const getPengembalianQuery = 'SELECT * FROM pengembalian';
+            const getPengembalianQuery = 'SELECT * FROM pengembalian ORDER BY waktu_pengembalian DESC';
             const getPengembalianResult = await client.query(getPengembalianQuery);
             const pengembalian = getPengembalianResult.rows;
 
@@ -466,29 +448,29 @@ module.exports = (app, pool) => {
     });
 
     app.get('/pengembalian/:id_praktikan', async (req, res) => {
-        const { id_praktikan } = req.body;
-
-        try {
-            const client = await pool.connect();
-
-            // Ambil data peminjaman berdasarkan id_praktikan
-            const getPeminjamanQuery = 'SELECT id_peminjaman FROM peminjaman WHERE id_praktikan = $1';
-            const getPeminjamanValues = [id_praktikan];
-            const getPeminjamanResult = await client.query(getPeminjamanQuery, getPeminjamanValues);
-            const peminjamanIds = getPeminjamanResult.rows.map(row => row.id_peminjaman);
-
-            // Ambil data pengembalian berdasarkan id_peminjaman
-            const getPengembalianQuery = 'SELECT * FROM pengembalian WHERE id_peminjaman = ANY($1)';
-            const getPengembalianValues = [peminjamanIds];
-            const getPengembalianResult = await client.query(getPengembalianQuery, getPengembalianValues);
-            const pengembalian = getPengembalianResult.rows;
-
-            res.status(200).json(pengembalian);
-            client.release();
-        } catch (error) {
-            console.error('Kesalahan saat mengambil data pengembalian:', error);
-            res.status(500).json({ error: 'Terjadi kesalahan server' });
-        }
+      const { id_praktikan } = req.body;
+    
+      try {
+        const client = await pool.connect();
+    
+        // Ambil data peminjaman berdasarkan id_praktikan
+        const getPeminjamanQuery = 'SELECT id_peminjaman FROM peminjaman WHERE id_praktikan = $1';
+        const getPeminjamanValues = [id_praktikan];
+        const getPeminjamanResult = await client.query(getPeminjamanQuery, getPeminjamanValues);
+        const peminjamanIds = getPeminjamanResult.rows.map(row => row.id_peminjaman);
+    
+        // Ambil data pengembalian berdasarkan id_peminjaman yang diurutkan berdasarkan waktu_pengembalian secara menurun (descending)
+        const getPengembalianQuery = 'SELECT * FROM pengembalian WHERE id_peminjaman = ANY($1) ORDER BY waktu_pengembalian DESC';
+        const getPengembalianValues = [peminjamanIds];
+        const getPengembalianResult = await client.query(getPengembalianQuery, getPengembalianValues);
+        const pengembalian = getPengembalianResult.rows;
+    
+        res.status(200).json(pengembalian);
+        client.release();
+      } catch (error) {
+        console.error('Kesalahan saat mengambil data pengembalian:', error);
+        res.status(500).json({ error: 'Terjadi kesalahan server' });
+      }
     });
 
     app.delete('/pengembalian/:id_pengembalian', async (req, res) => {
@@ -529,8 +511,96 @@ module.exports = (app, pool) => {
         console.error('Kesalahan saat menghapus data pengembalian:', error);
         res.status(500).json({ error: 'Terjadi kesalahan server' });
       }
+    });    
+
+    ///          ///
+    /// KELOMPOK ///
+    ///          ///
+
+    app.post('/kelompok', async (req, res) => {
+      const { kode_aslab, tahun1, tahun2, nama_kelompok, semester } = req.body;
+  
+      // Validasi tahun2 harus lebih besar dari tahun1
+      if (tahun2 <= tahun1) {
+          return res.status(400).json({ error: 'Tahun kedua harus lebih besar dari tahun pertama' });
+      }
+  
+      try {
+          const client = await pool.connect();
+  
+          // Cari id_asisten berdasarkan kode_aslab
+          const getAsistenQuery = 'SELECT id_akun FROM asisten WHERE kode_aslab = $1';
+          const getAsistenValues = [kode_aslab];
+          const getAsistenResult = await client.query(getAsistenQuery, getAsistenValues);
+          const id_akun = getAsistenResult.rows[0].id_akun;
+  
+          // Gabungkan tahun1 dan tahun2 menjadi format <tahun1>/<tahun2>
+          const tahunAjaran = `${tahun1}/${tahun2}`;
+  
+          // Insert data ke tabel kelompok
+          const insertKelompokQuery = `
+              INSERT INTO kelompok (id_kelompok, id_asisten, nama_kelompok, semester, tahun_ajaran)
+              VALUES (nextval('id_kelompok_sequence'), $1, $2, $3, $4)
+              RETURNING id_kelompok
+          `;
+          const insertKelompokValues = [id_akun, nama_kelompok, semester, tahunAjaran];
+          const insertKelompokResult = await client.query(insertKelompokQuery, insertKelompokValues);
+          const kelompokId = insertKelompokResult.rows[0].id_kelompok;
+  
+          res.status(201).json({ message: 'Data kelompok berhasil ditambahkan', id_kelompok: kelompokId });
+          client.release();
+      } catch (error) {
+          console.error('Kesalahan saat menambahkan data kelompok:', error);
+          res.status(500).json({ error: 'Terjadi kesalahan server' });
+      }
+  });  
+
+    app.get('/kelompok', async (req, res) => {
+        try {
+          const client = await pool.connect();
+      
+          const query = `
+            SELECT nama_kelompok FROM kelompok
+          `;
+          const result = await client.query(query);
+      
+          const namaKelompok = result.rows.map((row) => row.nama_kelompok);
+      
+          res.status(200).json(namaKelompok);
+          client.release();
+        } catch (error) {
+          console.error('Kesalahan saat mendapatkan data nama_kelompok:', error);
+          res.status(500).json({ error: 'Terjadi kesalahan server' });
+        }
     });
-    
+
+    app.get('/kelompok/:nama_kelompok', async (req, res) => {
+        try {
+          const { nama_kelompok } = req.body;
+          const client = await pool.connect();
+      
+          const query = `
+            SELECT id_kelompok FROM kelompok WHERE nama_kelompok = $1
+          `;
+          const result = await client.query(query, [nama_kelompok]);
+      
+          if (result.rows.length === 0) {
+            res.status(404).json({ error: 'Kelompok tidak ditemukan' });
+          } else {
+            const id_kelompok = result.rows[0].id_kelompok;
+            res.status(200).json({ id_kelompok });
+          }
+      
+          client.release();
+        } catch (error) {
+          console.error('Kesalahan saat mendapatkan data id_kelompok:', error);
+          res.status(500).json({ error: 'Terjadi kesalahan server' });
+        }
+    });
+      
+    ///      ///
+    /// AKUN ///
+    ///      ///
 
     app.get('/akun/:id_akun', async (req, res) => {
         const { id_akun } = req.body;
@@ -554,7 +624,7 @@ module.exports = (app, pool) => {
 
     app.put('/akun/:id_akun', async (req, res) => {
         const { id_akun } = req.body;
-        const { nama, npm, username, password, id_kelompok, kode_aslab } = req.body;
+        const { nama, npm, username, password, id_kelompok, kode_aslab, status_aslab } = req.body;
 
         try {
             const client = await pool.connect();
@@ -575,8 +645,8 @@ module.exports = (app, pool) => {
             updateValues = [id_kelompok, id_akun];
             } else if (id_role == 1) {
             // Akun dengan id_role = 1 adalah asisten
-            updateQuery = 'UPDATE asisten SET kode_aslab = $1 WHERE id_akun = $2';
-            updateValues = [kode_aslab, id_akun];
+            updateQuery = 'UPDATE asisten SET kode_aslab = $1, status_aslab = $2 WHERE id_akun = $3';
+            updateValues = [kode_aslab, status_aslab, id_akun];
             } else {
             // Jika id_role tidak valid, kirimkan respons dengan kode status 400
             return res.status(400).json({ error: 'ID role tidak valid' });
@@ -595,6 +665,10 @@ module.exports = (app, pool) => {
         }
     });
 
+    ///         ///
+    /// ASISTEN ///
+    ///         ///
+
     app.get('/kode_aslab', async (req, res) => {
         try {
             const client = await pool.connect();
@@ -611,76 +685,148 @@ module.exports = (app, pool) => {
             console.error('Kesalahan saat mendapatkan data kode_aslab:', error);
             res.status(500).json({ error: 'Terjadi kesalahan server' });
         }
+    });    
+
+    app.get('/asisten', async (req, res) => {
+      try {
+        const client = await pool.connect();
+    
+        // Query untuk mengambil data asisten dari view view_asisten_akun
+        const query = 'SELECT * FROM view_asisten_akun';
+        const result = await client.query(query);
+    
+        const asisten = result.rows;
+    
+        res.status(200).json(asisten);
+        client.release();
+      } catch (error) {
+        console.error('Kesalahan saat mengambil data asisten:', error);
+        res.status(500).json({ error: 'Terjadi kesalahan server' });
+      }
     });
 
-    app.get('/id_akun/:kode_aslab', async (req, res) => {
-        const { kode_aslab } = req.body;
-      
-        try {
+    app.put('/asisten/:id_akun', async (req, res) => {
+      const { id_akun } = req.body;
+      const { status_aslab } = req.body;
+  
+      try {
           const client = await pool.connect();
-      
-          const query = `
-            SELECT id_akun FROM asisten WHERE kode_aslab = $1
-          `;
-          const result = await client.query(query, [kode_aslab]);
-      
-          if (result.rows.length > 0) {
-            const id_akun = result.rows[0].id_akun;
-            res.status(200).json({ id_akun });
-          } else {
-            res.status(404).json({ error: 'id_akun not found' });
+  
+          // Periksa apakah akun dengan id_akun yang diberikan adalah asisten
+          const checkAsistenQuery = 'SELECT * FROM asisten WHERE id_akun = $1';
+          const checkAsistenValues = [id_akun];
+          const checkAsistenResult = await client.query(checkAsistenQuery, checkAsistenValues);
+          const asisten = checkAsistenResult.rows[0];
+  
+          if (!asisten) {
+              return res.status(404).json({ error: 'Data asisten tidak ditemukan' });
           }
-      
+  
+          // Update nilai status_aslab pada tabel asisten
+          const updateAsistenQuery = 'UPDATE asisten SET status_aslab = $1 WHERE id_akun = $2';
+          const updateAsistenValues = [status_aslab, id_akun];
+          await client.query(updateAsistenQuery, updateAsistenValues);
+  
+          res.status(200).json({ message: 'Nilai status_aslab berhasil diperbarui' });
           client.release();
-        } catch (error) {
-          console.error('Kesalahan saat mendapatkan data id_akun:', error);
+      } catch (error) {
+          console.error('Kesalahan saat memperbarui nilai status_aslab:', error);
           res.status(500).json({ error: 'Terjadi kesalahan server' });
-        }
-    });      
-
-    app.get('/kelompok', async (req, res) => {
-        try {
-          const client = await pool.connect();
-      
-          const query = `
-            SELECT nama_kelompok FROM kelompok
-          `;
-          const result = await client.query(query);
-      
-          const namaKelompok = result.rows.map((row) => row.nama_kelompok);
-      
-          res.status(200).json(namaKelompok);
-          client.release();
-        } catch (error) {
-          console.error('Kesalahan saat mendapatkan data nama_kelompok:', error);
-          res.status(500).json({ error: 'Terjadi kesalahan server' });
-        }
+      }
     });
 
-    app.get('/kelompok/:nama_kelompok', async (req, res) => {
-        try {
-          const { nama_kelompok } = req.params;
+    app.delete('/asisten/:id_akun', async (req, res) => {
+      const { id_akun } = req.body;
+  
+      try {
           const client = await pool.connect();
-      
-          const query = `
-            SELECT id_kelompok FROM kelompok WHERE nama_kelompok = $1
-          `;
-          const result = await client.query(query, [nama_kelompok]);
-      
-          if (result.rows.length === 0) {
-            res.status(404).json({ error: 'Kelompok tidak ditemukan' });
-          } else {
-            const id_kelompok = result.rows[0].id_kelompok;
-            res.status(200).json({ id_kelompok });
+  
+          // Periksa apakah akun yang akan dihapus adalah asisten
+          const checkAsistenQuery = 'SELECT * FROM asisten WHERE id_akun = $1';
+          const checkAsistenValues = [id_akun];
+          const checkAsistenResult = await client.query(checkAsistenQuery, checkAsistenValues);
+          const asisten = checkAsistenResult.rows[0];
+  
+          let updateKelompokQuery = '';
+          let updateKelompokValues = [];
+  
+          if (asisten) {
+              // Jika akun adalah asisten, perbarui data kolom id_asisten pada tabel kelompok menjadi NULL
+              updateKelompokQuery = 'UPDATE kelompok SET id_asisten = 0 WHERE id_asisten = $1';
+              updateKelompokValues = [id_akun];
+              await client.query(updateKelompokQuery, updateKelompokValues);
+  
+              // Hapus data asisten dari tabel asisten
+              const deleteAsistenQuery = 'DELETE FROM asisten WHERE id_akun = $1';
+              const deleteAsistenValues = [id_akun];
+              await client.query(deleteAsistenQuery, deleteAsistenValues);
           }
-      
+  
+          // Hapus data akun dari tabel akun
+          const deleteAkunQuery = 'DELETE FROM akun WHERE id_akun = $1';
+          const deleteAkunValues = [id_akun];
+          await client.query(deleteAkunQuery, deleteAkunValues);
+  
+          res.status(200).json({ message: 'Data akun berhasil dihapus' });
           client.release();
-        } catch (error) {
-          console.error('Kesalahan saat mendapatkan data id_kelompok:', error);
+      } catch (error) {
+          console.error('Kesalahan saat menghapus data akun:', error);
           res.status(500).json({ error: 'Terjadi kesalahan server' });
-        }
+      }
     });
-      
+
+    ///           ///
+    /// PRAKTIKAN ///
+    ///           ///
+    
+    app.delete('/praktikan/:id_akun', async (req, res) => {
+      const { id_akun } = req.body;
+  
+      try {
+          const client = await pool.connect();
+  
+          const updatePeminjamanQuery = 'UPDATE peminjaman SET id_praktikan = 1 WHERE id_praktikan = $1';
+          const updatePeminjamanValues = [id_akun];
+          await client.query(updatePeminjamanQuery, updatePeminjamanValues);
+
+          // Hapus data praktikan dari tabel praktikan
+          const deletePraktikanQuery = 'DELETE FROM praktikan WHERE id_akun = $1';
+          const deletePraktikanValues = [id_akun];
+          await client.query(deletePraktikanQuery, deletePraktikanValues);
+  
+          // Hapus data akun dari tabel akun
+          const deleteAkunQuery = 'DELETE FROM akun WHERE id_akun = $1';
+          const deleteAkunValues = [id_akun];
+          await client.query(deleteAkunQuery, deleteAkunValues);
+  
+          res.status(200).json({ message: 'Data akun berhasil dihapus' });
+          client.release();
+      } catch (error) {
+          console.error('Kesalahan saat menghapus data akun:', error);
+          res.status(500).json({ error: 'Terjadi kesalahan server' });
+      }
+    });
+  
+    app.get('/praktikan', async (req, res) => {
+      try {
+        const client = await pool.connect();
+    
+        // Query untuk mengambil data praktikan dari view view_akun_praktikan_kelompok
+        const query = 'SELECT * FROM view_akun_praktikan_kelompok';
+        const result = await client.query(query);
+    
+        const asisten = result.rows;
+    
+        res.status(200).json(asisten);
+        client.release();
+      } catch (error) {
+        console.error('Kesalahan saat mengambil data asisten:', error);
+        res.status(500).json({ error: 'Terjadi kesalahan server' });
+      }
+    });
+
+
+
     // Contoh penggunaan middleware checkAuth
     app.get('/protected', checkAuth, (req, res) => {
       res.status(200).json({ message: 'Akses diizinkan' });
