@@ -553,26 +553,28 @@ module.exports = (app, pool) => {
           console.error('Kesalahan saat menambahkan data kelompok:', error);
           res.status(500).json({ error: 'Terjadi kesalahan server' });
       }
-  });  
+    });  
 
     app.get('/kelompok', async (req, res) => {
-        try {
-          const client = await pool.connect();
-      
-          const query = `
-            SELECT nama_kelompok FROM kelompok
-          `;
-          const result = await client.query(query);
-      
-          const namaKelompok = result.rows.map((row) => row.nama_kelompok);
-      
-          res.status(200).json(namaKelompok);
-          client.release();
-        } catch (error) {
-          console.error('Kesalahan saat mendapatkan data nama_kelompok:', error);
-          res.status(500).json({ error: 'Terjadi kesalahan server' });
-        }
+      try {
+        const client = await pool.connect();
+    
+        const query = `
+          SELECT nama_kelompok FROM kelompok
+          WHERE id_kelompok <> 0
+        `;
+        const result = await client.query(query);
+    
+        const namaKelompok = result.rows.map((row) => row.nama_kelompok);
+    
+        res.status(200).json(namaKelompok);
+        client.release();
+      } catch (error) {
+        console.error('Kesalahan saat mendapatkan data nama_kelompok:', error);
+        res.status(500).json({ error: 'Terjadi kesalahan server' });
+      }
     });
+  
 
     app.get('/kelompok/:nama_kelompok', async (req, res) => {
         try {
@@ -675,6 +677,7 @@ module.exports = (app, pool) => {
           
             const query = `
                 SELECT kode_aslab FROM asisten
+                WHERE id_akun <> 0
             `;
             const result = await client.query(query);
             const kodeAslab = result.rows.map((row) => row.kode_aslab);
@@ -692,7 +695,10 @@ module.exports = (app, pool) => {
         const client = await pool.connect();
     
         // Query untuk mengambil data asisten dari view view_asisten_akun
-        const query = 'SELECT * FROM view_asisten_akun';
+        const query = `
+          SELECT * FROM view_asisten_akun
+          WHERE id_akun <> 0
+        `;
         const result = await client.query(query);
     
         const asisten = result.rows;
@@ -812,7 +818,10 @@ module.exports = (app, pool) => {
         const client = await pool.connect();
     
         // Query untuk mengambil data praktikan dari view view_akun_praktikan_kelompok
-        const query = 'SELECT * FROM view_akun_praktikan_kelompok';
+        const query = `
+        SELECT * FROM view_akun_praktikan_kelompok
+        WHERE id_akun <> 1
+        `;
         const result = await client.query(query);
     
         const asisten = result.rows;
