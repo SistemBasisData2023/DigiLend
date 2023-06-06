@@ -95,18 +95,12 @@ const RegisterPage = () => {
     // Lakukan pengiriman data ke backend
     // Misalnya, menggunakan fetch atau axios
 
-    // Contoh menggunakan fetch
-    fetch("URL_BACKEND", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    })
-      .then((response) => response.json())
-      .then((data) => {
+    // Lakukan pengiriman data ke backend menggunakan Axios
+    axios
+      .post("URL_BACKEND", formData)
+      .then((response) => {
         // Tanggapi respon dari backend
-        console.log(data);
+        console.log(response.data);
       })
       .catch((error) => {
         // Tangani kesalahan jika terjadi
