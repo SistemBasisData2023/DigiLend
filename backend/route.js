@@ -3,6 +3,17 @@ module.exports = (app, pool) => {
     const bcrypt = require('bcrypt');
     let lastInsertedId = 0; // Menyimpan ID terakhir yang diinsert
 
+    // Middleware untuk memeriksa session
+    const checkAuth = (req, res, next) => {
+      if (req.session.loggedIn) {
+        // Jika session loggedIn = true, lanjutkan ke rute selanjutnya
+        next();
+      } else {
+        // Jika session tidak ada atau loggedIn = false, kembalikan respons error
+        res.status(401).json({ error: 'Akses ditolak' });
+      }
+    };   
+
     app.post('/register', async (req, res) => {
         const { id_role, nama, npm, username, password, nama_kelompok, kode_aslab } = req.body;
       
@@ -321,64 +332,120 @@ module.exports = (app, pool) => {
         }
     });
 
-    app.post('/pengembalian', async (req, res) => {
-        const { id_peminjaman, jumlah_dikembalikan, bukti_pembayaran, waktu_pengembalian } = req.body;
-
-        try {
-            const client = await pool.connect();
-
-            // Ambil informasi peminjaman berdasarkan id_peminjaman
-            const getPeminjamanQuery = `
-            SELECT * FROM peminjaman WHERE id_peminjaman = $1
-            `;
-            const getPeminjamanValues = [id_peminjaman];
-            const peminjamanResult = await client.query(getPeminjamanQuery, getPeminjamanValues);
-            const peminjaman = peminjamanResult.rows[0];
-
-            if (!peminjaman) {
-            return res.status(404).json({ error: 'Data peminjaman tidak ditemukan' });
-            }
-
-            // Hitung jumlah hari terlambat
-            const waktuPengembalian = waktu_pengembalian ? new Date(waktu_pengembalian) : new Date();
-            const tenggatWaktu = new Date(peminjaman.tenggat_waktu);
-            const selisihHari = Math.floor((waktuPengembalian - tenggatWaktu) / (1000 * 60 * 60 * 24));
-            const denda = selisihHari > 0 ? selisihHari * 1000 : 0;
-
-            // Ambil informasi barang berdasarkan id_barang pada peminjaman
-            const getBarangQuery = `
-            SELECT * FROM barang WHERE id_barang = $1
-            `;
-            const getBarangValues = [peminjaman.id_barang];
-            const barangResult = await client.query(getBarangQuery, getBarangValues);
-            const barang = barangResult.rows[0];
-
-            if (!barang) {
-            return res.status(404).json({ error: 'Data barang tidak ditemukan' });
-            }
-
-            // Hitung nilai ganti rugi
-            const gantiRugi = (peminjaman.jumlah_dipinjam - jumlah_dikembalikan) * barang.harga;
-
-            // Hitung total sanksi
-            const totalSanksi = denda + gantiRugi;
-
-            // Insert data ke tabel pengembalian
-            const insertPengembalianQuery = `
-            INSERT INTO pengembalian (id_peminjaman, jumlah_dikembalikan, waktu_pengembalian, denda, ganti_rugi, total_sanksi, bukti_pembayaran)
-            VALUES ($1, $2, $3, $4, $5, $6, $7)
-            RETURNING *
-            `;
-            const insertPengembalianValues = [id_peminjaman, jumlah_dikembalikan, waktuPengembalian, denda, gantiRugi, totalSanksi, bukti_pembayaran];
-            const insertPengembalianResult = await client.query(insertPengembalianQuery, insertPengembalianValues);
-            const pengembalian = insertPengembalianResult.rows[0];
-
-            res.status(201).json(pengembalian);
-            client.release();
-        } catch (error) {
-            console.error('Kesalahan saat melakukan pengembalian:', error);
-            res.status(500).json({ error: 'Terjadi kesalahan server' });
+    app.delete('/peminjaman/:id_peminjaman', async (req, res) => {
+      const idPeminjaman = req.body.id_peminjaman;
+    
+      try {
+        const client = await pool.connect();
+    
+        // Periksa apakah data peminjaman dengan id_peminjaman yang sesuai memiliki nilai pada kolom id_pengembalian
+        const checkPeminjamanQuery = `
+          SELECT id_pengembalian FROM peminjaman WHERE id_peminjaman = $1
+        `;
+        const checkPeminjamanValues = [idPeminjaman];
+        const checkPeminjamanResult = await client.query(checkPeminjamanQuery, checkPeminjamanValues);
+        const idPengembalian = checkPeminjamanResult.rows[0].id_pengembalian;
+    
+        if (idPengembalian) {
+          // Jika id_pengembalian tidak NULL, ubah nilainya menjadi NULL pada tabel peminjaman
+          const updatePeminjamanQuery = `
+            UPDATE peminjaman 
+            SET id_pengembalian = NULL, returned = FALSE
+            WHERE id_peminjaman = $1
+          `;
+          const updatePeminjamanValues = [idPeminjaman];
+          await client.query(updatePeminjamanQuery, updatePeminjamanValues);
         }
+
+        // Hapus data pengembalian dengan id_peminjaman yang sama
+        const deletePengembalianQuery = `
+          DELETE FROM pengembalian WHERE id_peminjaman = $1
+        `;
+        const deletePengembalianValues = [idPeminjaman];
+        await client.query(deletePengembalianQuery, deletePengembalianValues);
+    
+        // Hapus data peminjaman dengan id_peminjaman yang sama
+        const deletePeminjamanQuery = `
+          DELETE FROM peminjaman WHERE id_peminjaman = $1
+        `;
+        const deletePeminjamanValues = [idPeminjaman];
+        await client.query(deletePeminjamanQuery, deletePeminjamanValues);
+    
+        res.status(200).json({ message: 'Data peminjaman dan pengembalian berhasil dihapus' });
+        client.release();
+      } catch (error) {
+        console.error('Kesalahan saat menghapus data peminjaman:', error);
+        res.status(500).json({ error: 'Terjadi kesalahan server' });
+      }
+    });
+
+    app.post('/pengembalian', async (req, res) => {
+      const { id_peminjaman, jumlah_dikembalikan, bukti_pembayaran, waktu_pengembalian } = req.body;
+    
+      try {
+        const client = await pool.connect();
+    
+        // Ambil informasi peminjaman berdasarkan id_peminjaman
+        const getPeminjamanQuery = `
+          SELECT * FROM peminjaman WHERE id_peminjaman = $1
+        `;
+        const getPeminjamanValues = [id_peminjaman];
+        const peminjamanResult = await client.query(getPeminjamanQuery, getPeminjamanValues);
+        const peminjaman = peminjamanResult.rows[0];
+    
+        if (!peminjaman) {
+          return res.status(404).json({ error: 'Data peminjaman tidak ditemukan' });
+        }
+    
+        // Hitung jumlah hari terlambat, denda, dan total sanksi
+        const waktuPengembalian = waktu_pengembalian ? new Date(waktu_pengembalian) : new Date();
+        const tenggatWaktu = new Date(peminjaman.tenggat_waktu);
+        const selisihHari = Math.floor((waktuPengembalian - tenggatWaktu) / (1000 * 60 * 60 * 24));
+        const denda = selisihHari > 0 ? selisihHari * 1000 : 0;
+    
+        // Ambil informasi barang berdasarkan id_barang pada peminjaman
+        const getBarangQuery = `
+          SELECT * FROM barang WHERE id_barang = $1
+        `;
+        const getBarangValues = [peminjaman.id_barang];
+        const barangResult = await client.query(getBarangQuery, getBarangValues);
+        const barang = barangResult.rows[0];
+    
+        if (!barang) {
+          return res.status(404).json({ error: 'Data barang tidak ditemukan' });
+        }
+    
+        // Hitung nilai ganti rugi
+        const gantiRugi = (peminjaman.jumlah_dipinjam - jumlah_dikembalikan) * barang.harga;
+    
+        // Hitung total sanksi
+        const totalSanksi = denda + gantiRugi;
+    
+        // Insert data ke tabel pengembalian
+        const insertPengembalianQuery = `
+          INSERT INTO pengembalian (id_peminjaman, jumlah_dikembalikan, waktu_pengembalian, denda, ganti_rugi, total_sanksi, bukti_pembayaran)
+          VALUES ($1, $2, $3, $4, $5, $6, $7)
+          RETURNING *
+        `;
+        const insertPengembalianValues = [id_peminjaman, jumlah_dikembalikan, waktuPengembalian, denda, gantiRugi, totalSanksi, bukti_pembayaran];
+        const insertPengembalianResult = await client.query(insertPengembalianQuery, insertPengembalianValues);
+        const pengembalian = insertPengembalianResult.rows[0];
+    
+        // Update kolom returned dan id_pengembalian pada tabel peminjaman
+        const updatePeminjamanQuery = `
+          UPDATE peminjaman
+          SET returned = TRUE, id_pengembalian = $1
+          WHERE id_peminjaman = $2
+        `;
+        const updatePeminjamanValues = [pengembalian.id_pengembalian, id_peminjaman];
+        await client.query(updatePeminjamanQuery, updatePeminjamanValues);
+    
+        res.status(201).json(pengembalian);
+        client.release();
+      } catch (error) {
+        console.error('Kesalahan saat melakukan pengembalian:', error);
+        res.status(500).json({ error: 'Terjadi kesalahan server' });
+      }
     });
 
     app.get('/pengembalian', async (req, res) => {
@@ -397,7 +464,6 @@ module.exports = (app, pool) => {
             res.status(500).json({ error: 'Terjadi kesalahan server' });
         }
     });
-
 
     app.get('/pengembalian/:id_praktikan', async (req, res) => {
         const { id_praktikan } = req.body;
@@ -424,6 +490,47 @@ module.exports = (app, pool) => {
             res.status(500).json({ error: 'Terjadi kesalahan server' });
         }
     });
+
+    app.delete('/pengembalian/:id_pengembalian', async (req, res) => {
+      const idPengembalian = req.body.id_pengembalian;
+    
+      try {
+        const client = await pool.connect();
+    
+        // Periksa data pengembalian dengan id_pengembalian yang sesuai
+        const checkPengembalianQuery = `
+          SELECT id_peminjaman FROM pengembalian WHERE id_pengembalian = $1
+        `;
+        const checkPengembalianValues = [idPengembalian];
+        const checkPengembalianResult = await client.query(checkPengembalianQuery, checkPengembalianValues);
+        const idPeminjaman = checkPengembalianResult.rows[0].id_peminjaman;
+    
+        if (idPeminjaman) {
+          // Jika id_peminjaman tidak NULL, ubah nilainya menjadi NULL pada tabel peminjaman
+          const updatePeminjamanQuery = `
+            UPDATE peminjaman 
+            SET id_pengembalian = NULL, returned = FALSE 
+            WHERE id_peminjaman = $1
+          `;
+          const updatePeminjamanValues = [idPeminjaman];
+          await client.query(updatePeminjamanQuery, updatePeminjamanValues);
+        }
+    
+        // Hapus data pengembalian dengan id_pengembalian yang sesuai
+        const deletePengembalianQuery = `
+          DELETE FROM pengembalian WHERE id_pengembalian = $1
+        `;
+        const deletePengembalianValues = [idPengembalian];
+        await client.query(deletePengembalianQuery, deletePengembalianValues);
+    
+        res.status(200).json({ message: 'Data pengembalian berhasil dihapus' });
+        client.release();
+      } catch (error) {
+        console.error('Kesalahan saat menghapus data pengembalian:', error);
+        res.status(500).json({ error: 'Terjadi kesalahan server' });
+      }
+    });
+    
 
     app.get('/akun/:id_akun', async (req, res) => {
         const { id_akun } = req.body;
@@ -574,7 +681,10 @@ module.exports = (app, pool) => {
         }
     });
       
-      
+    // Contoh penggunaan middleware checkAuth
+    app.get('/protected', checkAuth, (req, res) => {
+      res.status(200).json({ message: 'Akses diizinkan' });
+    }); 
 
     const port = 3000; // Port yang akan digunakan oleh server
 

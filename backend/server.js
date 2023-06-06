@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const { Pool } = require('pg'); // Import modul pg
+const session = require('express-session');
 const app = express();
 const dotenv = require('dotenv');
 dotenv.config();
@@ -34,6 +35,13 @@ const testDatabaseConnection = async () => {
 };
 
 testDatabaseConnection();
+
+// Konfigurasi session
+app.use(session({
+  secret: 'secret-key', // Ganti dengan kunci rahasia yang lebih aman
+  resave: false,
+  saveUninitialized: true,
+}));
 
 // Import routes from route.js
 require('./route.js')(app, pool);
