@@ -1,10 +1,12 @@
 import axios from "axios";
 import React, { useState, useEffect, Fragment } from "react";
+import { Link } from "react-router-dom";
 import { AiOutlineSearch } from "react-icons/ai";
 import { IoEllipsisVerticalSharp } from "react-icons/io5";
-import EditItem from "../components/EditItem";
+import EditItem from "../../components/EditItem";
 
 const ItemList = () => {
+  const userData = window.userData;
   const [items, setItems] = useState([]);
   const [showEditItem, setShowEditItem] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -58,23 +60,25 @@ const ItemList = () => {
                   <td>{data.name}</td>
                   <td>{data.username}</td>
                   <td>
-                    <button className="btn btn-ghost btn-circle shadow-xl" onClick={() => handleClickEdit(data)}>
-                      <IoEllipsisVerticalSharp />
-                    </button>
-
-                    {/* <div className="dropdown dropdown-end">
-                      <label tabIndex={0} className="btn btn-ghost btn-circle shadow-xl">
+                    {userData.id_role === 0 ? (
+                      <button className="btn btn-ghost btn-circle shadow-xl" onClick={() => handleClickEdit(data)}>
                         <IoEllipsisVerticalSharp />
-                      </label>
-                      <ul tabIndex={0} className="mt-3 p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
-                        <li>
-                          <a href="/dashboard/borrow">Borrow</a>
-                        </li>
-                        <li>
-                          <a href="/dashboard/return">Return</a>
-                        </li>
-                      </ul>
-                    </div> */}
+                      </button>
+                    ) : (
+                      <div className="dropdown dropdown-end">
+                        <label tabIndex={0} className="btn btn-ghost btn-circle shadow-xl">
+                          <IoEllipsisVerticalSharp />
+                        </label>
+                        <ul tabIndex={0} className="mt-3 p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
+                          <li>
+                            <Link to={`/dashboard/borrow?id=${data.id}`}>Borrow</Link>
+                          </li>
+                          <li>
+                            <a href="/dashboard/return">Return</a>
+                          </li>
+                        </ul>
+                      </div>
+                    )}
                   </td>
                 </tr>
               );

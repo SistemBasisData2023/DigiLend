@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { AiFillEyeInvisible, AiFillEye, AiFillRightCircle, AiFillLeftCircle } from "react-icons/ai";
 import Background from "../components/background/background.jsx";
 import digilendLogo from "../assets/logo-no-background.png";
@@ -9,25 +10,30 @@ import practician from "../assets/Practician.png";
 import secure from "../assets/Secure.png";
 
 const RegisterPage = () => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     nama: "",
     npm: "",
     jurusan: "Electrical Engineering",
     angkatan: 2018,
     telepon: "",
-    id_akun: 0,
+    id_role: 0,
     nama_kelompok: "",
     tahun_ajaran: "",
     kode_aslab: "",
     username: "",
     password: "",
   });
+  useEffect(() => {
+    window.userData = formData;
+  }, [formData]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData((prevFormData) => ({
       ...prevFormData,
-      [name]: name === "id_akun" || name === "angkatan" ? Number(value) : value,
+      [name]: name === "id_role" || name === "angkatan" ? Number(value) : value,
     }));
   };
 
@@ -43,10 +49,10 @@ const RegisterPage = () => {
 
   const handleClick = (option) => {
     if (option === "labAssistant") {
-      handleChange({ target: { name: "id_akun", value: 0 } });
+      handleChange({ target: { name: "id_role", value: 0 } });
       handleChange({ target: { name: "nama_kelompok", value: "" } });
     } else if (option === "practician") {
-      handleChange({ target: { name: "id_akun", value: 1 } });
+      handleChange({ target: { name: "id_role", value: 1 } });
       handleChange({ target: { name: "kode_aslab", value: "" } });
     }
   };
@@ -101,6 +107,7 @@ const RegisterPage = () => {
       .then((response) => {
         // Tanggapi respon dari backend
         console.log(response.data);
+        navigate("/dashboard");
       })
       .catch((error) => {
         // Tangani kesalahan jika terjadi
@@ -133,7 +140,7 @@ const RegisterPage = () => {
               <div className="flex flex-row justify-center md:gap-10 gap-4 md:h-72 pt-4 md:m-0 m-2">
                 <div
                   className={`flex flex-col justify-center items-center border-2 hover:border-[#B8C1F9] w-full p-4 rounded-2xl md:text-xl text-lg text-black font-bold cursor-pointer ${
-                    formData.id_akun === 0 ? "bg-[#B8C1F9] text-white" : ""
+                    formData.id_role === 0 ? "bg-[#B8C1F9] text-white" : ""
                   }`}
                   onClick={() => handleClick("labAssistant")}>
                   <img src={assistant} alt="Lab Assistant" className="md:h-5/6 w-fit" />
@@ -141,7 +148,7 @@ const RegisterPage = () => {
                 </div>
                 <div
                   className={`flex flex-col justify-center items-center border-2 hover:border-[#B8C1F9] w-full p-4 rounded-2xl md:text-xl text-lg text-black font-bold cursor-pointer ${
-                    formData.id_akun === 1 ? "bg-[#B8C1F9] text-white" : ""
+                    formData.id_role === 1 ? "bg-[#B8C1F9] text-white" : ""
                   }`}
                   onClick={() => handleClick("practician")}>
                   <img src={practician} alt="Practician" className="md:h-5/6 w-fit" />
@@ -181,7 +188,7 @@ const RegisterPage = () => {
                 <div className="flex">
                   <input type="text" placeholder="Phone Number" name="telepon" value={formData.telepon} onChange={handlePhoneNumberChange} className="input input-bordered input-info w-full bg-white border-2 text-black" />
                 </div>
-                {formData.id_akun === 0 ? (
+                {formData.id_role === 0 ? (
                   <div className="flex">
                     <input type="text" placeholder="Lab Assistant Code" name="kode_aslab" value={formData.kode_aslab} onChange={handleChange} className="input input-bordered input-info w-full bg-white border-2 text-black" />
                   </div>
@@ -256,7 +263,7 @@ const RegisterPage = () => {
                   </div>
                 </div>
                 <div className="flex justify-end mr-5 md:mr-9">
-                  <button className="button btn btn-info md:w-32 md:h-8 rounded-3xl md:text-lg text-md font-Inter text-white" onClick={handleSubmit}>
+                  <button className="button btn btn-info md:w-32 md:h-8 rounded-3xl md:text-lg text-md font-Inter text-white" onClick={() => navigate("/dashboard")}>
                     REGISTER
                   </button>
                 </div>

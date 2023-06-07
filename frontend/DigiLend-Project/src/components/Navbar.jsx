@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import digilendLogo from "../assets/logo-no-background.png";
 
 const Navbar = () => {
+  const userData = window.userData;
   useEffect(() => {
     const navbarHeight = document.getElementById("navbar").offsetHeight;
     const sidebar = document.getElementById("sidebar");
@@ -17,7 +18,7 @@ const Navbar = () => {
         <span className="font-Montserrat text-2xl font-bold">Digilend</span>
       </a>
       <div className="flex-none gap-2 mx-6">
-        <label className="btn btn-ghost btn-circle avatar">User</label>
+        <label className="btn btn-ghost">{userData && userData.nama ? userData.nama : "USER"}</label>
       </div>
     </div>
   );

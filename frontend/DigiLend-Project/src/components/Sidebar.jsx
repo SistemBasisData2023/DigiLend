@@ -6,6 +6,7 @@ import { FaHandHoldingMedical, FaHandHolding } from "react-icons/fa";
 import { IoExit } from "react-icons/io5";
 
 const Sidebar = () => {
+  const userData = window.userData;
   const navigate = useNavigate();
   const [activePage, setActivePage] = useState("");
 
@@ -13,7 +14,9 @@ const Sidebar = () => {
     navigate(`/dashboard${link}`, { state: { relative: true } });
     setActivePage(link);
   };
-
+  const handleLogout = () => {
+    window.userData = null;
+  };
   return (
     <div id="sidebar" className="flex flex-col p-6 h-screen sticky top-20">
       <ul className="space-y-5">
@@ -91,6 +94,7 @@ const Sidebar = () => {
       </ul>
       <motion.a
         href="/"
+        onClick={handleLogout}
         initial={{ opacity: 0, scale: 0.5 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{

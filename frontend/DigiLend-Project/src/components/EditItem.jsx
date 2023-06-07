@@ -4,6 +4,7 @@ const EditItem = ({ isVisible, onClose, selectedItem }) => {
   const [itemName, setItemName] = useState("");
   const [itemQuantity, setItemQuantity] = useState("");
   const [itemPrice, setItemPrice] = useState("");
+  const userData = window.userData;
 
   useEffect(() => {
     if (selectedItem) {
