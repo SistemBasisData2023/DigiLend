@@ -6,6 +6,7 @@ import { IoEllipsisVerticalSharp } from "react-icons/io5";
 import EditItem from "../../components/EditItem";
 import DeleteItem from "../../components/DeleteItem";
 import AddItem from "../../components/AddItem";
+import Pagination from "../../components/Pagination";
 
 const ItemList = () => {
   const userData = window.userData;
@@ -144,14 +145,8 @@ const ItemList = () => {
         </table>
         {/* Render pagination */}
         {totalPages > 1 && (
-          <div className="flex justify-center p-8">
-            <div className="flex flex-row gap-2">
-              {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
-                <button key={page} className="w-12 h-12 text-lg rounded-full bg-base-300" style={{ backgroundColor: page === currentPage ? "#40476c" : "" }} onClick={() => handlePageChange(page)}>
-                  {page}
-                </button>
-              ))}
-            </div>
+          <div className="flex justify-center p-12">
+            <Pagination totalPages={totalPages} currentPage={currentPage} onPageChange={handlePageChange} />
           </div>
         )}
       </div>

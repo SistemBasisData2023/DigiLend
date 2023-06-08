@@ -4,9 +4,10 @@ import axios from "axios";
 import { useLocation, Link } from "react-router-dom";
 import returnItem from "../../assets/return-item.png";
 import returnList from "../../assets/check-list.png";
+import DeleteReturn from "../../components/DeleteReturn.jsx";
+import Pagination from "../../components/Pagination.jsx";
 import { AiOutlineSearch } from "react-icons/ai";
 import { BsArrowLeft } from "react-icons/bs";
-import DeleteReturn from "../../components/DeleteReturn";
 
 const Return = () => {
   const userData = window.userData;
@@ -64,30 +65,62 @@ const Return = () => {
   const handleClick = (button) => {
     setSelectedButton(button);
   };
-  // tabel history return per user
   const [userReturnTable, setUserReturnTable] = useState([]);
+  const [returnTable, setReturnTable] = useState([]);
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [currentTablePage, setCurrentTablePage] = useState(1);
+  const itemsPerPage = 10;
+
   useEffect(() => {
     getUserReturnTable();
-  }, []);
-
-  const getUserReturnTable = async () => {
-    const { data } = await axios.get(`https://jsonplaceholder.typicode.com/users`);
-    setUserReturnTable(data);
-    console.log(data);
-  };
-
-  //tabel seluruh peminjaman buat asisten
-  const [returnTable, setReturnTable] = useState([]);
-  useEffect(() => {
     getReturnTable();
   }, []);
 
-  const getReturnTable = async () => {
-    const { data } = await axios.get(`https://jsonplaceholder.typicode.com/users`);
-    setReturnTable(data);
-    console.log(data);
+  const getUserReturnTable = async () => {
+    const { data } = await axios.get("https://jsonplaceholder.typicode.com/users");
+    setUserReturnTable(data);
   };
-  const [currentPage, setCurrentPage] = useState(1);
+
+  const getReturnTable = async () => {
+    const { data } = await axios.get("https://jsonplaceholder.typicode.com/users");
+    setReturnTable(data);
+  };
+
+  const filteredUserReturnTable = userReturnTable.filter((item) => {
+    const itemValues = Object.values(item).map((value) => value.toString().toLowerCase());
+    const searchData = itemValues.join(" ");
+    return searchData.includes(searchKeyword.toLowerCase());
+  });
+
+  const filteredReturnTable = returnTable.filter((item) => {
+    const itemValues = Object.values(item).map((value) => value.toString().toLowerCase());
+    const searchData = itemValues.join(" ");
+    return searchData.includes(searchKeyword.toLowerCase());
+  });
+
+  // Menghitung jumlah halaman total
+  const totalUserReturnPages = Math.ceil(filteredUserReturnTable.length / itemsPerPage);
+  const totalReturnPages = Math.ceil(filteredReturnTable.length / itemsPerPage);
+
+  // Menghitung index awal dan akhir data pada halaman saat ini
+  const userReturnStartIndex = (currentTablePage - 1) * itemsPerPage;
+  const userReturnEndIndex = userReturnStartIndex + itemsPerPage;
+  const currentItemsUserReturn = filteredUserReturnTable.slice(userReturnStartIndex, userReturnEndIndex);
+
+  const returnStartIndex = (currentTablePage - 1) * itemsPerPage;
+  const returnEndIndex = returnStartIndex + itemsPerPage;
+  const currentItemsReturn = filteredReturnTable.slice(returnStartIndex, returnEndIndex);
+
+  // Fungsi untuk mengubah halaman
+  const handlePageChange = (page) => {
+    setCurrentTablePage(page);
+  };
+
+  // Fungsi untuk meng-handle perubahan input pencarian
+  const handleSearch = (e) => {
+    setSearchKeyword(e.target.value);
+    setCurrentTablePage(1); // Set halaman kembali ke 1 setelah pencarian berubah
+  };
 
   const [showDeleteItem, setShowDeleteItem] = useState(false);
 
@@ -141,7 +174,7 @@ const Return = () => {
                 </tr>
               </thead>
               <tbody>
-                {returnTable.map((data) => {
+                {currentItemsReturn.map((data) => {
                   return (
                     <tr key={data.id_pengembalian} className="text-white">
                       <td>{data.id_pengembalian}</td>
@@ -162,6 +195,11 @@ const Return = () => {
                 })}
               </tbody>
             </table>
+            {totalReturnPages > 1 && (
+              <div className="flex justify-center p-12">
+                <Pagination totalPages={totalReturnPages} currentPage={currentTablePage} onPageChange={handlePageChange} />
+              </div>
+            )}
           </div>
         ) : (
           <div>
@@ -274,7 +312,7 @@ const Return = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {userReturnTable.map((data) => {
+                        {currentItemsUserReturn.map((data) => {
                           return (
                             <tr key={data.id_pengembalian} className="text-white">
                               <td>{data.id_pengembalian}</td>
@@ -290,6 +328,11 @@ const Return = () => {
                         })}
                       </tbody>
                     </table>
+                    {totalUserReturnPages > 1 && (
+                      <div className="flex justify-center p-12">
+                        <Pagination totalPages={totalUserReturnPages} currentPage={currentTablePage} onPageChange={handlePageChange} />
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div className="flex flex-col items-center space-y-4">

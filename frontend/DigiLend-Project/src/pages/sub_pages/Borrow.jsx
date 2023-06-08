@@ -3,6 +3,7 @@ import React, { useState, useEffect, Fragment } from "react";
 import { motion } from "framer-motion";
 import { useLocation, Link } from "react-router-dom";
 import DeleteBorrow from "../../components/DeleteBorrow.jsx";
+import Pagination from "../../components/Pagination.jsx";
 import confusePeople from "../../assets/confused-people-hehe.png";
 import startBorrow from "../../assets/shopping-cart.png";
 import borrowList from "../../assets/borrow-list.png";
@@ -60,27 +61,62 @@ const Borrow = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [userBorrowTable, setUserBorrowTable] = useState([]);
+  const [borrowTable, setBorrowTable] = useState([]);
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [currentTablePage, setCurrentTablePage] = useState(1);
+  const itemsPerPage = 10;
+
   useEffect(() => {
     getUserBorrowData();
-  }, []);
-
-  const getUserBorrowData = async () => {
-    const { data } = await axios.get(`https://jsonplaceholder.typicode.com/users`);
-    setUserBorrowTable(data);
-    console.log(data);
-  };
-  const [borrowTable, setBorrowTable] = useState([]);
-  useEffect(() => {
     getBorrowData();
   }, []);
 
+  const getUserBorrowData = async () => {
+    const { data } = await axios.get("https://jsonplaceholder.typicode.com/users");
+    setUserBorrowTable(data);
+  };
+
   const getBorrowData = async () => {
-    const { data } = await axios.get(`https://jsonplaceholder.typicode.com/users`);
+    const { data } = await axios.get("https://jsonplaceholder.typicode.com/users");
     setBorrowTable(data);
-    console.log(data);
+  };
+
+  const filteredUserBorrowTable = userBorrowTable.filter((item) => {
+    const itemValues = Object.values(item).map((value) => value.toString().toLowerCase());
+    const searchData = itemValues.join(" ");
+    return searchData.includes(searchKeyword.toLowerCase());
+  });
+
+  const filteredBorrowTable = borrowTable.filter((item) => {
+    const itemValues = Object.values(item).map((value) => value.toString().toLowerCase());
+    const searchData = itemValues.join(" ");
+    return searchData.includes(searchKeyword.toLowerCase());
+  });
+
+  // Menghitung jumlah halaman total
+  const totalUserBorrowPages = Math.ceil(filteredUserBorrowTable.length / itemsPerPage);
+  const totalBorrowPages = Math.ceil(filteredBorrowTable.length / itemsPerPage);
+
+  // Menghitung index awal dan akhir data pada halaman saat ini
+  const userBorrowStartIndex = (currentTablePage - 1) * itemsPerPage;
+  const userBorrowEndIndex = userBorrowStartIndex + itemsPerPage;
+  const currentItemsUserBorrow = filteredUserBorrowTable.slice(userBorrowStartIndex, userBorrowEndIndex);
+
+  const borrowStartIndex = (currentTablePage - 1) * itemsPerPage;
+  const borrowEndIndex = borrowStartIndex + itemsPerPage;
+  const currentItemsBorrow = filteredBorrowTable.slice(borrowStartIndex, borrowEndIndex);
+
+  // Fungsi untuk mengubah halaman
+  const handlePageChange = (page) => {
+    setCurrentTablePage(page);
+  };
+
+  // Fungsi untuk meng-handle perubahan input pencarian
+  const handleSearch = (e) => {
+    setSearchKeyword(e.target.value);
+    setCurrentTablePage(1); // Set halaman kembali ke 1 setelah pencarian berubah
   };
   const [showDeleteItem, setShowDeleteItem] = useState(false);
-
   const [deleteItem, setDeleteItem] = useState(null);
 
   const handleClickDelete = (data) => {
@@ -102,7 +138,7 @@ const Borrow = () => {
         {userData.id_role === 0 ? (
           <div>
             <div className="p-6 flex items-center">
-              <input type="text" placeholder="Search" className="input input-bordered rounded-3xl shadow-xl pr-10" />
+              <input type="text" placeholder="Search" className="input input-bordered rounded-3xl shadow-xl pr-10" value={searchKeyword} onChange={handleSearch} />
               <AiOutlineSearch className="text-2xl -translate-x-10" />
             </div>
             <table className="table table-zebra shadow-xl w-full">
@@ -118,7 +154,7 @@ const Borrow = () => {
                 </tr>
               </thead>
               <tbody>
-                {borrowTable.map((data) => {
+                {currentItemsBorrow.map((data) => {
                   return (
                     <tr key={data.id} className="text-white">
                       <td>{data.id}</td>
@@ -137,6 +173,11 @@ const Borrow = () => {
                 })}
               </tbody>
             </table>
+            {totalBorrowPages > 1 && (
+              <div className="flex justify-center p-12">
+                <Pagination totalPages={totalBorrowPages} currentPage={currentTablePage} onPageChange={handlePageChange} />{" "}
+              </div>
+            )}
           </div>
         ) : (
           <div>
@@ -256,7 +297,7 @@ const Borrow = () => {
                 {userBorrowTable.length > 0 ? (
                   <div>
                     <div className="p-6 flex items-center">
-                      <input type="text" placeholder="Search" className="input input-bordered rounded-3xl shadow-xl pr-10" />
+                      <input type="text" placeholder="Search" className="input input-bordered rounded-3xl shadow-xl pr-10" value={searchKeyword} onChange={handleSearch} />
                       <AiOutlineSearch className="text-2xl -translate-x-10" />
                     </div>
                     <table className="table table-zebra shadow-xl w-full">
@@ -271,7 +312,7 @@ const Borrow = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {userBorrowTable.map((data) => {
+                        {currentItemsUserBorrow.map((data) => {
                           return (
                             <tr key={data.id} className="text-white">
                               <td>{data.id}</td>
@@ -289,6 +330,11 @@ const Borrow = () => {
                         })}
                       </tbody>
                     </table>
+                    {totalUserBorrowPages > 1 && (
+                      <div className="flex justify-center p-12">
+                        <Pagination totalPages={totalUserBorrowPages} currentPage={currentTablePage} onPageChange={handlePageChange} />{" "}
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div className="flex flex-col items-center space-y-4">
