@@ -3,8 +3,11 @@ import React, { useState, useEffect, Fragment } from "react";
 import { motion } from "framer-motion";
 import { useLocation, Link } from "react-router-dom";
 import DeleteBorrow from "../../components/DeleteBorrow.jsx";
-import { AiOutlineSearch } from "react-icons/ai";
 import confusePeople from "../../assets/confused-people-hehe.png";
+import startBorrow from "../../assets/shopping-cart.png";
+import borrowList from "../../assets/borrow-list.png";
+import { AiOutlineSearch } from "react-icons/ai";
+import { BsArrowLeft } from "react-icons/bs";
 
 const Borrow = () => {
   const userData = window.userData;
@@ -34,6 +37,7 @@ const Borrow = () => {
 
   useEffect(() => {
     if (selectedItem) {
+      setSelectedButton("startBorrowing");
       setFormData((prevFormData) => ({
         ...prevFormData,
         id_barang: selectedItem.id,
@@ -48,7 +52,7 @@ const Borrow = () => {
     }
   }, [selectedItem]);
 
-  const [selectedButton, setSelectedButton] = useState("startBorrowing");
+  const [selectedButton, setSelectedButton] = useState("");
 
   const handleClick = (button) => {
     setSelectedButton(button);
@@ -136,89 +140,119 @@ const Borrow = () => {
           </div>
         ) : (
           <div>
-            <div className="flex flex-row justify-center space-x-20">
-              <button className="button btn btn-primary md:w-60 md:h-4 rounded-xl md:text-xl gap-2 shadow-xl" onClick={() => handleClick("startBorrowing")}>
-                Start Borrowing
-              </button>
-              <button className={`button btn btn-primary md:w-60 md:h-4 rounded-xl md:text-xl gap-2 shadow-xl`} onClick={() => handleClick("borrowList")}>
-                Borrow List
-              </button>
-            </div>
+            {selectedButton === "" && (
+              <div className="flex flex-row justify-center md:h-96 pt-6 md:m-0 m-2">
+                <div className="flex flex-row gap-6 md:w-2/3 md:gap-14">
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    whileHover={{ scale: [null, 1.1, 1.05] }}
+                    transition={{
+                      duration: 0.8,
+                      delay: 0.1,
+                      ease: [0, 0.71, 0.2, 1.01],
+                    }}
+                    className="flex flex-col relative justify-center items-center border-2 bg-slate-600 hover:border-[#B8C1F9] w-full p-4 rounded-2xl md:text-xl text-lg font-bold cursor-pointer text-center shadow-xl"
+                    onClick={() => handleClick("startBorrowing")}>
+                    <img src={startBorrow} alt="Start Borrow" className="sm:h-2/3 w-fit" />
+                    <p className="absolute bottom-3 md:bottom-6">Start Borrowing</p>
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    whileHover={{ scale: [null, 1.1, 1.05] }}
+                    transition={{
+                      duration: 0.8,
+                      delay: 0.3,
+                      ease: [0, 0.71, 0.2, 1.01],
+                    }}
+                    className="flex flex-col relative justify-center items-center border-2 bg-slate-600 hover:border-[#B8C1F9] w-full p-4 rounded-2xl md:text-xl text-lg font-bold cursor-pointer text-center shadow-xl"
+                    onClick={() => handleClick("borrowList")}>
+                    <img src={borrowList} alt="Borrow List" className="md:h-5/6 w-fit" />
+                    <p className="absolute bottom-3 md:bottom-6">Borrow List</p>
+                  </motion.div>
+                </div>
+              </div>
+            )}
 
             {selectedButton === "startBorrowing" && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.5 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{
-                  duration: 0.8,
-                  delay: 0.1,
-                  ease: [0, 0.71, 0.2, 1.01],
-                }}
-                className="flex flex-col items-center pt-8">
-                <div className="bg-neutral rounded-2xl p-12 w-2/3 md:w-2/5 space-y-8 border-2 ring-2 border-info">
-                  <h1 className="font-Montserrat text-3xl font-bold text-center">DigiCard</h1>
-                  {currentPage === 1 && (
-                    <div className="flex flex-col items-center text-white space-y-6 w-full px-8">
-                      <input
-                        type="text"
-                        placeholder="Enter The Item's ID"
-                        className="input input-bordered bg-neutral input-accent w-full"
-                        value={formData.id_barang}
-                        onChange={(e) => {
-                          const inputId = e.target.value.replace(/\D/g, "");
-                          setFormData({ ...formData, id_barang: inputId });
-                        }}
-                      />
-                      <input type="text" placeholder="Enter The Item's Name" className="input input-bordered bg-neutral input-accent w-full" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
-                      <input
-                        type="number"
-                        placeholder="Enter the Quantity"
-                        className="input input-bordered bg-neutral input-accent w-full"
-                        value={formData.jumlah_dipinjam}
-                        onChange={(e) => setFormData({ ...formData, jumlah_dipinjam: e.target.value })}
-                      />
-                    </div>
-                  )}
-                  {currentPage === 2 && (
-                    <div className="flex flex-col text-white space-y-4 w-full px-8 font-Montserrat">
-                      <div className="flex flex-row justify-between">
-                        <p>Item's ID: </p>
-                        <p>{formData.id_barang}</p>
+              <div className="flex flex-col items-center pt-8">
+                <BsArrowLeft className="absolute top-24 left-40 text-5xl text-accent cursor-pointer" onClick={() => handleClick("")} />
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{
+                    duration: 0.8,
+                    delay: 0.1,
+                    ease: [0, 0.71, 0.2, 1.01],
+                  }}
+                  className="bg-neutral rounded-2xl w-2/3 md:w-2/5 border-2 ring-2 border-info">
+                  <div className="backdrop-blur-sm p-12 space-y-8 ">
+                    <h1 className="font-Montserrat text-3xl font-bold text-center">DigiCard</h1>
+                    {currentPage === 1 && (
+                      <div className="flex flex-col items-center text-white space-y-6 w-full px-8">
+                        <input
+                          type="text"
+                          placeholder="Enter The Item's ID"
+                          className="input input-bordered bg-neutral input-accent w-full"
+                          value={formData.id_barang}
+                          onChange={(e) => {
+                            const inputId = e.target.value.replace(/\D/g, "");
+                            setFormData({ ...formData, id_barang: inputId });
+                          }}
+                        />
+                        <input type="text" placeholder="Enter The Item's Name" className="input input-bordered bg-neutral input-accent w-full" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
+                        <input
+                          type="number"
+                          placeholder="Enter the Quantity"
+                          className="input input-bordered bg-neutral input-accent w-full"
+                          value={formData.jumlah_dipinjam}
+                          onChange={(e) => setFormData({ ...formData, jumlah_dipinjam: e.target.value })}
+                        />
                       </div>
-                      <div className="flex flex-row justify-between">
-                        <p>Item's Name: </p>
-                        <p>{formData.name}</p>
+                    )}
+                    {currentPage === 2 && (
+                      <div className="flex flex-col text-white space-y-4 w-full px-8 font-Montserrat">
+                        <div className="flex flex-row justify-between">
+                          <p>Item's ID: </p>
+                          <p>{formData.id_barang}</p>
+                        </div>
+                        <div className="flex flex-row justify-between">
+                          <p>Item's Name: </p>
+                          <p>{formData.name}</p>
+                        </div>
+                        <div className="flex flex-row justify-between">
+                          <p>Quantity: </p>
+                          <p>{formData.jumlah_dipinjam}</p>
+                        </div>
+                        <div className="flex flex-row justify-between">
+                          <p>Item's Price: </p>
+                          <p>Rp. {selectedItem ? selectedItem.price : ""}</p>
+                        </div>
                       </div>
-                      <div className="flex flex-row justify-between">
-                        <p>Quantity: </p>
-                        <p>{formData.jumlah_dipinjam}</p>
+                    )}
+                    {currentPage < 2 && (
+                      <div className="text-end px-8">
+                        <button className="btn btn-success" onClick={() => setCurrentPage(currentPage + 1)}>
+                          Next
+                        </button>
                       </div>
-                      <div className="flex flex-row justify-between">
-                        <p>Item's Price: </p>
-                        <p>Rp. {selectedItem ? selectedItem.price : ""}</p>
+                    )}
+                    {currentPage > 1 && (
+                      <div className="flex flex-row px-8 justify-between">
+                        <button className="btn btn-error" onClick={() => setCurrentPage(currentPage - 1)}>
+                          Back
+                        </button>
+                        <button className="btn btn-success">Submit</button>
                       </div>
-                    </div>
-                  )}
-                  {currentPage < 2 && (
-                    <div className="text-end px-8">
-                      <button className="btn btn-success" onClick={() => setCurrentPage(currentPage + 1)}>
-                        Next
-                      </button>
-                    </div>
-                  )}
-                  {currentPage > 1 && (
-                    <div className="flex flex-row px-8 justify-between">
-                      <button className="btn btn-error" onClick={() => setCurrentPage(currentPage - 1)}>
-                        Back
-                      </button>
-                      <button className="btn btn-success">Submit</button>
-                    </div>
-                  )}
-                </div>
-              </motion.div>
+                    )}
+                  </div>
+                </motion.div>
+              </div>
             )}
             {selectedButton === "borrowList" && (
               <div className="borrow-list">
+                <BsArrowLeft className="absolute top-24 left-40 text-5xl text-accent cursor-pointer" onClick={() => handleClick("")} />
                 {userBorrowTable.length > 0 ? (
                   <div>
                     <div className="p-6 flex items-center">
