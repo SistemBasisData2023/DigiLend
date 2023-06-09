@@ -1,12 +1,13 @@
-import axios from "axios";
 import React, { useState, useEffect, Fragment } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 import { AiOutlineSearch, AiOutlinePlusCircle } from "react-icons/ai";
 import { IoEllipsisVerticalSharp } from "react-icons/io5";
-import EditItem from "../../components/EditItem";
-import DeleteItem from "../../components/DeleteItem";
-import AddItem from "../../components/AddItem";
-import Pagination from "../../components/Pagination";
+
+import EditItem from "../../components/EditItem.jsx";
+import DeleteItem from "../../components/DeleteItem.jsx";
+import AddItem from "../../components/AddItem.jsx";
+import Pagination from "../../components/Pagination.jsx";
 
 const ItemList = () => {
   const userData = window.userData;
@@ -83,7 +84,7 @@ const ItemList = () => {
     <Fragment>
       <div className="overflow-x-auto">
         <div className="flex flex-col items-center pt-6">
-          <h1 className="font-Montserrat font-bold text-5xl text-accent">Item List</h1>
+          <h1 className="font-Montserrat font-bold sm:text-5xl text-3xl text-accent">Item List</h1>
         </div>
         <div className="p-6 flex flex-row justify-between">
           <div className="flex">
@@ -150,6 +151,9 @@ const ItemList = () => {
           </div>
         )}
       </div>
+      <DeleteItem isVisible={showDeleteItem} onClose={() => setShowDeleteItem(false)} selectedItem={selectedItem} />
+      <EditItem isVisible={showEditItem} onClose={() => setShowEditItem(false)} selectedItem={selectedItem} />
+      <AddItem isVisible={showAddItem} onClose={() => setShowAddItem(false)} />
     </Fragment>
   );
 };

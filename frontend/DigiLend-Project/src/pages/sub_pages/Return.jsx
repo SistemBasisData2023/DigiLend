@@ -2,12 +2,14 @@ import React, { useState, useEffect, Fragment } from "react";
 import { motion } from "framer-motion";
 import axios from "axios";
 import { useLocation, Link } from "react-router-dom";
-import returnItem from "../../assets/return-item.png";
-import returnList from "../../assets/check-list.png";
-import DeleteReturn from "../../components/DeleteReturn.jsx";
-import Pagination from "../../components/Pagination.jsx";
 import { AiOutlineSearch } from "react-icons/ai";
 import { BsArrowLeft } from "react-icons/bs";
+
+import returnItem from "../../assets/return-item.png";
+import returnList from "../../assets/check-list.png";
+
+import DeleteReturn from "../../components/DeleteReturn.jsx";
+import Pagination from "../../components/Pagination.jsx";
 
 const Return = () => {
   const userData = window.userData;
@@ -152,7 +154,7 @@ const Return = () => {
     <Fragment>
       <div id="returnPage" className="overflow-x-auto space-y-8">
         <div className="flex flex-col items-center pt-6">
-          <h1 className="font-Montserrat font-bold text-5xl text-accent">Return Page</h1>
+          <h1 className="font-Montserrat font-bold sm:text-5xl text-3xl text-accent">Return Page</h1>
         </div>
         {userData.id_role === 0 ? (
           <div>
@@ -204,7 +206,7 @@ const Return = () => {
         ) : (
           <div>
             {selectedButton === "" && (
-              <div className="flex flex-row justify-center md:h-96 pt-6 md:m-0 m-2">
+              <div className="flex flex-row justify-center pt-6 md:m-0 m-2">
                 <div className="flex flex-row gap-6 md:w-2/3 md:gap-14">
                   <motion.div
                     initial={{ opacity: 0, scale: 0.5 }}
@@ -215,9 +217,9 @@ const Return = () => {
                       delay: 0.1,
                       ease: [0, 0.71, 0.2, 1.01],
                     }}
-                    className="flex flex-col relative justify-center items-center border-2 bg-[#40476c] hover:border-[#B8C1F9] w-full p-4 rounded-2xl md:text-xl text-lg font-bold cursor-pointer text-center shadow-xl"
+                    className="flex flex-col relative justify-center items-center border-2 bg-[#40476c] hover:border-[#B8C1F9] w-full p-4 rounded-2xl md:text-xl sm:text-lg text-sm font-bold cursor-pointer text-center shadow-xl"
                     onClick={() => handleClick("returnReport")}>
-                    <img src={returnItem} alt="Return" className="sm:h-2/3 w-fit" />
+                    <img src={returnItem} alt="Return" className="md:h-2/3 h-1/2 w-fit" />
                     <p className="absolute bottom-3 md:bottom-6 text-center">Report a Return</p>
                   </motion.div>
                   <motion.div
@@ -229,9 +231,9 @@ const Return = () => {
                       delay: 0.3,
                       ease: [0, 0.71, 0.2, 1.01],
                     }}
-                    className="flex flex-col relative justify-center items-center border-2 bg-[#40476c] hover:border-[#B8C1F9] w-full p-4 rounded-2xl md:text-xl text-lg font-bold cursor-pointer text-center shadow-xl"
+                    className="flex flex-col relative justify-center items-center border-2 bg-[#40476c] hover:border-[#B8C1F9] w-full p-4 rounded-2xl md:text-xl sm:text-lg text-sm font-bold cursor-pointer text-center shadow-xl"
                     onClick={() => handleClick("returnList")}>
-                    <img src={returnList} alt="Return List" className="md:h-4/6 w-fit" />
+                    <img src={returnList} alt="Return List" className="md:h-4/6 h-1/2 w-fit" />
                     <p className="absolute bottom-3 md:bottom-6 text-center">Your Return's History</p>
                   </motion.div>
                 </div>

@@ -24,20 +24,20 @@ const DeleteBorrow = ({ isVisible, onClose, deleteItem }) => {
 
   const handleButtonClick = () => {
     axios
-      .put("/api/delete", deleteData) // Replace '/api/delete' with your actual API endpoint
+      .delete("/api/borrow", { data: deleteData })
       .then((response) => {
-        console.log("Data deleted successfully:", response.data);
-        // Handle any further actions after the data is deleted
+        // Menghandle respon sukses
+        console.log(response.data);
       })
       .catch((error) => {
-        console.error("Error deleting data:", error);
-        // Handle any error that occurred during the deletion
+        // Menghandle kesalahan
+        console.error(error);
       });
   };
   if (!isVisible) return null;
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex justify-center items-center">
-      <div className="w-1/3 flex flex-col">
+    <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex justify-center items-center z-50">
+      <div className="md:w-1/3 flex flex-col">
         <div className="flex flex-col bg-base-100 rounded-3xl items-center p-8 space-y-4">
           <h1 className="font-Montserrat text-3xl font-bold">Delete Item</h1>
           <div className="text-white font-Montserrat space-y-4">

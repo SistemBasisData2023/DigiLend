@@ -1,10 +1,10 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
-import Navbar from "../components/Navbar";
-import Sidebar from "../components/Sidebar";
+import Navbar from "../components/Navbar.jsx";
+import Sidebar from "../components/Sidebar.jsx";
 import ItemList from "./sub_pages/ItemList.jsx";
-import Return from "./sub_pages/Return";
-import Borrow from "./sub_pages/Borrow";
+import Return from "./sub_pages/Return.jsx";
+import Borrow from "./sub_pages/Borrow.jsx";
 
 const Dashboard = () => {
   const location = useLocation();

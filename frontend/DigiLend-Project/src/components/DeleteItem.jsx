@@ -21,21 +21,21 @@ const DeleteItem = ({ isVisible, onClose, selectedItem }) => {
   console.log(deleteData);
   const handleButtonClick = () => {
     axios
-      .delete(`/api/items/${selectedItem.id}`) // Replace '/api/items/${selectedItem.id}' with your actual API endpoint for deleting an item
+      .delete("/api/items", { data: deleteData })
       .then((response) => {
-        console.log("Item deleted successfully:", response.data);
-        // Handle any further actions after the item is deleted
+        // Menghandle respon sukses
+        console.log(response.data);
       })
       .catch((error) => {
-        console.error("Error deleting item:", error);
-        // Handle any error that occurred during the deletion
+        // Menghandle kesalahan
+        console.error(error);
       });
   };
 
   if (!isVisible) return null;
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex justify-center items-center">
-      <div className="w-1/3 flex flex-col">
+    <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex justify-center items-center z-50">
+      <div className="md:w-1/3 flex flex-col">
         <div className="flex flex-col bg-base-100 rounded-3xl items-center p-8 space-y-4">
           <h1 className="font-Montserrat text-3xl font-bold">Delete Item</h1>
           <div className="text-white space-y-4">

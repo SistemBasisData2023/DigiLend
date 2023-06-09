@@ -133,11 +133,11 @@ const RegisterPage = () => {
               restDelta: 0.001,
             },
           }}
-          className="bg-[#FAFAFA] md:mr-24 backdrop-blur-sm rounded-2xl w-4/5 h-[25rem] sm:w-[45rem] sm:h-[33rem] border-2 shadow-2xl border-solid border-opacity-100">
+          className="bg-[#FAFAFA] md:mr-24 backdrop-blur-sm rounded-2xl w-4/5 h-[30rem] sm:w-[45rem] sm:h-[33rem] border-2 shadow-2xl border-solid border-opacity-100">
           <div className="my-5 space-y-4 sm:p-8">
             <h1 className="text-3xl sm:text-5xl font-bold leading-tight tracking-tight text-info text-center font-Montserrat">Register Account</h1>
             {currentPage === 1 && (
-              <div className="flex flex-row justify-center md:gap-10 gap-4 md:h-72 pt-4 md:m-0 m-2">
+              <div className="flex flex-row justify-center md:gap-10 gap-4 md:h-72 sm:pt-4 pt-10 md:m-0 m-2">
                 <div
                   className={`flex flex-col justify-center items-center border-2 hover:border-[#B8C1F9] w-full p-4 rounded-2xl md:text-xl text-lg text-black font-bold cursor-pointer ${
                     formData.id_role === 0 ? "bg-[#B8C1F9] text-white" : ""
@@ -217,7 +217,7 @@ const RegisterPage = () => {
             {currentPage === 3 && (
               <div className="space-y-4 pt-3">
                 <div className="flex flex-row items-center justify-center">
-                  <img src={secure} alt="Register" className="sm:h-28 h-14" />
+                  <img src={secure} alt="Register" className="sm:h-28 h-24" />
                 </div>
                 <div className="flex justify-center">
                   <input
@@ -285,7 +285,7 @@ const RegisterPage = () => {
                 <AiFillRightCircle className={`cursor-pointer text-info ${isNextDisabled ? "opacity-50" : ""}`} />
               </motion.div>
             </div>
-            <p className="absolute bottom-0 right-0 md:p-10 py-6 text-[0.7rem] md:text-lg font-Montserrat text-gray-500">
+            <p className="absolute bottom-0 right-0 sm:px-8 md:p-10 py-6 text-[0.7rem] sm:text-lg font-Montserrat text-gray-500">
               Already have Account?
               <a href="/login" className="font-Montserrat ml-1 mr-7 text-info hover:underline">
                 Log In

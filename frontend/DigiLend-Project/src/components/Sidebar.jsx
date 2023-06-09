@@ -18,7 +18,7 @@ const Sidebar = () => {
     window.userData = null;
   };
   return (
-    <div id="sidebar" className="flex flex-col p-6 h-screen sticky top-20">
+    <div id="sidebar" className="flex flex-col sm:p-6 h-screen sticky top-20">
       <ul className="space-y-5">
         <motion.li
           initial={{ opacity: 0, scale: 0.5 }}

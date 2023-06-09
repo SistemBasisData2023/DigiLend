@@ -25,8 +25,8 @@ const AddItem = ({ isVisible, onClose }) => {
 
   if (!isVisible) return null;
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex justify-center items-center">
-      <div className="w-1/3 flex flex-col">
+    <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex justify-center items-center z-50">
+      <div className="md:w-1/3 flex flex-col">
         <div className="flex flex-col bg-base-100 rounded-3xl items-center p-8 space-y-4">
           <h1 className="font-Montserrat text-3xl font-bold">Add Item</h1>
           <div className="text-white space-y-4">
