@@ -179,7 +179,8 @@ module.exports = (app, pool) => {
   });  
 
     app.put('/barang/:id_barang', async (req, res) => {
-        const { id_barang, harga, jumlah_tersedia, nama_barang } = req.body;
+        const { id_barang } = req.params;
+        const { harga, jumlah_tersedia, nama_barang } = req.body;
 
         try {
             const client = await pool.connect();
@@ -224,7 +225,7 @@ module.exports = (app, pool) => {
     });
 
     app.get('/barang/:id_barang', async (req, res) => {
-        const { id_barang } = req.body;
+        const { id_barang } = req.params;
 
         try {
             const client = await pool.connect();
@@ -251,7 +252,7 @@ module.exports = (app, pool) => {
     });    
 
     app.delete('/barang/:id_barang', async (req, res) => {
-      const { id_barang } = req.body;
+      const { id_barang } = req.params;
     
       try {
         const client = await pool.connect();
@@ -347,7 +348,7 @@ module.exports = (app, pool) => {
     });
 
     app.get('/peminjaman/:id_praktikan', async (req, res) => {
-        const { id_praktikan } = req.body;
+        const { id_praktikan } = req.params;
 
         try {
             const client = await pool.connect();
@@ -369,7 +370,7 @@ module.exports = (app, pool) => {
     });
 
     app.delete('/peminjaman/:id_peminjaman', async (req, res) => {
-      const idPeminjaman = req.body.id_peminjaman;
+      const idPeminjaman = req.params.id_peminjaman;
     
       try {
         const client = await pool.connect();
@@ -520,7 +521,7 @@ module.exports = (app, pool) => {
     });
 
     app.get('/pengembalian/:id_praktikan', async (req, res) => {
-      const { id_praktikan } = req.body;
+      const { id_praktikan } = req.params;
     
       try {
         const client = await pool.connect();
@@ -616,7 +617,7 @@ module.exports = (app, pool) => {
         const id_akun = getAsistenResult.rows[0].id_akun;
     
         // Gabungkan tahun1 dan tahun2 menjadi format <tahun1>/<tahun2>
-        const tahunAjaran = `${tahun1}/${tahun2}`;
+        const tahunAjaran = `${tahun1}-${tahun2}`;
     
         // Insert data ke tabel kelompok
         const insertKelompokQuery = `
@@ -655,15 +656,17 @@ module.exports = (app, pool) => {
       }
     });    
 
-    app.get('/nama_kelompok', async (req, res) => {
+    app.get('/nama_kelompok/:tahun_ajaran', async (req, res) => {
       try {
+        const { tahun_ajaran } = req.params;
         const client = await pool.connect();
     
         const getKelompokQuery = `
           SELECT nama_kelompok FROM kelompok
           WHERE id_kelompok <> 0
+          AND tahun_ajaran = $1
         `;
-        const kelompokResult = await client.query(getKelompokQuery);
+        const kelompokResult = await client.query(getKelompokQuery, [tahun_ajaran]);
         const kelompok = kelompokResult.rows.map(row => row.nama_kelompok);
     
         res.status(200).json(kelompok);
@@ -672,10 +675,10 @@ module.exports = (app, pool) => {
         console.error('Kesalahan saat mengambil data kelompok:', error);
         res.status(500).json({ error: 'Terjadi kesalahan server' });
       }
-    });    
+    });     
 
     app.put('/kelompok/:id_kelompok', async (req, res) => {
-      const { id_kelompok } = req.body;
+      const { id_kelompok } = req.params;
       const { nama_kelompok, kode_aslab } = req.body;
     
       try {
@@ -716,7 +719,7 @@ module.exports = (app, pool) => {
     });    
       
     app.delete('/kelompok/:id_kelompok', async (req, res) => {
-      const { id_kelompok } = req.body;
+      const { id_kelompok } = req.params;
     
       try {
         const client = await pool.connect();
@@ -741,28 +744,10 @@ module.exports = (app, pool) => {
 
     ///      ///
     /// AKUN ///
-    ///      ///
-
-    app.get('/akun', async (req, res) => {
-      try {
-        const client = await pool.connect();
-    
-        const getAkunQuery = `
-          SELECT * FROM view_data_akun
-        `;
-        const akunResult = await client.query(getAkunQuery);
-        const akun = akunResult.rows;
-    
-        res.status(200).json(akun);
-        client.release();
-      } catch (error) {
-        console.error('Kesalahan saat mengambil data akun:', error);
-        res.status(500).json({ error: 'Terjadi kesalahan server' });
-      }
-    });    
+    ///      ///  
 
     app.get('/akun/:id_akun', async (req, res) => {
-        const { id_akun } = req.body;
+        const { id_akun } = req.params;
 
         try {
             const client = await pool.connect();
@@ -782,8 +767,8 @@ module.exports = (app, pool) => {
     });
 
     app.put('/akun/:id_akun', async (req, res) => {
-      const { id_akun } = req.body;
-      const { nama, npm, id_kelompok, kode_aslab, status_aslab } = req.body;
+      const { id_akun } = req.params;
+      const { nama, npm, telepon, jurusan, nama_kelompok, kode_aslab, status_aslab } = req.body;
     
       try {
         const client = await pool.connect();
@@ -798,11 +783,17 @@ module.exports = (app, pool) => {
         let updateValues = [];
     
         // Periksa id_role untuk menentukan tabel yang akan diperbarui
-        if (id_role == 0) {
+        if (id_role === 0) {
           // Akun dengan id_role = 0 adalah praktikan
+          // Dapatkan id_kelompok berdasarkan nama_kelompok
+          const getIdKelompokQuery = 'SELECT id_kelompok FROM kelompok WHERE nama_kelompok = $1';
+          const getIdKelompokValues = [nama_kelompok];
+          const getIdKelompokResult = await client.query(getIdKelompokQuery, getIdKelompokValues);
+          const id_kelompok = getIdKelompokResult.rows[0].id_kelompok;
+    
           updateQuery = 'UPDATE praktikan SET id_kelompok = $1 WHERE id_akun = $2';
           updateValues = [id_kelompok, id_akun];
-        } else if (id_role == 1) {
+        } else if (id_role === 1) {
           // Akun dengan id_role = 1 adalah asisten
           updateQuery = 'UPDATE asisten SET kode_aslab = $1, status_aslab = $2 WHERE id_akun = $3';
           updateValues = [kode_aslab, status_aslab, id_akun];
@@ -814,9 +805,9 @@ module.exports = (app, pool) => {
         // Lakukan pembaruan pada tabel yang sesuai
         await client.query(updateQuery, updateValues);
     
-        // Update juga kolom nama dan npm pada tabel akun
-        const updateAkunQuery = 'UPDATE akun SET nama = $1, npm = $2 WHERE id_akun = $3';
-        const updateAkunValues = [nama, npm, id_akun];
+        // Update juga kolom nama, npm, telepon, dan jurusan pada tabel akun
+        const updateAkunQuery = 'UPDATE akun SET nama = $1, npm = $2, telepon = $3, jurusan = $4 WHERE id_akun = $5';
+        const updateAkunValues = [nama, npm, telepon, jurusan, id_akun];
         await client.query(updateAkunQuery, updateAkunValues);
     
         res.status(200).json({ message: 'Data akun berhasil diperbarui' });
@@ -856,6 +847,8 @@ module.exports = (app, pool) => {
     
         const getAkunQuery = `
           SELECT * FROM view_data_asisten
+          WHERE id_akun <> 0
+          ORDER BY nama ASC
         `;
         const akunResult = await client.query(getAkunQuery);
         const akun = akunResult.rows;
@@ -869,7 +862,7 @@ module.exports = (app, pool) => {
     });
 
     app.put('/asisten/:id_akun', async (req, res) => {
-      const { id_akun } = req.body;
+      const { id_akun } = req.params;
       const { status_aslab } = req.body;
   
       try {
@@ -899,7 +892,7 @@ module.exports = (app, pool) => {
     });
 
     app.delete('/asisten/:id_akun', async (req, res) => {
-      const { id_akun } = req.body;
+      const { id_akun } = req.params;
   
       try {
           const client = await pool.connect();
@@ -940,7 +933,7 @@ module.exports = (app, pool) => {
     ///           ///
     
     app.delete('/praktikan/:id_akun', async (req, res) => {
-      const { id_akun } = req.body;
+      const { id_akun } = req.params;
   
       try {
           const client = await pool.connect();
@@ -975,6 +968,7 @@ module.exports = (app, pool) => {
         const query = `
         SELECT * FROM view_akun_praktikan_kelompok
         WHERE id_akun <> 1
+        ORDER BY nama ASC
         `;
         const result = await client.query(query);
     
