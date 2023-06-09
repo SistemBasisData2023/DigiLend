@@ -24,7 +24,7 @@ const DeleteBorrow = ({ isVisible, onClose, deleteItem }) => {
 
   const handleButtonClick = () => {
     axios
-      .delete("/api/borrow", { data: deleteData })
+      .delete(`http://localhost:3000/peminjaman/${deleteData.borrowerID}`)
       .then((response) => {
         // Menghandle respon sukses
         console.log(response.data);
@@ -34,6 +34,7 @@ const DeleteBorrow = ({ isVisible, onClose, deleteItem }) => {
         console.error(error);
       });
   };
+
   if (!isVisible) return null;
   return (
     <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex justify-center items-center z-50">

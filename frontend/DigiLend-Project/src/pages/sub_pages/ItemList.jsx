@@ -51,9 +51,13 @@ const ItemList = () => {
   }, []);
 
   const getData = async () => {
-    const { data } = await axios.get(`https://jsonplaceholder.typicode.com/users`);
-    setItems(data);
-    console.log(data);
+    try {
+      const { data } = await axios.get("http://localhost:3000/barang"); // Mengubah URL menjadi "/barang"
+      setItems(data);
+      console.log(data);
+    } catch (error) {
+      console.error("Kesalahan saat mengambil data:", error);
+    }
   };
 
   const handleClickAdd = (data) => {

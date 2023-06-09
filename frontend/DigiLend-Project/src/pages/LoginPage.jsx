@@ -28,13 +28,6 @@ const LoginPage = () => {
   };
   const handleSubmit = (e) => {
     e.preventDefault;
-    if (formData.idakun === 0) {
-      // Tindakan untuk Lab Assistant
-    } else if (formData.idakun === 1) {
-      // Tindakan untuk Practician
-    } else {
-      // Opsi tidak valid, mungkin perlu menampilkan pesan kesalahan
-    }
   };
   return (
     <motion.div className="w-full h-screen" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>

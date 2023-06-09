@@ -21,7 +21,7 @@ const EditItem = ({ isVisible, onClose, selectedItem }) => {
 
   const handleButtonClick = () => {
     axios
-      .put("/api/update", editData) // Replace '/api/update' with your actual API endpoint
+      .put(`http://localhost:3000/barang/${selectedItem.id}`, editData)
       .then((response) => {
         console.log("Data updated successfully:", response.data);
         // Handle any further actions after the data is updated

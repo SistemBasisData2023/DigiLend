@@ -24,9 +24,13 @@ const Borrow = () => {
   }, []);
 
   const getData = async () => {
-    const { data } = await axios.get(`https://jsonplaceholder.typicode.com/users`);
-    setItems(data);
-    console.log(data);
+    try {
+      const { data } = await axios.get(`http://localhost:3000/peminjaman`);
+      setItems(data);
+      console.log(data);
+    } catch (error) {
+      console.error("Kesalahan saat mengambil data:", error);
+    }
   };
 
   const selectedItem = items.find((item) => item.id === parseInt(itemId));
@@ -74,13 +78,21 @@ const Borrow = () => {
   }, []);
 
   const getUserBorrowData = async () => {
-    const { data } = await axios.get("https://jsonplaceholder.typicode.com/users");
-    setUserBorrowTable(data);
+    try {
+      const { data } = await axios.get("http://localhost:3000/peminjaman/:id_praktikan");
+      setUserBorrowTable(data);
+    } catch (error) {
+      console.error("Kesalahan saat mengambil data peminjaman:", error);
+    }
   };
 
   const getBorrowData = async () => {
-    const { data } = await axios.get("https://jsonplaceholder.typicode.com/users");
-    setBorrowTable(data);
+    try {
+      const { data } = await axios.get("http://localhost:3000/peminjaman");
+      setBorrowTable(data);
+    } catch (error) {
+      console.error("Kesalahan saat mengambil data peminjaman:", error);
+    }
   };
 
   const filteredUserBorrowTable = userBorrowTable.filter((item) => {
@@ -128,7 +140,7 @@ const Borrow = () => {
 
   const handleSubmit = () => {
     axios
-      .post("URL_ENDPOINT", formData)
+      .post("http://localhost:300/peminjaman", formData)
       .then((response) => {
         // Tangani respons jika sukses
         console.log(response.data);

@@ -79,13 +79,21 @@ const Return = () => {
   }, []);
 
   const getUserReturnTable = async () => {
-    const { data } = await axios.get("https://jsonplaceholder.typicode.com/users");
-    setUserReturnTable(data);
+    try {
+      const { data } = await axios.get(`http://localhost:3000/pengembalian/${id_praktikan}`);
+      setUserReturnTable(data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const getReturnTable = async () => {
-    const { data } = await axios.get("https://jsonplaceholder.typicode.com/users");
-    setReturnTable(data);
+    try {
+      const { data } = await axios.get("http://localhost:3000/pengembalian");
+      setReturnTable(data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const filteredUserReturnTable = userReturnTable.filter((item) => {
@@ -135,7 +143,7 @@ const Return = () => {
 
   const handleSubmit = () => {
     axios
-      .post("URL_ENDPOINT", formData)
+      .post("http://localhost:3000/pengembalian", formData)
       .then((response) => {
         // Tangani respons jika sukses
         console.log(response.data);
@@ -145,6 +153,7 @@ const Return = () => {
         console.error(error);
       });
   };
+
   useEffect(() => {
     const sidebarWidth = document.getElementById("sidebar").offsetWidth;
     const returnPage = document.getElementById("returnPage");
