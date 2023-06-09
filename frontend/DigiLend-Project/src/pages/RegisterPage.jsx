@@ -20,11 +20,11 @@ const RegisterPage = () => {
     password: "",
     nama_kelompok: "",
     kode_aslab: "",
-    jurusan: "Electrical Engineering",
-    angkatan: 2018,
+    jurusan: "Teknik Elektro",
     telepon: "",
     tahun_ajaran: "",
   });
+
   useEffect(() => {
     window.userData = formData;
   }, [formData]);
@@ -33,7 +33,7 @@ const RegisterPage = () => {
     const { name, value } = event.target;
     setFormData((prevFormData) => ({
       ...prevFormData,
-      [name]: name === "id_role" || name === "angkatan" ? Number(value) : value,
+      [name]: name === "id_role",
     }));
   };
 
@@ -66,9 +66,13 @@ const RegisterPage = () => {
   }, []);
 
   const getGroupData = async () => {
-    const { data } = await axios.get(`https://jsonplaceholder.typicode.com/users`);
-    setGroupList(data);
-    console.log(data);
+    try {
+      const response = await axios.get("http://localhost:3000/nama_kelompok");
+      const data = response.data;
+      setGroupList(data);
+    } catch (error) {
+      console.error("Kesalahan saat mengambil data kelompok:", error);
+    }
   };
 
   const getTahunAjaranData = async () => {
@@ -98,20 +102,15 @@ const RegisterPage = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    // Lakukan pengiriman data ke backend
-    // Misalnya, menggunakan fetch atau axios
 
-    // Lakukan pengiriman data ke backend menggunakan Axios
     axios
-      .post("URL_BACKEND", formData)
+      .post("http://localhost:3000/register", formData)
       .then((response) => {
-        // Tanggapi respon dari backend
         console.log(response.data);
         navigate("/dashboard");
       })
       .catch((error) => {
-        // Tangani kesalahan jika terjadi
-        console.error(error);
+        console.error("Kesalahan saat mendaftarkan akun:", error);
       });
   };
 
@@ -165,24 +164,13 @@ const RegisterPage = () => {
                   <input type="text" placeholder="Student ID Number" name="npm" value={formData.npm} onChange={handleStudentIdChange} className="input input-bordered input-info w-full bg-white border-2 text-black" />{" "}
                 </div>
                 <div className="flex justify-between space-x-2 md:space-x-0">
-                  <select name="jurusan" value={formData.jurusan} onChange={handleChange} className="select select-info w-1/2 md:w-full max-w-xs bg-white border-2 text-black font-normal">
+                  <select name="jurusan" value={formData.jurusan} onChange={handleChange} className="select select-info w-full bg-white border-2 text-black font-normal">
                     <option disabled selected>
                       Major
                     </option>
-                    <option>Electrical Engineering</option>
-                    <option>Computer Engineering</option>
-                    <option>Biomedical Engineering</option>
-                  </select>
-                  <select name="angkatan" value={formData.angkatan} onChange={handleChange} className="select select-info w-2/5 md:w-full max-w-xs bg-white border-2 text-black font-normal">
-                    <option disabled selected>
-                      Batch
-                    </option>
-                    <option>2018</option>
-                    <option>2019</option>
-                    <option>2020</option>
-                    <option>2021</option>
-                    <option>2022</option>
-                    <option>2023</option>
+                    <option value="Teknik Elektro">Electrical Engineering</option>
+                    <option value="Teknik Komputer">Computer Engineering</option>
+                    <option value="Teknik Biomedik">Biomedical Engineering</option>
                   </select>
                 </div>
                 <div className="flex">
