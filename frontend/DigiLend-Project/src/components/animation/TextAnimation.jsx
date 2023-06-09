@@ -4,7 +4,7 @@ import styled, { keyframes } from "styled-components";
 export const TextAnimation = ({ word }) => {
   const reactArray = word.split("");
   return (
-    <Wrapper className="md:text-7xl text-5xl font-bold font-Montserrat text-accent-focus">
+    <Wrapper className="md:text-7xl sm:text-5xl text-4xl font-bold font-Montserrat text-accent-focus">
       {reactArray.map((item, index) => (
         <span key={index}>{item}</span>
       ))}
