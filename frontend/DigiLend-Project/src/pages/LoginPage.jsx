@@ -134,6 +134,7 @@ const LoginPage = () => {
           </div>
         </motion.div>
       </div>
+      <pre>{JSON.stringify(formData, null, 2)}</pre>
     </motion.div>
   );
 };

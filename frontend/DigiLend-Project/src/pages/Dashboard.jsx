@@ -5,6 +5,7 @@ import Sidebar from "../components/Sidebar.jsx";
 import ItemList from "./sub_pages/ItemList.jsx";
 import Return from "./sub_pages/Return.jsx";
 import Borrow from "./sub_pages/Borrow.jsx";
+import EditProfile from "./sub_pages/EditProfile.jsx";
 
 const Dashboard = () => {
   const location = useLocation();
@@ -18,6 +19,7 @@ const Dashboard = () => {
         {currentPath === "/item-list" && <ItemList />}
         {currentPath === "/borrow" && <Borrow />}
         {currentPath === "/return" && <Return />}
+        {currentPath === "/edit-profile" && <EditProfile />}
       </div>
     </div>
   );

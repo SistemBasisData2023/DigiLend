@@ -13,17 +13,17 @@ const RegisterPage = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
+    id_role: 0,
     nama: "",
     npm: "",
+    username: "",
+    password: "",
+    nama_kelompok: "",
+    kode_aslab: "",
     jurusan: "Electrical Engineering",
     angkatan: 2018,
     telepon: "",
-    id_role: 0,
-    nama_kelompok: "",
     tahun_ajaran: "",
-    kode_aslab: "",
-    username: "",
-    password: "",
   });
   useEffect(() => {
     window.userData = formData;
@@ -294,6 +294,7 @@ const RegisterPage = () => {
           </div>
         </motion.div>
       </div>
+      <pre>{JSON.stringify(formData, null, 2)}</pre>
     </motion.div>
   );
 };

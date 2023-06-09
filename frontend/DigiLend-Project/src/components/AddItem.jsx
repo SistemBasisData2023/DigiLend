@@ -12,14 +12,14 @@ const AddItem = ({ isVisible, onClose }) => {
 
   const handleButtonClick = () => {
     axios
-      .post("/api/create", newItem) // Replace '/api/create' with your actual API endpoint
+      .post("http://localhost:3000/barang", addData) // Mengirimkan addData sebagai body permintaan
       .then((response) => {
-        console.log("Data created successfully:", response.data);
-        // Handle any further actions after the data is created
+        console.log("Data berhasil ditambahkan:", response.data);
+        // Lakukan tindakan setelah data berhasil ditambahkan
       })
       .catch((error) => {
-        console.error("Error creating data:", error);
-        // Handle any error that occurred during the creation
+        console.error("Kesalahan saat menambahkan data:", error);
+        // Lakukan penanganan kesalahan yang terjadi saat menambahkan data
       });
   };
 
