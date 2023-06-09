@@ -3,10 +3,10 @@ import { motion } from "framer-motion";
 import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
 import digilendLogo from "../assets/logo-no-background.png";
 import Background from "../components/background/background.jsx";
+import loginVector from "../assets/login-vector.png";
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
-    idakun: 0,
     username: "",
     password: "",
   });
@@ -18,16 +18,25 @@ const LoginPage = () => {
       [name]: value,
     }));
   };
-  const handleClick = (option) => {
-    option === "labAssistant" && handleChange({ target: { name: "idakun", value: 0 } });
-    option === "practician" && handleChange({ target: { name: "idakun", value: 1 } });
-  };
 
   const toggle = () => {
     setOpen(!open);
   };
+
   const handleSubmit = (e) => {
-    e.preventDefault;
+    e.preventDefault();
+
+    axios
+      .post("http://localhost:3000/login", formData)
+      .then((response) => {
+        // Tangani respons jika sukses
+        console.log(response.data);
+        // Lakukan aksi lain yang diperlukan, seperti menyimpan token atau mengarahkan pengguna ke halaman lain
+      })
+      .catch((error) => {
+        // Tangani kesalahan jika terjadi
+        console.error(error);
+      });
   };
   return (
     <motion.div className="w-full h-screen" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
@@ -48,26 +57,12 @@ const LoginPage = () => {
             },
           }}
           className="bg-[#FAFAFA] md:mr-24 backdrop-blur-sm rounded-2xl min-w-[20rem] min-h-[24rem] sm:w-[26rem] sm:h-[30rem] border-2 shadow-2xl border-solid border-opacity-100">
-          <div className="my-5 space-y-4 sm:p-8">
-            <h1 className="text-2xl sm:text-3xl font-bold leading-tight tracking-tight text-info text-center font-Montserrat">Choose Account Type</h1>
-            <div className="flex flex-row justify-center space-x-5">
-              <div
-                className={`flex justify-center border-2 hover:border-[#B8C1F9] w-40 p-4 rounded-2xl text-xl text-black font-bold cursor-pointer ${formData.idakun === 0 ? "bg-[#B8C1F9] text-white" : ""}`}
-                onClick={() => handleClick("labAssistant")}>
-                Lab Assistant
-              </div>
-
-              <div
-                className={`flex justify-center border-2 hover:border-[#B8C1F9] w-40 p-4 rounded-2xl text-xl text-black font-bold cursor-pointer ${formData.idakun === 1 ? "bg-[#B8C1F9] text-white" : ""}`}
-                onClick={() => handleClick("practician")}>
-                Practician
-              </div>
-            </div>
-            <div>
-              <h2 className="flex justify-center font-semibold">{formData.idakun === 0 ? "Hello Lab Assistant!" : "Hello Practician!"}</h2>
-              <h2 className="flex justify-center font-semibold">Please fill out the form below to get started</h2>
-            </div>
+          <div className="my-5 space-y-2 sm:p-8">
+            <h1 className="text-3xl sm:text-4xl font-bold leading-tight tracking-tight text-info text-center font-Montserrat">Log In</h1>
             <form className="space-y-4 pt-3" action="#" onSubmit={handleSubmit}>
+              <div className="flex flex-row justify-center">
+                <img src={loginVector} alt="login-vector" className="h-36" />
+              </div>
               <div className="flex justify-center">
                 <input
                   type="text"
