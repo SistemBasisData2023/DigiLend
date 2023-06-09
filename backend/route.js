@@ -19,95 +19,98 @@ module.exports = (app, pool) => {
     ///                  ///
 
     app.post('/register', async (req, res) => {
-        const { id_role, nama, npm, username, password, nama_kelompok, kode_aslab } = req.body;
-      
-        try {
-          const client = await pool.connect();
-      
-          if (!kode_aslab && !nama_kelompok) {
-            throw new Error('Kode Aslab atau Nama Kelompok harus diisi');
+      const { id_role, nama, npm, username, password, nama_kelompok, kode_aslab, jurusan, telepon } = req.body;
+    
+      try {
+        const client = await pool.connect();
+    
+        if (!kode_aslab && !nama_kelompok) {
+          throw new Error('Kode Aslab atau Nama Kelompok harus diisi');
+        }
+    
+        const getNextIdQuery = `
+          SELECT id_akun FROM akun
+          ORDER BY id_akun DESC
+          LIMIT 1
+        `;
+        const getNextIdResult = await client.query(getNextIdQuery);
+    
+        let lastInsertedId = 0;
+        if (getNextIdResult.rows.length > 0) {
+          lastInsertedId = getNextIdResult.rows[0].id_akun; // Mengupdate lastInsertedId dengan ID terakhir yang ada di tabel
+        }
+    
+        const newId = lastInsertedId + 1; // Menghitung ID baru
+    
+        const hashedPassword = await bcrypt.hash(password, 10); // Mengenkripsi password
+    
+        const angkatan = parseInt(npm.substring(0, 2)) + 2000; // Mendapatkan nilai angkatan dari 2 digit pertama npm
+    
+        const akunQuery = `
+          INSERT INTO akun (id_akun, id_role, nama, npm, username, password, jurusan, telepon, angkatan)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+          RETURNING *
+        `;
+        const akunValues = [newId, id_role, nama, npm, username, hashedPassword, jurusan, telepon, angkatan]; // Menggunakan password yang telah dienkripsi
+    
+        const akunResult = await client.query(akunQuery, akunValues);
+        const akunData = akunResult.rows[0];
+    
+        let roleSpecificData;
+        if (id_role == 0) {
+          if (!nama_kelompok) {
+            throw new Error('Nama kelompok harus diisi');
           }
-      
-          const getNextIdQuery = `
-            SELECT id_akun FROM akun
-            ORDER BY id_akun DESC
-            LIMIT 1
+    
+          const kelompokQuery = `
+            SELECT id_kelompok FROM kelompok WHERE nama_kelompok = $1
           `;
-          const getNextIdResult = await client.query(getNextIdQuery);
-      
-          if (getNextIdResult.rows.length > 0) {
-            lastInsertedId = getNextIdResult.rows[0].id_akun; // Mengupdate lastInsertedId dengan ID terakhir yang ada di tabel
-          }
-      
-          const newId = lastInsertedId + 1; // Menghitung ID baru
-      
-          const hashedPassword = await bcrypt.hash(password, 10); // Mengenkripsi password
-      
-          const akunQuery = `
-            INSERT INTO akun (id_akun, id_role, nama, npm, username, password)
-            VALUES ($1, $2, $3, $4, $5, $6)
-            RETURNING *
-          `;
-          const akunValues = [newId, id_role, nama, npm, username, hashedPassword]; // Menggunakan password yang telah dienkripsi
-      
-          const akunResult = await client.query(akunQuery, akunValues);
-          const akunData = akunResult.rows[0];
-      
-          let roleSpecificData;
-          if (id_role == 0) {
-            if (!nama_kelompok) {
-              throw new Error('Nama kelompok harus diisi');
-            }
-      
-            const kelompokQuery = `
-              SELECT id_kelompok FROM kelompok WHERE nama_kelompok = $1
-            `;
-            const kelompokValues = [nama_kelompok];
-      
-            const kelompokResult = await client.query(kelompokQuery, kelompokValues);
-      
-            if (kelompokResult.rows.length > 0) {
-              const praktikanQuery = `
-                INSERT INTO praktikan (id_akun, id_kelompok)
-                VALUES ($1, $2)
-                RETURNING *
-              `;
-              const praktikanValues = [akunData.id_akun, kelompokResult.rows[0].id_kelompok];
-      
-              const praktikanResult = await client.query(praktikanQuery, praktikanValues);
-              roleSpecificData = praktikanResult.rows[0];
-            } else {
-              throw new Error('Kelompok tidak ditemukan');
-            }
-          } else if (id_role == 1) {
-            if (!kode_aslab) {
-              throw new Error('Kode Aslab harus diisi');
-            }
-      
-            const asistenQuery = `
-              INSERT INTO asisten (id_akun, kode_aslab)
+          const kelompokValues = [nama_kelompok];
+    
+          const kelompokResult = await client.query(kelompokQuery, kelompokValues);
+    
+          if (kelompokResult.rows.length > 0) {
+            const praktikanQuery = `
+              INSERT INTO praktikan (id_akun, id_kelompok)
               VALUES ($1, $2)
               RETURNING *
             `;
-            const asistenValues = [akunData.id_akun, kode_aslab];
-      
-            const asistenResult = await client.query(asistenQuery, asistenValues);
-            roleSpecificData = asistenResult.rows[0];
+            const praktikanValues = [akunData.id_akun, kelompokResult.rows[0].id_kelompok];
+    
+            const praktikanResult = await client.query(praktikanQuery, praktikanValues);
+            roleSpecificData = praktikanResult.rows[0];
+          } else {
+            throw new Error('Kelompok tidak ditemukan');
           }
-      
-          res.status(201).json({
-            akun: akunData,
-            roleSpecificData: roleSpecificData
-          });
-      
-          lastInsertedId = newId; // Mengupdate lastInsertedId dengan ID yang baru saja diinsert
-      
-          client.release();
-        } catch (error) {
-          console.error('Kesalahan saat menyimpan akun:', error);
-          res.status(500).json({ error: 'Terjadi kesalahan server' });
+        } else if (id_role == 1) {
+          if (!kode_aslab) {
+            throw new Error('Kode Aslab harus diisi');
+          }
+    
+          const asistenQuery = `
+            INSERT INTO asisten (id_akun, kode_aslab)
+            VALUES ($1, $2)
+            RETURNING *
+          `;
+          const asistenValues = [akunData.id_akun, kode_aslab];
+    
+          const asistenResult = await client.query(asistenQuery, asistenValues);
+          roleSpecificData = asistenResult.rows[0];
         }
-    });
+    
+        res.status(201).json({
+          akun: akunData,
+          roleSpecificData: roleSpecificData
+        });
+    
+        lastInsertedId = newId; // Mengupdate lastInsertedId dengan ID yang baru saja diinsert
+    
+        client.release();
+      } catch (error) {
+        console.error('Kesalahan saat menyimpan akun:', error);
+        res.status(500).json({ error: 'Terjadi kesalahan server' });
+      }
+    });    
 
     app.post('/login', async (req, res) => {
         const { username, password } = req.body;
@@ -247,6 +250,35 @@ module.exports = (app, pool) => {
         }
     });    
 
+    app.delete('/barang/:id_barang', async (req, res) => {
+      const { id_barang } = req.body;
+    
+      try {
+        const client = await pool.connect();
+    
+        // Periksa apakah barang dengan id_barang tersebut ada dalam database
+        const checkBarangQuery = 'SELECT * FROM barang WHERE id_barang = $1';
+        const checkBarangValues = [id_barang];
+        const checkBarangResult = await client.query(checkBarangQuery, checkBarangValues);
+        const barangExists = checkBarangResult.rows.length > 0;
+    
+        if (!barangExists) {
+          return res.status(404).json({ error: 'Barang tidak ditemukan' });
+        }
+    
+        // Hapus barang berdasarkan id_barang
+        const deleteBarangQuery = 'DELETE FROM barang WHERE id_barang = $1';
+        const deleteBarangValues = [id_barang];
+        await client.query(deleteBarangQuery, deleteBarangValues);
+    
+        res.status(200).json({ message: 'Barang berhasil dihapus' });
+        client.release();
+      } catch (error) {
+        console.error('Kesalahan saat menghapus barang:', error);
+        res.status(500).json({ error: 'Terjadi kesalahan server' });
+      }
+    });
+
     ///            ///
     /// PEMINJAMAN ///
     ///            ///
@@ -375,7 +407,7 @@ module.exports = (app, pool) => {
         const deletePeminjamanValues = [idPeminjaman];
         await client.query(deletePeminjamanQuery, deletePeminjamanValues);
     
-        res.status(200).json({ message: 'Data peminjaman dan pengembalian berhasil dihapus' });
+        res.status(200).json({ message: 'Data berhasil dihapus' });
         client.release();
       } catch (error) {
         console.error('Kesalahan saat menghapus data peminjaman:', error);
@@ -558,42 +590,70 @@ module.exports = (app, pool) => {
     ///          ///
 
     app.post('/kelompok', async (req, res) => {
-      const { kode_aslab, tahun1, tahun2, nama_kelompok, semester } = req.body;
-  
+      const { kode_aslab, tahun1, tahun2, nama_kelompok } = req.body;
+    
       // Validasi tahun2 harus lebih besar dari tahun1
       if (tahun2 <= tahun1) {
-          return res.status(400).json({ error: 'Tahun kedua harus lebih besar dari tahun pertama' });
+        return res.status(400).json({ error: 'Tahun kedua harus lebih besar dari tahun pertama' });
       }
-  
+    
+      let semester;
+      if (nama_kelompok.startsWith('B') || nama_kelompok.startsWith('K')) {
+        semester = 'Gasal';
+      } else if (nama_kelompok.startsWith('E')) {
+        semester = 'Genap';
+      } else {
+        return res.status(400).json({ error: 'Format nama kelompok tidak valid' });
+      }
+    
       try {
-          const client = await pool.connect();
-  
-          // Cari id_asisten berdasarkan kode_aslab
-          const getAsistenQuery = 'SELECT id_akun FROM asisten WHERE kode_aslab = $1';
-          const getAsistenValues = [kode_aslab];
-          const getAsistenResult = await client.query(getAsistenQuery, getAsistenValues);
-          const id_akun = getAsistenResult.rows[0].id_akun;
-  
-          // Gabungkan tahun1 dan tahun2 menjadi format <tahun1>/<tahun2>
-          const tahunAjaran = `${tahun1}/${tahun2}`;
-  
-          // Insert data ke tabel kelompok
-          const insertKelompokQuery = `
-              INSERT INTO kelompok (id_kelompok, id_asisten, nama_kelompok, semester, tahun_ajaran)
-              VALUES (nextval('id_kelompok_sequence'), $1, $2, $3, $4)
-              RETURNING id_kelompok
-          `;
-          const insertKelompokValues = [id_akun, nama_kelompok, semester, tahunAjaran];
-          const insertKelompokResult = await client.query(insertKelompokQuery, insertKelompokValues);
-          const kelompokId = insertKelompokResult.rows[0].id_kelompok;
-  
-          res.status(201).json({ message: 'Data kelompok berhasil ditambahkan', id_kelompok: kelompokId });
-          client.release();
+        const client = await pool.connect();
+    
+        // Cari id_asisten berdasarkan kode_aslab
+        const getAsistenQuery = 'SELECT id_akun FROM asisten WHERE kode_aslab = $1';
+        const getAsistenValues = [kode_aslab];
+        const getAsistenResult = await client.query(getAsistenQuery, getAsistenValues);
+        const id_akun = getAsistenResult.rows[0].id_akun;
+    
+        // Gabungkan tahun1 dan tahun2 menjadi format <tahun1>/<tahun2>
+        const tahunAjaran = `${tahun1}/${tahun2}`;
+    
+        // Insert data ke tabel kelompok
+        const insertKelompokQuery = `
+          INSERT INTO kelompok (id_kelompok, id_asisten, nama_kelompok, semester, tahun_ajaran)
+          VALUES (nextval('id_kelompok_sequence'), $1, $2, $3, $4)
+          RETURNING id_kelompok
+        `;
+        const insertKelompokValues = [id_akun, nama_kelompok, semester, tahunAjaran];
+        const insertKelompokResult = await client.query(insertKelompokQuery, insertKelompokValues);
+        const kelompokId = insertKelompokResult.rows[0].id_kelompok;
+    
+        res.status(201).json({ message: 'Data kelompok berhasil ditambahkan', id_kelompok: kelompokId });
+        client.release();
       } catch (error) {
-          console.error('Kesalahan saat menambahkan data kelompok:', error);
-          res.status(500).json({ error: 'Terjadi kesalahan server' });
+        console.error('Kesalahan saat menambahkan data kelompok:', error);
+        res.status(500).json({ error: 'Terjadi kesalahan server' });
       }
-    });  
+    });    
+
+    app.get('/kelompok', async (req, res) => {
+      try {
+        const client = await pool.connect();
+    
+        const getKelompokQuery = `
+        SELECT * FROM kelompok
+        WHERE id_kelompok <> 0
+        `;
+        const kelompokResult = await client.query(getKelompokQuery);
+        const kelompok = kelompokResult.rows;
+    
+        res.status(200).json(kelompok);
+        client.release();
+      } catch (error) {
+        console.error('Kesalahan saat mengambil data kelompok:', error);
+        res.status(500).json({ error: 'Terjadi kesalahan server' });
+      }
+    });    
 
     app.get('/nama_kelompok', async (req, res) => {
       try {
@@ -601,6 +661,7 @@ module.exports = (app, pool) => {
     
         const getKelompokQuery = `
           SELECT nama_kelompok FROM kelompok
+          WHERE id_kelompok <> 0
         `;
         const kelompokResult = await client.query(getKelompokQuery);
         const kelompok = kelompokResult.rows.map(row => row.nama_kelompok);
@@ -615,31 +676,35 @@ module.exports = (app, pool) => {
 
     app.put('/kelompok/:id_kelompok', async (req, res) => {
       const { id_kelompok } = req.body;
-      const { id_asisten, tahun1, tahun2, semester } = req.body;
+      const { nama_kelompok, kode_aslab } = req.body;
     
       try {
         const client = await pool.connect();
     
-        // Periksa apakah kelompok dengan id_kelompok tertentu ada di tabel kelompok
+        // Periksa apakah kelompok dengan id_kelompok tersebut ada dalam database
         const checkKelompokQuery = 'SELECT * FROM kelompok WHERE id_kelompok = $1';
         const checkKelompokValues = [id_kelompok];
         const checkKelompokResult = await client.query(checkKelompokQuery, checkKelompokValues);
-        const kelompok = checkKelompokResult.rows[0];
+        const kelompokExists = checkKelompokResult.rows.length > 0;
     
-        if (!kelompok) {
+        if (!kelompokExists) {
           return res.status(404).json({ error: 'Kelompok tidak ditemukan' });
         }
-        
-        // Gabungkan tahun1 dan tahun2 menjadi format <tahun1>/<tahun2>
-        const tahunAjaran = `${tahun1}/${tahun2}`;
-        
-        // Update nilai-nilai pada tabel kelompok, kecuali id_kelompok dan nama_kelompok
-        const updateKelompokQuery = `
-          UPDATE kelompok
-          SET id_asisten = $1, tahun_ajaran = $2, semester = $3
-          WHERE id_kelompok = $4
-        `;
-        const updateKelompokValues = [id_asisten, tahunAjaran, semester, id_kelompok];
+    
+        // Periksa apakah kode_aslab ada dalam database
+        const checkAslabQuery = 'SELECT id_akun FROM asisten WHERE kode_aslab = $1';
+        const checkAslabValues = [kode_aslab];
+        const checkAslabResult = await client.query(checkAslabQuery, checkAslabValues);
+        const aslabExists = checkAslabResult.rows.length > 0;
+    
+        if (!aslabExists) {
+          return res.status(404).json({ error: 'Kode Aslab tidak ditemukan' });
+        }
+    
+        // Update id_asisten berdasarkan kode_aslab
+        const id_asisten = checkAslabResult.rows[0].id_akun;
+        const updateKelompokQuery = 'UPDATE kelompok SET nama_kelompok = $1, id_asisten = $2 WHERE id_kelompok = $3';
+        const updateKelompokValues = [nama_kelompok, id_asisten, id_kelompok];
         await client.query(updateKelompokQuery, updateKelompokValues);
     
         res.status(200).json({ message: 'Data kelompok berhasil diperbarui' });
@@ -648,7 +713,7 @@ module.exports = (app, pool) => {
         console.error('Kesalahan saat memperbarui data kelompok:', error);
         res.status(500).json({ error: 'Terjadi kesalahan server' });
       }
-    });
+    });    
       
     app.delete('/kelompok/:id_kelompok', async (req, res) => {
       const { id_kelompok } = req.body;
@@ -717,47 +782,50 @@ module.exports = (app, pool) => {
     });
 
     app.put('/akun/:id_akun', async (req, res) => {
-        const { id_akun } = req.body;
-        const { nama, npm, username, password, id_kelompok, kode_aslab, status_aslab } = req.body;
-
-        try {
-            const client = await pool.connect();
-
-            // Periksa id_role dari akun yang akan diperbarui
-            const getAkunQuery = 'SELECT id_role FROM akun WHERE id_akun = $1';
-            const getAkunValues = [id_akun];
-            const getAkunResult = await client.query(getAkunQuery, getAkunValues);
-            const id_role = getAkunResult.rows[0].id_role;
-
-            let updateQuery = '';
-            let updateValues = [];
-
-            // Periksa id_role untuk menentukan tabel yang akan diperbarui
-            if (id_role == 0) {
-            // Akun dengan id_role = 0 adalah praktikan
-            updateQuery = 'UPDATE praktikan SET id_kelompok = $1 WHERE id_akun = $2';
-            updateValues = [id_kelompok, id_akun];
-            } else if (id_role == 1) {
-            // Akun dengan id_role = 1 adalah asisten
-            updateQuery = 'UPDATE asisten SET kode_aslab = $1, status_aslab = $2 WHERE id_akun = $3';
-            updateValues = [kode_aslab, status_aslab, id_akun];
-            } else {
-            // Jika id_role tidak valid, kirimkan respons dengan kode status 400
-            return res.status(400).json({ error: 'ID role tidak valid' });
-            }
-
-            // Lakukan pembaruan pada tabel yang sesuai
-            updateQuery = 'UPDATE akun SET nama = $1, username = $2, password = $3, npm = $4 WHERE id_akun = $5';
-            updateValues = [nama, username, password, npm, id_akun];
-            await client.query(updateQuery, updateValues);
-
-            res.status(200).json({ message: 'Data akun berhasil diperbarui' });
-            client.release();
-        } catch (error) {
-            console.error('Kesalahan saat memperbarui data akun:', error);
-            res.status(500).json({ error: 'Terjadi kesalahan server' });
+      const { id_akun } = req.body;
+      const { nama, npm, id_kelompok, kode_aslab, status_aslab } = req.body;
+    
+      try {
+        const client = await pool.connect();
+    
+        // Periksa id_role dari akun yang akan diperbarui
+        const getAkunQuery = 'SELECT id_role FROM akun WHERE id_akun = $1';
+        const getAkunValues = [id_akun];
+        const getAkunResult = await client.query(getAkunQuery, getAkunValues);
+        const id_role = getAkunResult.rows[0].id_role;
+    
+        let updateQuery = '';
+        let updateValues = [];
+    
+        // Periksa id_role untuk menentukan tabel yang akan diperbarui
+        if (id_role == 0) {
+          // Akun dengan id_role = 0 adalah praktikan
+          updateQuery = 'UPDATE praktikan SET id_kelompok = $1 WHERE id_akun = $2';
+          updateValues = [id_kelompok, id_akun];
+        } else if (id_role == 1) {
+          // Akun dengan id_role = 1 adalah asisten
+          updateQuery = 'UPDATE asisten SET kode_aslab = $1, status_aslab = $2 WHERE id_akun = $3';
+          updateValues = [kode_aslab, status_aslab, id_akun];
+        } else {
+          // Jika id_role tidak valid, kirimkan respons dengan kode status 400
+          return res.status(400).json({ error: 'ID role tidak valid' });
         }
-    });
+    
+        // Lakukan pembaruan pada tabel yang sesuai
+        await client.query(updateQuery, updateValues);
+    
+        // Update juga kolom nama dan npm pada tabel akun
+        const updateAkunQuery = 'UPDATE akun SET nama = $1, npm = $2 WHERE id_akun = $3';
+        const updateAkunValues = [nama, npm, id_akun];
+        await client.query(updateAkunQuery, updateAkunValues);
+    
+        res.status(200).json({ message: 'Data akun berhasil diperbarui' });
+        client.release();
+      } catch (error) {
+        console.error('Kesalahan saat memperbarui data akun:', error);
+        res.status(500).json({ error: 'Terjadi kesalahan server' });
+      }
+    });    
 
     ///         ///
     /// ASISTEN ///
