@@ -790,7 +790,41 @@ module.exports = (app, pool) => {
       console.error('Kesalahan saat mengambil data kelompok:', error);
       res.status(500).json({ error: 'Terjadi kesalahan server' });
     }
-  });     
+  });  
+  
+  app.get('/kelompok/:id_akun', async (req, res) => {
+    const { id_akun } = req.params;
+  
+    try {
+      const client = await pool.connect();
+  
+      // Periksa apakah praktikan dengan id_akun tersebut ada dalam database
+      const checkPraktikanQuery = 'SELECT * FROM praktikan WHERE id_akun = $1';
+      const checkPraktikanValues = [id_akun];
+      const checkPraktikanResult = await client.query(checkPraktikanQuery, checkPraktikanValues);
+      const praktikan = checkPraktikanResult.rows[0];
+  
+      if (!praktikan) {
+        return res.status(404).json({ error: 'Praktikan tidak ditemukan' });
+      }
+  
+      // Ambil nama_kelompok berdasarkan id_kelompok dari tabel kelompok
+      const getKelompokQuery = 'SELECT nama_kelompok FROM kelompok WHERE id_kelompok = $1';
+      const getKelompokValues = [praktikan.id_kelompok];
+      const getKelompokResult = await client.query(getKelompokQuery, getKelompokValues);
+      const kelompok = getKelompokResult.rows[0];
+  
+      if (!kelompok) {
+        return res.status(404).json({ error: 'Kelompok tidak ditemukan' });
+      }
+  
+      res.status(200).json({ nama_kelompok: kelompok.nama_kelompok });
+      client.release();
+    } catch (error) {
+      console.error('Kesalahan saat mencari nama_kelompok:', error);
+      res.status(500).json({ error: 'Terjadi kesalahan server' });
+    }
+  });  
 
   app.put('/kelompok/:id_kelompok', async (req, res) => {
     const { id_kelompok } = req.params;
