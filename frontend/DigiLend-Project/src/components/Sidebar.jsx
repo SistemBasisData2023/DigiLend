@@ -6,7 +6,8 @@ import { FaHandHoldingMedical, FaHandHolding } from "react-icons/fa";
 import { IoExit } from "react-icons/io5";
 
 const Sidebar = () => {
-  const userData = window.userData;
+  const storedData = sessionStorage.getItem("akun");
+  const userData = JSON.parse(storedData);
   const navigate = useNavigate();
   const [activePage, setActivePage] = useState("");
 

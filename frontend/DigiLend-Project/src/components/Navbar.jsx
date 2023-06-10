@@ -4,7 +4,8 @@ import { useNavigate } from "react-router-dom";
 import digilendLogo from "../assets/logo-no-background.png";
 
 const Navbar = () => {
-  const userData = sessionStorage.getItem("akun");
+  const storedData = sessionStorage.getItem("akun");
+  const userData = JSON.parse(storedData);
   const navigate = useNavigate();
   const handleClick = (link) => {
     navigate(`/dashboard${link}`, { state: { relative: true } });
