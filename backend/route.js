@@ -785,6 +785,25 @@ module.exports = (app, pool) => {
         }
     });
 
+    app.get('/akun/:username', async (req, res) => {
+      const { username } = req.params;
+    
+      try {
+        const client = await pool.connect();
+    
+        const query = 'SELECT * FROM akun WHERE username = $1';
+        const values = [username];
+        const result = await client.query(query, values);
+        const akun = result.rows[0];
+    
+        res.status(200).json(akun);
+        client.release();
+      } catch (error) {
+        console.error('Kesalahan saat mengambil data akun:', error);
+        res.status(500).json({ error: 'Terjadi kesalahan server' });
+      }
+    });    
+
     app.put('/akun/:id_akun', async (req, res) => {
       const { id_akun } = req.params;
       const { nama, npm, telepon, jurusan, nama_kelompok, kode_aslab, status_aslab } = req.body;

@@ -1,10 +1,14 @@
 const express = require('express');
+const cors = require('cors');
 const bodyParser = require('body-parser');
 const { Pool } = require('pg'); // Import modul pg
 const session = require('express-session');
 const app = express();
 const dotenv = require('dotenv');
 dotenv.config();
+
+//Mengizinkan semua permintaan dari semua domain/origin
+app.use(cors());
 
 // Middleware untuk mengurai body dengan format JSON
 app.use(bodyParser.json());
