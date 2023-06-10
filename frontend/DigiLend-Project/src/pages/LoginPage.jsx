@@ -6,6 +6,7 @@ import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
 import digilendLogo from "../assets/logo-no-background.png";
 import Background from "../components/background/background.jsx";
 import loginVector from "../assets/login-vector.png";
+import { BsConeStriped } from "react-icons/bs";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -27,6 +28,7 @@ const LoginPage = () => {
   const toggle = () => {
     setOpen(!open);
   };
+  console.log(sessionStorage);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -34,6 +36,11 @@ const LoginPage = () => {
     axios
       .post("http://localhost:3000/login", formData)
       .then((response) => {
+        // Setelah menerima respons dari backend
+        const token = response.data.token;
+        const akun = response.data.akun;
+        sessionStorage.setItem("token", token);
+        sessionStorage.setItem("akun", JSON.stringify(akun));
         // Tangani respons jika sukses
         console.log(response.data);
         navigate("/dashboard");

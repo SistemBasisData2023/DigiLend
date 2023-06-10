@@ -15,7 +15,8 @@ const Sidebar = () => {
     setActivePage(link);
   };
   const handleLogout = () => {
-    window.userData = null;
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("akun");
   };
   return (
     <div id="sidebar" className="flex flex-col sm:p-6 h-screen sticky top-20">

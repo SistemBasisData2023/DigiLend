@@ -148,7 +148,7 @@ const RegisterPage = () => {
               <div className="flex flex-row justify-center md:gap-10 gap-4 md:h-72 sm:pt-4 pt-10 md:m-0 m-2">
                 <div
                   className={`flex flex-col justify-center items-center border-2 hover:border-[#B8C1F9] w-full p-4 rounded-2xl md:text-xl text-lg text-black font-bold cursor-pointer ${
-                    formData.id_role === 0 ? "bg-[#B8C1F9] text-white" : ""
+                    formData.id_role === 1 ? "bg-[#B8C1F9] text-white" : ""
                   }`}
                   onClick={() => handleClick("labAssistant")}>
                   <img src={assistant} alt="Lab Assistant" className="md:h-5/6 w-fit" />
@@ -156,7 +156,7 @@ const RegisterPage = () => {
                 </div>
                 <div
                   className={`flex flex-col justify-center items-center border-2 hover:border-[#B8C1F9] w-full p-4 rounded-2xl md:text-xl text-lg text-black font-bold cursor-pointer ${
-                    formData.id_role === 1 ? "bg-[#B8C1F9] text-white" : ""
+                    formData.id_role === 0 ? "bg-[#B8C1F9] text-white" : ""
                   }`}
                   onClick={() => handleClick("practician")}>
                   <img src={practician} alt="Practician" className="md:h-5/6 w-fit" />

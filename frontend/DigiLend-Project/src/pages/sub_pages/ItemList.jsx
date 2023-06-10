@@ -10,7 +10,8 @@ import AddItem from "../../components/AddItem.jsx";
 import Pagination from "../../components/Pagination.jsx";
 
 const ItemList = () => {
-  const userData = window.userData;
+  const userData = sessionStorage.getItem("akun");
+  console.log(userData);
   const [items, setItems] = useState([]);
   const [showAddItem, setShowAddItem] = useState(false);
   const [showEditItem, setShowEditItem] = useState(false);
@@ -95,7 +96,7 @@ const ItemList = () => {
             <input type="text" placeholder="Search" className="input input-bordered rounded-3xl shadow-xl pr-10" value={searchKeyword} onChange={handleSearch} />
             <AiOutlineSearch className="text-2xl -translate-x-11 translate-y-3" />
           </div>
-          {userData.id_role === 0 && (
+          {userData.id_role === 1 && (
             <div className="btn btn-ghost flex flex-row items-center gap-3 px-6" onClick={() => handleClickAdd()}>
               <AiOutlinePlusCircle className="text-3xl" />
               <span className="text-lg">Add Item</span>
@@ -115,11 +116,11 @@ const ItemList = () => {
           <tbody>
             {currentItems.map((data) => {
               return (
-                <tr key={data.id} className="text-white">
-                  <td>{data.id}</td>
-                  <td>{data.name}</td>
-                  <td>{data.name}</td>
-                  <td>{data.username}</td>
+                <tr key={data.id_barang} className="text-white">
+                  <td>{data.id_barang}</td>
+                  <td>{data.nama_barang}</td>
+                  <td>{data.jumlah_tersedia}</td>
+                  <td>{data.harga}</td>
                   <td>
                     {userData.id_role === 0 ? (
                       <div className="dropdown dropdown-end">
@@ -138,7 +139,7 @@ const ItemList = () => {
                         )}
                       </div>
                     ) : (
-                      <Link tabIndex={0} className="btn btn-ghost btn-circle shadow-xl" to={`/dashboard/borrow?id=${data.id}`}>
+                      <Link tabIndex={0} className="btn btn-ghost btn-circle shadow-xl" to={`/dashboard/borrow?id=${data.id_barang}`}>
                         <IoEllipsisVerticalSharp />
                       </Link>
                     )}

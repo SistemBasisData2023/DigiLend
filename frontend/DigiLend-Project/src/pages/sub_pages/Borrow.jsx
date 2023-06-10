@@ -13,7 +13,8 @@ import startBorrow from "../../assets/shopping-cart.png";
 import borrowList from "../../assets/borrow-list.png";
 
 const Borrow = () => {
-  const userData = window.userData;
+  const storedData = sessionStorage.getItem("akun");
+  const userData = JSON.parse(storedData);
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const itemId = searchParams.get("id");
@@ -25,21 +26,18 @@ const Borrow = () => {
 
   const getData = async () => {
     try {
-      const { data } = await axios.get(`http://localhost:3000/peminjaman`);
+      const { data } = await axios.get(`http://localhost:3000/barang`);
       setItems(data);
-      console.log(data);
     } catch (error) {
       console.error("Kesalahan saat mengambil data:", error);
     }
   };
 
-  const selectedItem = items.find((item) => item.id === parseInt(itemId));
-  console.log(selectedItem);
+  const selectedItem = items.find((item) => item.id_barang === parseInt(itemId));
   const [formData, setFormData] = useState({
-    id_barang: selectedItem ? selectedItem.id : "",
-    name: selectedItem ? selectedItem.id : "",
+    id_barang: selectedItem ? selectedItem.id_barang : "",
     jumlah_dipinjam: "",
-    id_praktikan: 0,
+    id_praktikan: userData.id_akun,
   });
 
   useEffect(() => {
@@ -47,14 +45,12 @@ const Borrow = () => {
       setSelectedButton("startBorrowing");
       setFormData((prevFormData) => ({
         ...prevFormData,
-        id_barang: selectedItem.id,
-        name: selectedItem.name,
+        id_barang: selectedItem.id_barang,
       }));
     } else {
       setFormData((prevFormData) => ({
         ...prevFormData,
         id_barang: "",
-        name: "",
       }));
     }
   }, [selectedItem]);
@@ -79,7 +75,7 @@ const Borrow = () => {
 
   const getUserBorrowData = async () => {
     try {
-      const { data } = await axios.get("http://localhost:3000/peminjaman/:id_praktikan");
+      const { data } = await axios.get(`http://localhost:3000/peminjaman/${userData.id_akun}`);
       setUserBorrowTable(data);
     } catch (error) {
       console.error("Kesalahan saat mengambil data peminjaman:", error);
@@ -96,15 +92,21 @@ const Borrow = () => {
   };
 
   const filteredUserBorrowTable = userBorrowTable.filter((item) => {
-    const itemValues = Object.values(item).map((value) => value.toString().toLowerCase());
-    const searchData = itemValues.join(" ");
-    return searchData.includes(searchKeyword.toLowerCase());
+    if (item) {
+      const itemValues = Object.values(item).map((value) => (value ? value.toString().toLowerCase() : ""));
+      const searchData = itemValues.join(" ");
+      return searchData.includes(searchKeyword.toLowerCase());
+    }
+    return false;
   });
 
   const filteredBorrowTable = borrowTable.filter((item) => {
-    const itemValues = Object.values(item).map((value) => value.toString().toLowerCase());
-    const searchData = itemValues.join(" ");
-    return searchData.includes(searchKeyword.toLowerCase());
+    if (item) {
+      const itemValues = Object.values(item).map((value) => (value ? value.toString().toLowerCase() : ""));
+      const searchData = itemValues.join(" ");
+      return searchData.includes(searchKeyword.toLowerCase());
+    }
+    return false;
   });
 
   // Menghitung jumlah halaman total
@@ -138,11 +140,30 @@ const Borrow = () => {
     setShowDeleteItem((prevState) => !prevState);
   };
 
+  const [borrowItem, setBorrowItem] = useState(null);
+
+  const handleNextClick = () => {
+    // Panggil API untuk mendapatkan data barang berdasarkan ID
+    axios
+      .get(`http://localhost:3000/barang/${formData.id_barang}`)
+      .then((response) => {
+        const data = response.data;
+        setBorrowItem(data); // Mengisi borrowItem dengan data respons dari API
+
+        // Ubah halaman saat tombol "Next" diklik
+        setCurrentPage(currentPage + 1);
+      })
+      .catch((error) => {
+        console.error("Kesalahan saat mengambil data barang:", error);
+      });
+  };
+
   const handleSubmit = () => {
     axios
-      .post("http://localhost:300/peminjaman", formData)
+      .post("http://localhost:3000/peminjaman", formData)
       .then((response) => {
         // Tangani respons jika sukses
+        handleClick("borrowList");
         console.log(response.data);
       })
       .catch((error) => {
@@ -162,7 +183,7 @@ const Borrow = () => {
         <div className="flex flex-col items-center pt-6">
           <h1 className="font-Montserrat font-bold sm:text-5xl text-3xl text-accent">Borrow Page</h1>
         </div>
-        {userData.id_role === 0 ? (
+        {userData.id_role === 1 ? (
           <div>
             <div className="p-6 flex items-center">
               <input type="text" placeholder="Search" className="input input-bordered rounded-3xl shadow-xl pr-10" value={searchKeyword} onChange={handleSearch} />
@@ -269,7 +290,6 @@ const Borrow = () => {
                             setFormData({ ...formData, id_barang: inputId });
                           }}
                         />
-                        <input type="text" placeholder="Enter The Item's Name" className="input input-bordered bg-neutral input-accent w-full" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
                         <input
                           type="number"
                           placeholder="Enter the Quantity"
@@ -283,11 +303,11 @@ const Borrow = () => {
                       <div className="flex flex-col text-white space-y-4 w-full px-8 font-Montserrat">
                         <div className="flex flex-row justify-between">
                           <p>Item's ID: </p>
-                          <p>{formData.id_barang}</p>
+                          <p>{borrowItem.id_barang}</p>
                         </div>
                         <div className="flex flex-row justify-between">
                           <p>Item's Name: </p>
-                          <p>{formData.name}</p>
+                          <p>{borrowItem.nama_barang}</p>
                         </div>
                         <div className="flex flex-row justify-between">
                           <p>Quantity: </p>
@@ -295,13 +315,13 @@ const Borrow = () => {
                         </div>
                         <div className="flex flex-row justify-between">
                           <p>Item's Price: </p>
-                          <p>Rp. {selectedItem ? selectedItem.price : ""}</p>
+                          <p>Rp. {borrowItem.harga}</p>
                         </div>
                       </div>
                     )}
                     {currentPage < 2 && (
                       <div className="text-end px-8">
-                        <button className="btn btn-success" onClick={() => setCurrentPage(currentPage + 1)}>
+                        <button className="btn btn-success" onClick={handleNextClick}>
                           Next
                         </button>
                       </div>
@@ -343,12 +363,12 @@ const Borrow = () => {
                       <tbody>
                         {currentItemsUserBorrow.map((data) => {
                           return (
-                            <tr key={data.id} className="text-white">
-                              <td>{data.id}</td>
-                              <td>{data.name}</td>
-                              <td>{data.name}</td>
-                              <td>{data.username}</td>
-                              <td>KAPAN</td>
+                            <tr key={data.id_peminjaman} className="text-white">
+                              <td>{data.id_peminjaman}</td>
+                              <td>{data.id_barang}</td>
+                              <td>{data.nama_barang}</td>
+                              <td>{data.jumlah_dipinjam}</td>
+                              <td>{data.tenggat_waktu}</td>
                               <td>
                                 <Link to={`/dashboard/return?id=${data.id}`} class="btn btn-success text-xs">
                                   Return
