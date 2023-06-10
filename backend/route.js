@@ -359,18 +359,23 @@ module.exports = (app, pool) => {
     });
     
     app.get('/peminjaman', async (req, res) => {
-        try {
-            const client = await pool.connect();
-            const query = 'SELECT * FROM peminjaman ORDER BY waktu_peminjaman DESC';
-            const result = await client.query(query);
-            const peminjaman = result.rows;
-            res.status(200).json(peminjaman);
-            client.release();
-        } catch (error) {
-            console.error('Kesalahan saat mengambil data peminjaman:', error);
-            res.status(500).json({ error: 'Terjadi kesalahan server' });
-        }
-    });
+      try {
+        const client = await pool.connect();
+        const query = `
+          SELECT p.*, b.nama_barang 
+          FROM peminjaman p 
+          JOIN barang b ON p.id_barang = b.id_barang 
+          ORDER BY p.waktu_peminjaman DESC
+        `;
+        const result = await client.query(query);
+        const peminjaman = result.rows;
+        res.status(200).json(peminjaman);
+        client.release();
+      } catch (error) {
+        console.error('Kesalahan saat mengambil data peminjaman:', error);
+        res.status(500).json({ error: 'Terjadi kesalahan server' });
+      }
+    });    
 
     app.get('/peminjaman/:id_praktikan', async (req, res) => {
         const { id_praktikan } = req.params;
@@ -379,8 +384,12 @@ module.exports = (app, pool) => {
             const client = await pool.connect();
 
             const query = `
-            SELECT * FROM peminjaman WHERE id_praktikan = $1 ORDER BY waktu_peminjaman DESC
-            `;
+            SELECT p.*, b.nama_barang 
+            FROM peminjaman p 
+            JOIN barang b ON p.id_barang = b.id_barang 
+            WHERE id_praktikan = $1
+            ORDER BY p.waktu_peminjaman DESC
+          `;
             const values = [id_praktikan];
 
             const result = await client.query(query, values);
