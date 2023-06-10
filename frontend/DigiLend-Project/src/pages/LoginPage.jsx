@@ -1,15 +1,20 @@
 import React, { useState } from "react";
+import axios from "axios";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
 import digilendLogo from "../assets/logo-no-background.png";
 import Background from "../components/background/background.jsx";
 import loginVector from "../assets/login-vector.png";
 
 const LoginPage = () => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     username: "",
     password: "",
   });
+
   const [open, setOpen] = useState(false);
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -31,6 +36,7 @@ const LoginPage = () => {
       .then((response) => {
         // Tangani respons jika sukses
         console.log(response.data);
+        navigate("/dashboard");
         // Lakukan aksi lain yang diperlukan, seperti menyimpan token atau mengarahkan pengguna ke halaman lain
       })
       .catch((error) => {
@@ -59,7 +65,7 @@ const LoginPage = () => {
           className="bg-[#FAFAFA] md:mr-24 backdrop-blur-sm rounded-2xl min-w-[20rem] min-h-[24rem] sm:w-[26rem] sm:h-[30rem] border-2 shadow-2xl border-solid border-opacity-100">
           <div className="my-5 space-y-2 sm:p-8">
             <h1 className="text-3xl sm:text-4xl font-bold leading-tight tracking-tight text-info text-center font-Montserrat">Log In</h1>
-            <form className="space-y-4 pt-3" action="#" onSubmit={handleSubmit}>
+            <div className="space-y-4 pt-3">
               <div className="flex flex-row justify-center">
                 <img src={loginVector} alt="login-vector" className="h-36" />
               </div>
@@ -114,11 +120,11 @@ const LoginPage = () => {
                     Register
                   </a>
                 </p>
-                <button type="submit" className="p-2 px-7 hover:bg-info-content bg-info text-gray-50 font-Inter sm:text-lg w-fit h-fit rounded-2xl shadow-xl border-solid border-2">
+                <button type="submit" className="p-2 px-7 hover:bg-info-content bg-info text-gray-50 font-Inter sm:text-lg w-fit h-fit rounded-2xl shadow-xl border-solid border-2" onClick={handleSubmit}>
                   LOGIN
                 </button>
               </div>
-            </form>
+            </div>
           </div>
         </motion.div>
       </div>

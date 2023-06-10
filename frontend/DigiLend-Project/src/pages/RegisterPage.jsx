@@ -13,7 +13,7 @@ const RegisterPage = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    id_role: 0,
+    id_role: 1,
     nama: "",
     npm: "",
     username: "",
@@ -22,7 +22,7 @@ const RegisterPage = () => {
     kode_aslab: "",
     jurusan: "Teknik Elektro",
     telepon: "",
-    tahun_ajaran: "",
+    tahun_ajaran: "2022-2023",
   });
 
   useEffect(() => {
@@ -33,7 +33,7 @@ const RegisterPage = () => {
     const { name, value } = event.target;
     setFormData((prevFormData) => ({
       ...prevFormData,
-      [name]: name === "id_role",
+      [name]: value, // Menggunakan value dari input sebagai nilainya
     }));
   };
 
@@ -49,10 +49,10 @@ const RegisterPage = () => {
 
   const handleClick = (option) => {
     if (option === "labAssistant") {
-      handleChange({ target: { name: "id_role", value: 0 } });
+      handleChange({ target: { name: "id_role", value: 1 } });
       handleChange({ target: { name: "nama_kelompok", value: "" } });
     } else if (option === "practician") {
-      handleChange({ target: { name: "id_role", value: 1 } });
+      handleChange({ target: { name: "id_role", value: 0 } });
       handleChange({ target: { name: "kode_aslab", value: "" } });
     }
   };
@@ -61,24 +61,33 @@ const RegisterPage = () => {
   const [tahunAjaran, setTahunAjaran] = useState([]);
 
   useEffect(() => {
-    getGroupData();
     getTahunAjaranData();
   }, []);
 
-  const getGroupData = async () => {
-    try {
-      const response = await axios.get("http://localhost:3000/nama_kelompok");
-      const data = response.data;
-      setGroupList(data);
-    } catch (error) {
-      console.error("Kesalahan saat mengambil data kelompok:", error);
-    }
-  };
+  useEffect(() => {
+    const getGroupData = async () => {
+      try {
+        if (formData.tahun_ajaran) {
+          const response = await axios.get(`http://localhost:3000/nama_kelompok/${formData.tahun_ajaran}`);
+          const data = response.data;
+          setGroupList(data);
+        }
+      } catch (error) {
+        console.error("Kesalahan saat mengambil data kelompok:", error);
+      }
+    };
+
+    getGroupData();
+  }, [formData.tahun_ajaran]);
 
   const getTahunAjaranData = async () => {
-    const { data } = await axios.get(`https://jsonplaceholder.typicode.com/todos`);
-    setTahunAjaran(data);
-    console.log(data);
+    try {
+      const response = await axios.get("http://localhost:3000/tahun_ajaran");
+      const data = response.data;
+      setTahunAjaran(data);
+    } catch (error) {
+      console.error("Kesalahan saat mengambil data tahun ajaran:", error);
+    }
   };
 
   const [open, setOpen] = useState(false); // State untuk menyimpan opsi yang dipilih
@@ -176,28 +185,30 @@ const RegisterPage = () => {
                 <div className="flex">
                   <input type="text" placeholder="Phone Number" name="telepon" value={formData.telepon} onChange={handlePhoneNumberChange} className="input input-bordered input-info w-full bg-white border-2 text-black" />
                 </div>
-                {formData.id_role === 0 ? (
+                {formData.id_role === 1 ? (
                   <div className="flex">
                     <input type="text" placeholder="Lab Assistant Code" name="kode_aslab" value={formData.kode_aslab} onChange={handleChange} className="input input-bordered input-info w-full bg-white border-2 text-black" />
                   </div>
                 ) : (
                   <div className="flex justify-between space-x-2 md:space-x-0">
-                    <select name="nama_kelompok" value={formData.nama_kelompok} onChange={handleChange} className="select select-info w-1/2 md:w-full max-w-xs bg-white border-2 text-black font-normal">
-                      <option disabled selected>
-                        Group Id
-                      </option>
-                      {groupList.map((groupData) => (
-                        <option key={groupData.id}>{groupData.name}</option>
-                      ))}
-                    </select>
                     <select name="tahun_ajaran" value={formData.tahun_ajaran} onChange={handleChange} className="select select-info w-2/5 md:w-full max-w-xs bg-white border-2 text-black font-normal">
                       <option disabled selected>
                         Academic Year
                       </option>
                       {tahunAjaran.map((getTahunAjaranData) => (
-                        <option key={getTahunAjaranData.id}>{getTahunAjaranData.title}</option>
+                        <option key={getTahunAjaranData}>{getTahunAjaranData}</option>
                       ))}
                     </select>
+                    {formData.tahun_ajaran && (
+                      <select name="nama_kelompok" value={formData.nama_kelompok} onChange={handleChange} className="select select-info w-1/2 md:w-full max-w-xs bg-white border-2 text-black font-normal">
+                        <option disabled selected>
+                          Group Id
+                        </option>
+                        {groupList.map((groupData) => (
+                          <option key={groupData}>{groupData}</option>
+                        ))}
+                      </select>
+                    )}
                   </div>
                 )}
               </div>
@@ -251,7 +262,7 @@ const RegisterPage = () => {
                   </div>
                 </div>
                 <div className="flex justify-end mr-5 md:mr-9">
-                  <button className="button btn btn-info md:w-32 md:h-8 rounded-3xl md:text-lg text-md font-Inter text-white" onClick={() => navigate("/dashboard")}>
+                  <button className="button btn btn-info md:w-32 md:h-8 rounded-3xl md:text-lg text-md font-Inter text-white" onClick={handleSubmit}>
                     REGISTER
                   </button>
                 </div>
