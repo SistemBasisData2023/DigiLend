@@ -427,8 +427,7 @@ module.exports = (app, pool) => {
         console.error('Kesalahan saat mengambil data peminjaman:', error);
         res.status(500).json({ error: 'Terjadi kesalahan server' });
       }
-    });
-    
+    });    
 
     app.delete('/peminjaman/:id_peminjaman', async (req, res) => {
       const idPeminjaman = req.params.id_peminjaman;
