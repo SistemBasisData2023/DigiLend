@@ -196,6 +196,7 @@ const Return = () => {
                   <th>Compensation</th>
                   <th>Total Penalty</th>
                   <th>Proof of Payment</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -206,9 +207,9 @@ const Return = () => {
                       <td>{data.id_peminjaman}</td>
                       <td>{data.jumlah_dikembalikan}</td>
                       <td>{formatDate(data.waktu_pengembalian)}</td>
-                      <td>{data.denda}</td>
-                      <td>{data.ganti_rugi}</td>
-                      <td>{data.total_sanksi}</td>
+                      <td>Rp{data.denda}</td>
+                      <td>Rp{data.ganti_rugi}</td>
+                      <td>Rp{data.total_sanksi}</td>
                       <td>{data.bukti_pembayaran}</td>
                       <td>
                         <button class="btn btn-error text-xs" onClick={() => handleClickDelete(data)}>

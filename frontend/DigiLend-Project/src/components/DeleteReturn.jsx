@@ -2,38 +2,25 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const DeleteReturn = ({ isVisible, onClose, deleteItem }) => {
-  const [deleteData, setDeleteData] = useState({
-    id_pengembalian: "",
-    id_peminjaman: "",
-    jumlah_dikembalikan: "",
-    waktu_pengembalian: "",
-    denda: "",
-    ganti_rugi: "",
-    total_sanksi: "",
-    bukti_pembayaran: "",
-  });
+  function formatDate(dateString) {
+    const date = new Date(dateString);
 
-  useEffect(() => {
-    if (deleteItem) {
-      setDeleteData({
-        id_pengembalian: deleteItem.id_pengembalian || "",
-        id_peminjaman: deleteItem.id_peminjaman || "",
-        jumlah_dikembalikan: deleteItem.jumlah_dikembalikan || "",
-        waktu_pengembalian: deleteItem.waktu_pengembalian || "",
-        denda: deleteItem.denda || "",
-        ganti_rugi: deleteItem.ganti_rugi || "",
-        total_sanksi: deleteItem.total_sanksi || "",
-        bukti_pembayaran: deleteItem.bukti_pembayaran || "",
-      });
-    }
-  }, [deleteItem]);
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const year = date.getFullYear().toString();
 
+    const formattedDate = `${day}-${month}-${year}`;
+
+    return formattedDate;
+  }
   const handleButtonClick = () => {
     axios
-      .delete(`http://localhost:3000/pengembalian/${deleteData.id_pengembalian}`)
+      .delete(`http://localhost:3000/pengembalian/${deleteItem.id_pengembalian}`)
       .then((response) => {
         // Menghandle respon sukses
         console.log(response.data);
+        onClose();
+        window.location.reload();
       })
       .catch((error) => {
         // Menghandle kesalahan
@@ -52,35 +39,35 @@ const DeleteReturn = ({ isVisible, onClose, deleteItem }) => {
             <div className="text-black space-y-4 bg-slate-300 p-4 shadow-inner">
               <div className="flex flex-row justify-between">
                 <p>Return's ID: </p>
-                <p>{deleteData.id_pengembalian}</p>
+                <p>{deleteItem.id_pengembalian}</p>
               </div>
               <div className="flex flex-row justify-between">
                 <p>Borrow's ID: </p>
-                <p>{deleteData.id_peminjaman}</p>
+                <p>{deleteItem.id_peminjaman}</p>
               </div>
               <div className="flex flex-row justify-between">
                 <p>Return Amount: </p>
-                <p>{deleteData.jumlah_dikembalikan}</p>
+                <p>{deleteItem.jumlah_dikembalikan}</p>
               </div>
               <div className="flex flex-row justify-between">
                 <p>Return Timestamp:</p>
-                <p>{deleteData.waktu_pengembalian}</p>
+                <p>{formatDate(deleteItem.waktu_pengembalian)}</p>
               </div>
               <div className="flex flex-row justify-between">
                 <p>Penalty: </p>
-                <p>{deleteData.denda}</p>
+                <p>{deleteItem.denda}</p>
               </div>
               <div className="flex flex-row justify-between">
                 <p>Compensation: </p>
-                <p>{deleteData.ganti_rugi}</p>
+                <p>{deleteItem.ganti_rugi}</p>
               </div>
               <div className="flex flex-row justify-between">
                 <p>Total Penalty: </p>
-                <p>{deleteData.total_sanksi}</p>
+                <p>{deleteItem.total_sanksi}</p>
               </div>
               <div className="flex flex-row justify-between">
                 <p>Proof of Payment: </p>
-                <p>{deleteData.bukti_pembayaran}</p>
+                <p>{deleteItem.bukti_pembayaran}</p>
               </div>
             </div>
 

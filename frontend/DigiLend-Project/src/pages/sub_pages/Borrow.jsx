@@ -76,7 +76,7 @@ const Borrow = () => {
   const getUserBorrowData = async () => {
     try {
       const { data } = await axios.get(`http://localhost:3000/peminjaman/${userData.id_akun}`);
-      setUserBorrowTable(data);
+      setUserBorrowTable(data.peminjaman);
     } catch (error) {
       console.error("Kesalahan saat mengambil data peminjaman:", error);
     }
@@ -91,23 +91,31 @@ const Borrow = () => {
     }
   };
 
-  const filteredUserBorrowTable = userBorrowTable.filter((item) => {
-    if (item) {
-      const itemValues = Object.values(item).map((value) => (value ? value.toString().toLowerCase() : ""));
-      const searchData = itemValues.join(" ");
-      return searchData.includes(searchKeyword.toLowerCase());
-    }
-    return false;
-  });
+  const filteredUserBorrowTable = Array.isArray(userBorrowTable)
+    ? userBorrowTable.filter((item) => {
+        if (item) {
+          const itemValues = Object.values(item).map((value) => (value ? value.toString().toLowerCase() : ""));
+          if (Array.isArray(itemValues)) {
+            const searchData = itemValues.join(" ");
+            return searchData.includes(searchKeyword.toLowerCase());
+          }
+        }
+        return false;
+      })
+    : [];
 
-  const filteredBorrowTable = borrowTable.filter((item) => {
-    if (item) {
-      const itemValues = Object.values(item).map((value) => (value ? value.toString().toLowerCase() : ""));
-      const searchData = itemValues.join(" ");
-      return searchData.includes(searchKeyword.toLowerCase());
-    }
-    return false;
-  });
+  const filteredBorrowTable = Array.isArray(borrowTable)
+    ? borrowTable.filter((item) => {
+        if (item) {
+          const itemValues = Object.values(item).map((value) => (value ? value.toString().toLowerCase() : ""));
+          if (Array.isArray(itemValues)) {
+            const searchData = itemValues.join(" ");
+            return searchData.includes(searchKeyword.toLowerCase());
+          }
+        }
+        return false;
+      })
+    : [];
 
   function formatDate(dateString) {
     const date = new Date(dateString);
@@ -217,15 +225,15 @@ const Borrow = () => {
               <tbody>
                 {currentItemsBorrow.map((data) => {
                   return (
-                    <tr key={data.id} className="text-white">
-                      <td>{data.id}</td>
-                      <td>{data.name}</td>
-                      <td>itemname</td>
-                      <td>userid</td>
-                      <td>{data.username}</td>
-                      <td>KAPAN</td>
+                    <tr key={data.id_peminjaman} className="text-white">
+                      <td>{data.id_peminjaman}</td>
+                      <td>{data.id_barang}</td>
+                      <td>{data.nama_barang}</td>
+                      <td>{data.id_praktikan}</td>
+                      <td>{data.jumlah_dipinjam}</td>
+                      <td>{formatDate(data.tenggat_waktu)}</td>
                       <td>
-                        <button class="btn btn-error text-xs" onClick={() => handleClickDelete(data)}>
+                        <button className="btn btn-error text-xs" onClick={() => handleClickDelete(data)}>
                           Delete
                         </button>
                       </td>
@@ -383,7 +391,7 @@ const Borrow = () => {
                               <td>{data.jumlah_dipinjam}</td>
                               <td>{formatDate(data.tenggat_waktu)}</td>
                               <td>
-                                <Link to={`/dashboard/return?id=${data.id_peminjaman}`} class="btn btn-success text-xs">
+                                <Link to={`/dashboard/return?id=${data.id_peminjaman}`} className="btn btn-success text-xs">
                                   Return
                                 </Link>
                               </td>

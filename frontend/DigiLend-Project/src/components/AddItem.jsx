@@ -2,11 +2,10 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const AddItem = ({ isVisible, onClose }) => {
-  const userData = window.userData;
   const [addData, setAddData] = useState({
-    itemName: "",
-    itemQuantity: "",
-    itemPrice: "",
+    nama_barang: "",
+    jumlah_tersedia: "",
+    harga: "",
   });
   console.log(addData);
 
@@ -15,7 +14,8 @@ const AddItem = ({ isVisible, onClose }) => {
       .post("http://localhost:3000/barang", addData) // Mengirimkan addData sebagai body permintaan
       .then((response) => {
         console.log("Data berhasil ditambahkan:", response.data);
-        // Lakukan tindakan setelah data berhasil ditambahkan
+        onClose();
+        window.location.reload();
       })
       .catch((error) => {
         console.error("Kesalahan saat menambahkan data:", error);
@@ -32,15 +32,15 @@ const AddItem = ({ isVisible, onClose }) => {
           <div className="text-white space-y-4">
             <div className="space-y-2">
               <label className="text-lg">Item's Name</label>
-              <input type="text" placeholder="Type Here" className="input input-bordered input-accent w-full max-w-xs" value={addData.itemName} onChange={(e) => setAddData({ ...addData, itemName: e.target.value })} />
+              <input type="text" placeholder="Type Here" className="input input-bordered input-accent w-full max-w-xs" value={addData.nama_barang} onChange={(e) => setAddData({ ...addData, nama_barang: e.target.value })} />
             </div>
             <div className="space-y-2">
               <label className="text-lg">Item's Quantity</label>
-              <input type="number" placeholder="Type Here" className="input input-bordered input-accent w-full max-w-xs" value={addData.itemQuantity} onChange={(e) => setAddData({ ...addData, itemQuantity: e.target.value })} />
+              <input type="number" placeholder="Type Here" className="input input-bordered input-accent w-full max-w-xs" value={addData.jumlah_tersedia} onChange={(e) => setAddData({ ...addData, jumlah_tersedia: e.target.value })} />
             </div>
             <div className="space-y-2">
               <label className="text-lg">Item's Price</label>
-              <input type="text" placeholder="Type Here" className="input input-bordered input-accent w-full max-w-xs" value={addData.itemPrice} onChange={(e) => setAddData({ ...addData, itemPrice: e.target.value })} />
+              <input type="text" placeholder="Type Here" className="input input-bordered input-accent w-full max-w-xs" value={addData.harga} onChange={(e) => setAddData({ ...addData, harga: e.target.value })} />
             </div>
 
             <div className="flex flex-row justify-center items-center gap-8 pt-4">

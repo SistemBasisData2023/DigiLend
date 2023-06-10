@@ -12,6 +12,7 @@ import Pagination from "../../components/Pagination.jsx";
 const ItemList = () => {
   const storedData = sessionStorage.getItem("akun");
   const userData = JSON.parse(storedData);
+  console.log(userData);
   const [items, setItems] = useState([]);
   const [showAddItem, setShowAddItem] = useState(false);
   const [showEditItem, setShowEditItem] = useState(false);
@@ -61,7 +62,7 @@ const ItemList = () => {
     }
   };
 
-  const handleClickAdd = (data) => {
+  const handleClickAdd = () => {
     setShowAddItem((prevState) => !prevState);
   };
 

@@ -111,6 +111,11 @@ const RegisterPage = () => {
     axios
       .post("http://localhost:3000/register", formData)
       .then((response) => {
+        // Setelah menerima respons dari backend
+        const token = response.data.token;
+        const akun = response.data.akun;
+        sessionStorage.setItem("token", token);
+        sessionStorage.setItem("akun", JSON.stringify(akun));
         console.log(response.data);
         navigate("/dashboard");
       })

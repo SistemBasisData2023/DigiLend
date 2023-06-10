@@ -2,32 +2,26 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const DeleteBorrow = ({ isVisible, onClose, deleteItem }) => {
-  const [deleteData, setDeleteData] = useState({
-    borrowerID: "",
-    itemID: "",
-    itemQuantity: "",
-    PracticianID: "",
-    borrowDeadline: "",
-  });
+  function formatDate(dateString) {
+    const date = new Date(dateString);
 
-  useEffect(() => {
-    if (deleteItem) {
-      setDeleteData({
-        borrowerID: deleteItem.id_peminjaman || "",
-        itemID: deleteItem.id_barang || "",
-        itemQuantity: deleteItem.jumlah_dipinjam || "",
-        PracticianID: deleteItem.id_praktikan || "",
-        borrowDeadline: deleteItem.tenggat_waktu || "",
-      });
-    }
-  }, [deleteItem]);
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const year = date.getFullYear().toString();
+
+    const formattedDate = `${day}-${month}-${year}`;
+
+    return formattedDate;
+  }
 
   const handleButtonClick = () => {
     axios
-      .delete(`http://localhost:3000/peminjaman/${deleteData.borrowerID}`)
+      .delete(`http://localhost:3000/peminjaman/${deleteItem.id_peminjaman}`)
       .then((response) => {
         // Menghandle respon sukses
         console.log(response.data);
+        onClose();
+        window.location.reload();
       })
       .catch((error) => {
         // Menghandle kesalahan
@@ -46,23 +40,23 @@ const DeleteBorrow = ({ isVisible, onClose, deleteItem }) => {
             <div className="text-black space-y-4 bg-slate-300 p-4 shadow-inner">
               <div className="flex flex-row justify-between">
                 <p>Borrower's ID: </p>
-                <p>{deleteData.borrowerID}</p>
+                <p>{deleteItem.id_peminjaman}</p>
               </div>
               <div className="flex flex-row justify-between">
                 <p>Item's ID: </p>
-                <p>{deleteData.itemID}</p>
+                <p>{deleteItem.id_barang}</p>
               </div>
               <div className="flex flex-row justify-between">
                 <p>Quantity: </p>
-                <p>{deleteData.itemQuantity}</p>
+                <p>{deleteItem.jumlah_dipinjam}</p>
               </div>
               <div className="flex flex-row justify-between">
                 <p>Practician's ID: </p>
-                <p>{deleteData.PracticianID}</p>
+                <p>{deleteItem.id_praktikan}</p>
               </div>
               <div className="flex flex-row justify-between">
                 <p>Return's Deadline: </p>
-                <p>{deleteData.borrowDeadline}</p>
+                <p>{formatDate(deleteItem.tenggat_waktu)}</p>
               </div>
             </div>
 

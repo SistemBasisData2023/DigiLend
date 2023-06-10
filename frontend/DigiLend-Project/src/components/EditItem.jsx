@@ -4,27 +4,28 @@ import axios from "axios";
 const EditItem = ({ isVisible, onClose, selectedItem }) => {
   const userData = window.userData;
   const [editData, setEditData] = useState({
-    itemName: "",
-    itemQuantity: "",
-    itemPrice: "",
+    nama_barang: "",
+    jumlah_tersedia: "",
+    harga: "",
   });
 
   useEffect(() => {
     if (selectedItem) {
       setEditData({
-        itemName: selectedItem.name || "",
-        itemQuantity: selectedItem.quantity || "",
-        itemPrice: selectedItem.price || "",
+        nama_barang: selectedItem.nama_barang || "",
+        jumlah_tersedia: selectedItem.jumlah_tersedia || "",
+        harga: selectedItem.harga || "",
       });
     }
   }, [selectedItem]);
 
   const handleButtonClick = () => {
     axios
-      .put(`http://localhost:3000/barang/${selectedItem.id}`, editData)
+      .put(`http://localhost:3000/barang/${selectedItem.id_barang}`, editData)
       .then((response) => {
         console.log("Data updated successfully:", response.data);
-        // Handle any further actions after the data is updated
+        onClose();
+        window.location.reload();
       })
       .catch((error) => {
         console.error("Error updating data:", error);
@@ -41,15 +42,15 @@ const EditItem = ({ isVisible, onClose, selectedItem }) => {
           <div className="text-white space-y-4">
             <div className="space-y-2">
               <label className="text-lg">Item's Name</label>
-              <input type="text" placeholder="Type Here" className="input input-bordered input-accent w-full max-w-xs" value={editData.itemName} onChange={(e) => setEditData({ ...editData, itemName: e.target.value })} />
+              <input type="text" placeholder="Type Here" className="input input-bordered input-accent w-full max-w-xs" value={editData.nama_barang} onChange={(e) => setEditData({ ...editData, nama_barang: e.target.value })} />
             </div>
             <div className="space-y-2">
               <label className="text-lg">Item's Quantity</label>
-              <input type="number" placeholder="Type Here" className="input input-bordered input-accent w-full max-w-xs" value={editData.itemQuantity} onChange={(e) => setEditData({ ...editData, itemQuantity: e.target.value })} />
+              <input type="number" placeholder="Type Here" className="input input-bordered input-accent w-full max-w-xs" value={editData.jumlah_tersedia} onChange={(e) => setEditData({ ...editData, jumlah_tersedia: e.target.value })} />
             </div>
             <div className="space-y-2">
               <label className="text-lg">Item's Price</label>
-              <input type="text" placeholder="Type Here" className="input input-bordered input-accent w-full max-w-xs" value={editData.itemPrice} onChange={(e) => setEditData({ ...editData, itemPrice: e.target.value })} />
+              <input type="text" placeholder="Type Here" className="input input-bordered input-accent w-full max-w-xs" value={editData.harga} onChange={(e) => setEditData({ ...editData, harga: e.target.value })} />
             </div>
 
             <div className="flex flex-row justify-center items-center gap-8 pt-4">

@@ -2,29 +2,14 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const DeleteItem = ({ isVisible, onClose, selectedItem }) => {
-  const [deleteData, setDeleteData] = useState({
-    itemName: "",
-    itemQuantity: "",
-    itemPrice: "",
-  });
-
-  useEffect(() => {
-    if (selectedItem) {
-      setDeleteData({
-        itemName: selectedItem.name || "",
-        itemQuantity: selectedItem.quantity || "",
-        itemPrice: selectedItem.price || "",
-      });
-    }
-  }, [selectedItem]);
-
-  console.log(deleteData);
   const handleButtonClick = () => {
     axios
-      .delete("/api/items", { data: deleteData })
+      .delete(`http://localhost:3000/barang/${selectedItem.id_barang}`, { data: selectedItem })
       .then((response) => {
         // Menghandle respon sukses
         console.log(response.data);
+        onClose();
+        window.location.reload();
       })
       .catch((error) => {
         // Menghandle kesalahan
@@ -43,16 +28,16 @@ const DeleteItem = ({ isVisible, onClose, selectedItem }) => {
             <div className="text-black space-y-4 bg-slate-300 p-4 shadow-inner">
               <div className="flex flex-row justify-between">
                 <p>Item's Name: </p>
-                <p>{deleteData.itemName}</p>
+                <p>{selectedItem.nama_barang}</p>
               </div>
 
               <div className="flex flex-row justify-between">
                 <p>Quantity: </p>
-                <p>{deleteData.itemQuantity}</p>
+                <p>{selectedItem.jumlah_tersedia}</p>
               </div>
               <div className="flex flex-row justify-between">
                 <p>Item's Price: </p>
-                <p>{deleteData.itemPrice}</p>
+                <p>{selectedItem.harga}</p>
               </div>
             </div>
             <div className="flex flex-row justify-center items-center gap-8 pt-4">
