@@ -1,7 +1,9 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { BigHead } from "@bigheads/core";
 
 import digilendLogo from "../assets/logo-no-background.png";
+import { getRandomOptions } from "./random_profile/BigHeads.jsx";
 
 const Navbar = () => {
   const storedData = sessionStorage.getItem("akun");
@@ -25,7 +27,8 @@ const Navbar = () => {
         <span className="font-Montserrat text-2xl font-bold">Digilend</span>
       </a>
       <div className="flex-none gap-2 mx-6">
-        <label className="btn btn-ghost" onClick={() => handleClick("/edit-profile")}>
+        <label className="btn btn-ghost h-fit" onClick={() => handleClick("/profile")}>
+          <BigHead {...getRandomOptions()} className="w-16" />
           {userData && userData.nama ? userData.nama : "USER"}
         </label>
       </div>

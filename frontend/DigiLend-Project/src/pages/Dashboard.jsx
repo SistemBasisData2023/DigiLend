@@ -19,7 +19,7 @@ const Dashboard = () => {
         {currentPath === "/item-list" && <ItemList />}
         {currentPath === "/borrow" && <Borrow />}
         {currentPath === "/return" && <Return />}
-        {currentPath === "/edit-profile" && <EditProfile />}
+        {currentPath === "/profile" && <EditProfile />}
       </div>
     </div>
   );
