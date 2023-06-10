@@ -1,5 +1,5 @@
 module.exports = (app, pool) => {
-  
+
     const { generateToken } = require('./server');
 
     const bcrypt = require('bcrypt');
@@ -112,8 +112,16 @@ module.exports = (app, pool) => {
           roleSpecificData = asistenResult.rows[0];
         }
     
+        // Ambil seluruh kolom dari tabel akun setelah insert
+        const akunAfterInsertQuery = `
+          SELECT * FROM akun WHERE id_akun = $1
+        `;
+        const akunAfterInsertValues = [akunData.id_akun];
+        const akunAfterInsertResult = await client.query(akunAfterInsertQuery, akunAfterInsertValues);
+        const akunAfterInsertData = akunAfterInsertResult.rows[0];
+    
         res.status(201).json({
-          akun: akunData,
+          akun: akunAfterInsertData,
           roleSpecificData: roleSpecificData
         });
     
@@ -124,45 +132,47 @@ module.exports = (app, pool) => {
         console.error('Kesalahan saat menyimpan akun:', error);
         res.status(500).json({ error: 'Terjadi kesalahan server' });
       }
-    });    
+    });      
 
     app.post('/login', async (req, res) => {
-        const { username, password } = req.body;
-      
-        try {
-          const client = await pool.connect();
-      
-          // Cari akun berdasarkan username
-          const findAkunQuery = `
-            SELECT * FROM akun WHERE username = $1
-          `;
-          const findAkunValues = [username];
-          const findAkunResult = await client.query(findAkunQuery, findAkunValues);
-      
-          // Jika akun tidak ditemukan
-          if (findAkunResult.rows.length === 0) {
-            return res.status(404).json({ error: 'Akun tidak ditemukan' });
-          }
-      
-          const akun = findAkunResult.rows[0];
-      
-          // Verifikasi password
-          const passwordMatch = await bcrypt.compare(password, akun.password); // Membandingkan password dengan hash yang tersimpan di database
-      
-          if (passwordMatch) {
-            // Password benar, berikan token JWT
-            const token = generateToken(akun);
-            return res.status(200).json({ message: 'Login berhasil', token });
-          } else {
-            // Password salah
-            return res.status(401).json({ error: 'Kombinasi username dan password salah' });
-          }
-      
-          client.release();
-        } catch (error) {
-          console.error('Kesalahan saat proses login:', error);
-          res.status(500).json({ error: 'Terjadi kesalahan server' });
+      const { username, password } = req.body;
+
+      try {
+        const client = await pool.connect();
+
+        // Cari akun berdasarkan username
+        const findAkunQuery = `
+          SELECT * FROM akun WHERE username = $1
+        `;
+        const findAkunValues = [username];
+        const findAkunResult = await client.query(findAkunQuery, findAkunValues);
+
+        // Jika akun tidak ditemukan
+        if (findAkunResult.rows.length === 0) {
+          return res.status(404).json({ error: 'Akun tidak ditemukan' });
         }
+
+        const akun = findAkunResult.rows[0];
+
+        // Verifikasi password
+        const passwordMatch = await bcrypt.compare(password, akun.password);
+
+        if (passwordMatch) {
+          // Password benar, berikan token JWT
+          const token = generateToken(akun);
+
+          // Mengembalikan seluruh kolom dari tabel akun
+          return res.status(200).json({ message: 'Login berhasil', token, akun });
+        } else {
+          // Password salah
+          return res.status(401).json({ error: 'Kombinasi username dan password salah' });
+        }
+
+        client.release();
+      } catch (error) {
+        console.error('Kesalahan saat proses login:', error);
+        res.status(500).json({ error: 'Terjadi kesalahan server' });
+      }
     });
 
     ///        ///
