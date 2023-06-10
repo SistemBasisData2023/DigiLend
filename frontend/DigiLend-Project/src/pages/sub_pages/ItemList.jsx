@@ -122,7 +122,7 @@ const ItemList = () => {
                   <td>{data.jumlah_tersedia}</td>
                   <td>{data.harga}</td>
                   <td>
-                    {userData.id_role === 0 ? (
+                    {userData.id_role === 1 ? (
                       <div className="dropdown dropdown-end">
                         <label tabIndex={0} className="btn btn-ghost btn-circle shadow-xl" onClick={handleDropdownToggle}>
                           <IoEllipsisVerticalSharp />

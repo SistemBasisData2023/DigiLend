@@ -25,10 +25,6 @@ const RegisterPage = () => {
     tahun_ajaran: "2022-2023",
   });
 
-  useEffect(() => {
-    window.userData = formData;
-  }, [formData]);
-
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData((prevFormData) => ({

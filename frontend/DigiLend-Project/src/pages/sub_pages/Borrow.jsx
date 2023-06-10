@@ -177,6 +177,7 @@ const Borrow = () => {
         // Tangani respons jika sukses
         handleClick("borrowList");
         console.log(response.data);
+        getUserBorrowData();
       })
       .catch((error) => {
         // Tangani kesalahan jika terjadi

@@ -20,7 +20,6 @@ const Return = () => {
   // tabel peminjaman seluruh user
   const [borrowData, setBorrowData] = useState([]);
 
-  console.log("borrow id: ", borrowId);
   useEffect(() => {
     getData();
   }, []);
@@ -32,7 +31,7 @@ const Return = () => {
   };
 
   const selectedItem = borrowData.find((item) => item.id_peminjaman === parseInt(borrowId));
-  console.log("selected item:", selectedItem);
+
   const [formData, setFormData] = useState({
     id_peminjaman: selectedItem ? selectedItem.id_peminjaman : "",
     nama_barang: selectedItem ? selectedItem.nama_barang : "",
@@ -67,6 +66,19 @@ const Return = () => {
   const handleClick = (button) => {
     setSelectedButton(button);
   };
+
+  function formatDate(dateString) {
+    const date = new Date(dateString);
+
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const year = date.getFullYear().toString();
+
+    const formattedDate = `${day}-${month}-${year}`;
+
+    return formattedDate;
+  }
+
   const [userReturnTable, setUserReturnTable] = useState([]);
   const [returnTable, setReturnTable] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState("");
@@ -80,7 +92,7 @@ const Return = () => {
 
   const getUserReturnTable = async () => {
     try {
-      const { data } = await axios.get(`http://localhost:3000/pengembalian/${userData.id_praktikan}`);
+      const { data } = await axios.get(`http://localhost:3000/pengembalian/${userData.id_akun}`);
       setUserReturnTable(data);
     } catch (error) {
       console.error(error);
@@ -148,6 +160,7 @@ const Return = () => {
         // Tangani respons jika sukses
         handleClick("returnList");
         console.log(response.data);
+        getUserReturnTable();
       })
       .catch((error) => {
         // Tangani kesalahan jika terjadi
@@ -169,7 +182,7 @@ const Return = () => {
         {userData.id_role === 1 ? (
           <div>
             <div className="p-6 flex items-center">
-              <input type="text" placeholder="Search" className="input input-bordered rounded-3xl shadow-xl pr-10" />
+              <input type="text" placeholder="Search" className="input input-bordered rounded-3xl shadow-xl pr-10" onChange={handleSearch} />
               <AiOutlineSearch className="text-2xl -translate-x-10" />
             </div>
             <table className="table table-zebra shadow-xl w-full">
@@ -192,7 +205,7 @@ const Return = () => {
                       <td>{data.id_pengembalian}</td>
                       <td>{data.id_peminjaman}</td>
                       <td>{data.jumlah_dikembalikan}</td>
-                      <td>{data.waktu_pengembalian}</td>
+                      <td>{formatDate(data.waktu_pengembalian)}</td>
                       <td>{data.denda}</td>
                       <td>{data.ganti_rugi}</td>
                       <td>{data.total_sanksi}</td>
@@ -287,8 +300,8 @@ const Return = () => {
                           type="text"
                           placeholder="Enter The Proof of Your Payment"
                           className="input input-bordered bg-neutral input-accent w-full"
-                          value={formData.name}
-                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          value={formData.bukti_pembayaran}
+                          onChange={(e) => setFormData({ ...formData, bukti_pembayaran: e.target.value })}
                         />
                       </div>
                     </div>
@@ -307,7 +320,7 @@ const Return = () => {
                 {userReturnTable.length > 0 ? (
                   <div>
                     <div className="p-6 flex items-center">
-                      <input type="text" placeholder="Search" className="input input-bordered rounded-3xl shadow-xl pr-10" />
+                      <input type="text" placeholder="Search" className="input input-bordered rounded-3xl shadow-xl pr-10" onChange={handleSearch} />
                       <AiOutlineSearch className="text-2xl -translate-x-10" />
                     </div>
                     <table className="table table-zebra shadow-xl w-full">
@@ -330,10 +343,10 @@ const Return = () => {
                               <td>{data.id_pengembalian}</td>
                               <td>{data.id_peminjaman}</td>
                               <td>{data.jumlah_dikembalikan}</td>
-                              <td>{data.waktu_pengembalian}</td>
-                              <td>{data.denda}</td>
-                              <td>{data.ganti_rugi}</td>
-                              <td>{data.total_sanksi}</td>
+                              <td>{formatDate(data.waktu_pengembalian)}</td>
+                              <td>Rp{data.denda}</td>
+                              <td>Rp{data.ganti_rugi}</td>
+                              <td>Rp{data.total_sanksi}</td>
                               <td>{data.bukti_pembayaran}</td>
                             </tr>
                           );
