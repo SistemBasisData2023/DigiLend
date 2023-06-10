@@ -109,6 +109,18 @@ const Borrow = () => {
     return false;
   });
 
+  function formatDate(dateString) {
+    const date = new Date(dateString);
+
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const year = date.getFullYear().toString();
+
+    const formattedDate = `${day}-${month}-${year}`;
+
+    return formattedDate;
+  }
+
   // Menghitung jumlah halaman total
   const totalUserBorrowPages = Math.ceil(filteredUserBorrowTable.length / itemsPerPage);
   const totalBorrowPages = Math.ceil(filteredBorrowTable.length / itemsPerPage);
@@ -368,9 +380,9 @@ const Borrow = () => {
                               <td>{data.id_barang}</td>
                               <td>{data.nama_barang}</td>
                               <td>{data.jumlah_dipinjam}</td>
-                              <td>{data.tenggat_waktu}</td>
+                              <td>{formatDate(data.tenggat_waktu)}</td>
                               <td>
-                                <Link to={`/dashboard/return?id=${data.id}`} class="btn btn-success text-xs">
+                                <Link to={`/dashboard/return?id=${data.id_peminjaman}`} class="btn btn-success text-xs">
                                   Return
                                 </Link>
                               </td>

@@ -12,7 +12,8 @@ import DeleteReturn from "../../components/DeleteReturn.jsx";
 import Pagination from "../../components/Pagination.jsx";
 
 const Return = () => {
-  const userData = window.userData;
+  const storedData = sessionStorage.getItem("akun");
+  const userData = JSON.parse(storedData);
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const borrowId = searchParams.get("id");
@@ -25,18 +26,17 @@ const Return = () => {
   }, []);
 
   const getData = async () => {
-    const { data } = await axios.get(`https://jsonplaceholder.typicode.com/users`);
+    const { data } = await axios.get(`http://localhost:3000/peminjaman`);
     setBorrowData(data);
     console.log(data);
   };
 
-  const selectedItem = borrowData.find((item) => item.id === parseInt(borrowId));
+  const selectedItem = borrowData.find((item) => item.id_peminjaman === parseInt(borrowId));
   console.log("selected item:", selectedItem);
-  console.log(selectedItem);
   const [formData, setFormData] = useState({
-    id_peminjaman: selectedItem ? selectedItem.id : "",
-    nama_barang: selectedItem ? selectedItem.name : "",
-    jumlah_barang: selectedItem ? selectedItem.email : "",
+    id_peminjaman: selectedItem ? selectedItem.id_peminjaman : "",
+    nama_barang: selectedItem ? selectedItem.nama_barang : "",
+    jumlah_barang: selectedItem ? selectedItem.jumlah_barang : "",
     jumlah_dikembalikan: "",
     bukti_pembayaran: "",
     waktu_pengembalian: "",
@@ -48,9 +48,9 @@ const Return = () => {
 
       setFormData((prevFormData) => ({
         ...prevFormData,
-        id_peminjaman: selectedItem.id,
-        nama_barang: selectedItem.name,
-        jumlah_barang: selectedItem.email,
+        id_peminjaman: selectedItem.id_peminjaman,
+        nama_barang: selectedItem.nama_barang,
+        jumlah_barang: selectedItem.jumlah_barang,
       }));
     } else {
       setFormData((prevFormData) => ({
@@ -80,7 +80,7 @@ const Return = () => {
 
   const getUserReturnTable = async () => {
     try {
-      const { data } = await axios.get(`http://localhost:3000/pengembalian/${id_praktikan}`);
+      const { data } = await axios.get(`http://localhost:3000/pengembalian/${userData.id_praktikan}`);
       setUserReturnTable(data);
     } catch (error) {
       console.error(error);
@@ -146,6 +146,7 @@ const Return = () => {
       .post("http://localhost:3000/pengembalian", formData)
       .then((response) => {
         // Tangani respons jika sukses
+        handleClick("returnList");
         console.log(response.data);
       })
       .catch((error) => {
@@ -165,7 +166,7 @@ const Return = () => {
         <div className="flex flex-col items-center pt-6">
           <h1 className="font-Montserrat font-bold sm:text-5xl text-3xl text-accent">Return Page</h1>
         </div>
-        {userData.id_role === 0 ? (
+        {userData.id_role === 1 ? (
           <div>
             <div className="p-6 flex items-center">
               <input type="text" placeholder="Search" className="input input-bordered rounded-3xl shadow-xl pr-10" />
@@ -229,7 +230,7 @@ const Return = () => {
                     className="flex flex-col relative justify-center items-center border-2 bg-[#40476c] hover:border-[#B8C1F9] w-full p-4 rounded-2xl md:text-xl sm:text-lg text-sm font-bold cursor-pointer text-center shadow-xl"
                     onClick={() => handleClick("returnReport")}>
                     <img src={returnItem} alt="Return" className="md:h-2/3 h-1/2 w-fit" />
-                    <p className="absolute bottom-3 md:bottom-6 text-center">Report a Return</p>
+                    <p className="absolute bottom-3 md:bottom-6 text-center">Return Item</p>
                   </motion.div>
                   <motion.div
                     initial={{ opacity: 0, scale: 0.5 }}
