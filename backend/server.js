@@ -5,7 +5,26 @@ const { Pool } = require('pg'); // Import modul pg
 const session = require('express-session');
 const app = express();
 const dotenv = require('dotenv');
+const jwt = require('jsonwebtoken');
 dotenv.config();
+
+// Fungsi untuk menghasilkan token JWT
+const generateToken = (akun) => {
+  const payload = {
+    id_akun: akun.id_akun,
+    username: akun.username,
+    // Tambahkan data lain yang perlu Anda sertakan dalam token
+  };
+
+  const options = {
+    expiresIn: '1h', // Waktu kadaluarsa token (misalnya: 1 jam)
+  };
+
+  const secretKey = 'secret-key'; // Ganti dengan kunci rahasia yang lebih aman
+  const token = jwt.sign(payload, secretKey, options);
+
+  return token;
+};
 
 //Mengizinkan semua permintaan dari semua domain/origin
 app.use(cors());
@@ -38,14 +57,8 @@ const testDatabaseConnection = async () => {
   }
 };
 
+module.exports = { generateToken };
 testDatabaseConnection();
-
-// Konfigurasi session
-app.use(session({
-  secret: 'secret-key', // Ganti dengan kunci rahasia yang lebih aman
-  resave: false,
-  saveUninitialized: true,
-}));
 
 // Import routes from route.js
 require('./route.js')(app, pool);

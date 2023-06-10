@@ -1,18 +1,32 @@
 module.exports = (app, pool) => {
   
+    const { generateToken } = require('./server');
+
     const bcrypt = require('bcrypt');
     let lastInsertedId = 0; // Menyimpan ID terakhir yang diinsert
 
-    // Middleware untuk memeriksa session
-    const checkAuth = (req, res, next) => {
-      if (req.session.loggedIn) {
-        // Jika session loggedIn = true, lanjutkan ke rute selanjutnya
-        next();
-      } else {
-        // Jika session tidak ada atau loggedIn = false, kembalikan respons error
-        res.status(401).json({ error: 'Akses ditolak' });
+    ///            ///
+    /// MIDDLEWARE ///
+    ///            ///
+
+    // Middleware untuk verifikasi token JWT
+    const verifyToken = (req, res, next) => {
+      const token = req.headers.authorization;
+
+      if (!token) {
+        return res.status(401).json({ error: 'Token tidak tersedia' });
       }
-    };   
+
+      jwt.verify(token, 'secret-key', (error, decoded) => {
+        if (error) {
+          return res.status(403).json({ error: 'Token tidak valid' });
+        }
+
+        // Token valid, lanjutkan eksekusi ke endpoint selanjutnya
+        req.user = decoded;
+        next();
+      });
+    };
     
     ///                  ///
     /// REGISTER & LOGIN ///
@@ -136,8 +150,9 @@ module.exports = (app, pool) => {
           const passwordMatch = await bcrypt.compare(password, akun.password); // Membandingkan password dengan hash yang tersimpan di database
       
           if (passwordMatch) {
-            // Password benar, berikan token atau berikan respon sesuai kebutuhan aplikasi
-            return res.status(200).json({ message: 'Login berhasil', id_akun: akun.id_akun });
+            // Password benar, berikan token JWT
+            const token = generateToken(akun);
+            return res.status(200).json({ message: 'Login berhasil', token });
           } else {
             // Password salah
             return res.status(401).json({ error: 'Kombinasi username dan password salah' });
@@ -590,7 +605,7 @@ module.exports = (app, pool) => {
     /// KELOMPOK ///
     ///          ///
 
-    app.post('/kelompok', async (req, res) => {
+    app.post('/kelompok', verifyToken, async (req, res) => {
       const { kode_aslab, tahun1, tahun2, nama_kelompok } = req.body;
     
       // Validasi tahun2 harus lebih besar dari tahun1
@@ -1019,11 +1034,6 @@ module.exports = (app, pool) => {
         res.status(500).json({ error: 'Terjadi kesalahan server' });
       }
     });
-
-    // Contoh penggunaan middleware checkAuth
-    app.get('/protected', checkAuth, (req, res) => {
-      res.status(200).json({ message: 'Akses diizinkan' });
-    }); 
 
     const port = 3000; // Port yang akan digunakan oleh server
 
