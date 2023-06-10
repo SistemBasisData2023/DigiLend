@@ -378,30 +378,57 @@ module.exports = (app, pool) => {
     });    
 
     app.get('/peminjaman/:id_praktikan', async (req, res) => {
-        const { id_praktikan } = req.params;
-
-        try {
-            const client = await pool.connect();
-
-            const query = `
-            SELECT p.*, b.nama_barang 
-            FROM peminjaman p 
-            JOIN barang b ON p.id_barang = b.id_barang 
-            WHERE id_praktikan = $1
-            ORDER BY p.waktu_peminjaman DESC
-          `;
-            const values = [id_praktikan];
-
-            const result = await client.query(query, values);
-            const peminjaman = result.rows;
-
-            res.status(200).json(peminjaman);
-            client.release();
-        } catch (error) {
-            console.error('Kesalahan saat mengambil data peminjaman:', error);
-            res.status(500).json({ error: 'Terjadi kesalahan server' });
+      const idPraktikan = req.params.id_praktikan;
+    
+      try {
+        const client = await pool.connect();
+        const query = `
+          SELECT p.*, b.nama_barang 
+          FROM peminjaman p 
+          JOIN barang b ON p.id_barang = b.id_barang 
+          WHERE p.id_praktikan = $1
+          ORDER BY p.waktu_peminjaman DESC
+        `;
+        const values = [idPraktikan];
+        const result = await client.query(query, values);
+        const peminjaman = result.rows;
+    
+        // Tanggal sekarang
+        const today = new Date();
+    
+        // Menyaring peminjaman dengan notifikasi H-7, H-3, dan H-1
+        const peminjamanH7 = peminjaman.filter(
+          (p) => p.waktu_peminjaman.getTime() - today.getTime() <= 7 * 24 * 60 * 60 * 1000
+        );
+        const peminjamanH3 = peminjaman.filter(
+          (p) => p.waktu_peminjaman.getTime() - today.getTime() <= 3 * 24 * 60 * 60 * 1000
+        );
+        const peminjamanH1 = peminjaman.filter(
+          (p) => p.waktu_peminjaman.getTime() - today.getTime() <= 1 * 24 * 60 * 60 * 1000
+        );
+    
+        // Kirim notifikasi jika ada peminjaman dengan notifikasi H-7, H-3, atau H-1
+        if (peminjamanH7.length > 0) {
+          console.log('Ada peminjaman dengan notifikasi H-7');
+          // Lakukan tindakan notifikasi untuk H-7
         }
+        if (peminjamanH3.length > 0) {
+          console.log('Ada peminjaman dengan notifikasi H-3');
+          // Lakukan tindakan notifikasi untuk H-3
+        }
+        if (peminjamanH1.length > 0) {
+          console.log('Ada peminjaman dengan notifikasi H-1');
+          // Lakukan tindakan notifikasi untuk H-1
+        }
+    
+        res.status(200).json(peminjaman);
+        client.release();
+      } catch (error) {
+        console.error('Kesalahan saat mengambil data peminjaman:', error);
+        res.status(500).json({ error: 'Terjadi kesalahan server' });
+      }
     });
+    
 
     app.delete('/peminjaman/:id_peminjaman', async (req, res) => {
       const idPeminjaman = req.params.id_peminjaman;
