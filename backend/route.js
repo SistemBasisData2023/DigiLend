@@ -294,18 +294,34 @@ module.exports = (app, pool) => {
         return res.status(404).json({ error: 'Barang tidak ditemukan' });
       }
   
+      // Hapus peminjaman dan pengembalian yang melibatkan id_barang tersebut
+      await client.query('BEGIN');
+  
+      // Hapus pengembalian berdasarkan id_barang
+      const deletePengembalianQuery = 'DELETE FROM pengembalian WHERE id_barang = $1';
+      const deletePengembalianValues = [id_barang];
+      await client.query(deletePengembalianQuery, deletePengembalianValues);
+  
+      // Hapus peminjaman berdasarkan id_barang
+      const deletePeminjamanQuery = 'DELETE FROM peminjaman WHERE id_barang = $1';
+      const deletePeminjamanValues = [id_barang];
+      await client.query(deletePeminjamanQuery, deletePeminjamanValues);
+  
       // Hapus barang berdasarkan id_barang
       const deleteBarangQuery = 'DELETE FROM barang WHERE id_barang = $1';
       const deleteBarangValues = [id_barang];
       await client.query(deleteBarangQuery, deleteBarangValues);
   
-      res.status(200).json({ message: 'Barang berhasil dihapus' });
+      await client.query('COMMIT');
+  
+      res.status(200).json({ message: 'Barang berhasil dihapus beserta data peminjaman dan pengembalian yang terkait' });
       client.release();
     } catch (error) {
+      await client.query('ROLLBACK');
       console.error('Kesalahan saat menghapus barang:', error);
       res.status(500).json({ error: 'Terjadi kesalahan server' });
     }
-  });
+  });  
 
   ///            ///
   /// PEMINJAMAN ///
@@ -646,7 +662,7 @@ module.exports = (app, pool) => {
   });
 
   app.delete('/pengembalian/:id_pengembalian', async (req, res) => {
-    const idPengembalian = req.body.id_pengembalian;
+    const idPengembalian = req.params.id_pengembalian;
   
     try {
       const client = await pool.connect();
@@ -946,8 +962,17 @@ module.exports = (app, pool) => {
       const updateAkunQuery = 'UPDATE akun SET nama = $1, npm = $2, telepon = $3, jurusan = $4 WHERE id_akun = $5';
       const updateAkunValues = [nama, npm, telepon, jurusan, id_akun];
       await client.query(updateAkunQuery, updateAkunValues);
+
+      // Ambil seluruh kolom dari tabel akun setelah insert
+      const akunAfterEditQuery = `
+        SELECT * FROM akun WHERE id_akun = $1
+      `;
+      const akunAfterEditValues = [id_akun];
+
+      const akunAfterEditResult = await client.query(akunAfterEditQuery, akunAfterEditValues);
+      const akunAfterEditData = akunAfterEditResult.rows[0];
   
-      res.status(200).json({ message: 'Data akun berhasil diperbarui' });
+      res.status(200).json({ message: 'Data akun berhasil diperbarui',  akunAfterEditData});
       client.release();
     } catch (error) {
       console.error('Kesalahan saat memperbarui data akun:', error);
