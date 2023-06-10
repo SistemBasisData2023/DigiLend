@@ -6,7 +6,7 @@ import { FaHandHoldingMedical, FaHandHolding } from "react-icons/fa";
 import { IoExit } from "react-icons/io5";
 
 const Sidebar = () => {
-  const storedData = sessionStorage.getItem("akun");
+  const storedData = localStorage.getItem("akun");
   const userData = JSON.parse(storedData);
   const navigate = useNavigate();
   const [activePage, setActivePage] = useState("");
@@ -16,8 +16,8 @@ const Sidebar = () => {
     setActivePage(link);
   };
   const handleLogout = () => {
-    sessionStorage.removeItem("token");
-    sessionStorage.removeItem("akun");
+    localStorage.removeItem("token");
+    localStorage.removeItem("akun");
   };
   return (
     <div id="sidebar" className="flex flex-col sm:p-6 h-screen sticky top-20">

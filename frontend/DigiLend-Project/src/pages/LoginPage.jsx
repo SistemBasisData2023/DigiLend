@@ -28,7 +28,7 @@ const LoginPage = () => {
   const toggle = () => {
     setOpen(!open);
   };
-  console.log(sessionStorage);
+  console.log(localStorage);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -39,8 +39,8 @@ const LoginPage = () => {
         // Setelah menerima respons dari backend
         const token = response.data.token;
         const akun = response.data.akun;
-        sessionStorage.setItem("token", token);
-        sessionStorage.setItem("akun", JSON.stringify(akun));
+        localStorage.setItem("token", token);
+        localStorage.setItem("akun", JSON.stringify(akun));
         // Tangani respons jika sukses
         console.log(response.data);
         navigate("/dashboard");

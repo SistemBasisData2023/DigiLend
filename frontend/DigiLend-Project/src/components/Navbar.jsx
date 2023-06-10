@@ -6,7 +6,7 @@ import digilendLogo from "../assets/logo-no-background.png";
 import { getRandomOptions } from "./random_profile/BigHeads.jsx";
 
 const Navbar = () => {
-  const storedData = sessionStorage.getItem("akun");
+  const storedData = localStorage.getItem("akun");
   const userData = JSON.parse(storedData);
   const navigate = useNavigate();
   const handleClick = (link) => {

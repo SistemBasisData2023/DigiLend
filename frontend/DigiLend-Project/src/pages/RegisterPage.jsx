@@ -114,8 +114,8 @@ const RegisterPage = () => {
         // Setelah menerima respons dari backend
         const token = response.data.token;
         const akun = response.data.akun;
-        sessionStorage.setItem("token", token);
-        sessionStorage.setItem("akun", JSON.stringify(akun));
+        localStorage.setItem("token", token);
+        localStorage.setItem("akun", JSON.stringify(akun));
         console.log(response.data);
         navigate("/dashboard");
       })

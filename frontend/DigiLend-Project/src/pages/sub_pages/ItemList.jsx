@@ -10,7 +10,7 @@ import AddItem from "../../components/AddItem.jsx";
 import Pagination from "../../components/Pagination.jsx";
 
 const ItemList = () => {
-  const storedData = sessionStorage.getItem("akun");
+  const storedData = localStorage.getItem("akun");
   const userData = JSON.parse(storedData);
   console.log(userData);
   const [items, setItems] = useState([]);

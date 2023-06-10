@@ -13,7 +13,7 @@ import startBorrow from "../../assets/shopping-cart.png";
 import borrowList from "../../assets/borrow-list.png";
 
 const Borrow = () => {
-  const storedData = sessionStorage.getItem("akun");
+  const storedData = localStorage.getItem("akun");
   const userData = JSON.parse(storedData);
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);

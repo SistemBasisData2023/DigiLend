@@ -12,7 +12,7 @@ import DeleteReturn from "../../components/DeleteReturn.jsx";
 import Pagination from "../../components/Pagination.jsx";
 
 const Return = () => {
-  const storedData = sessionStorage.getItem("akun");
+  const storedData = localStorage.getItem("akun");
   const userData = JSON.parse(storedData);
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
