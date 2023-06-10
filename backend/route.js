@@ -742,6 +742,25 @@ module.exports = (app, pool) => {
       }
     });    
 
+    app.get('/tahun_ajaran', async (req, res) => {
+      try {
+        const client = await pool.connect();
+    
+        const query = `
+          SELECT DISTINCT tahun_ajaran FROM kelompok
+          WHERE id_kelompok <> 0
+        `;
+        const result = await client.query(query);
+        const tahunAjaran = result.rows.map((row) => row.tahun_ajaran);
+    
+        res.status(200).json(tahunAjaran);
+        client.release();
+      } catch (error) {
+        console.error('Kesalahan saat mengambil data tahun ajaran:', error);
+        res.status(500).json({ error: 'Terjadi kesalahan server' });
+      }
+    });   
+
     ///      ///
     /// AKUN ///
     ///      ///  
