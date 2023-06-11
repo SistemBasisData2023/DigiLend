@@ -23,12 +23,27 @@ const ItemList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
+  useEffect(() => {
+    getData();
+  }, []);
+
+  const getData = async () => {
+    try {
+      const { data } = await axios.get("http://localhost:3000/barang"); // Mengubah URL menjadi "/barang"
+      setItems(data);
+      console.log(data);
+    } catch (error) {
+      console.error("Kesalahan saat mengambil data:", error);
+    }
+  };
+
   // Filter data berdasarkan keyword pencarian
   const filteredItems = items.filter((item) => {
-    const itemValues = Object.values(item).map((value) => value.toString().toLowerCase());
+    const itemValues = Object.values(item).map((value) => (value ? value.toString().toLowerCase() : ""));
     const searchData = itemValues.join(" ");
     return searchData.includes(searchKeyword.toLowerCase());
   });
+
   // Menghitung jumlah halaman total
   const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
 
@@ -46,20 +61,6 @@ const ItemList = () => {
   const handleSearch = (e) => {
     setSearchKeyword(e.target.value);
     setCurrentPage(1); // Set halaman kembali ke 1 setelah pencarian berubah
-  };
-
-  useEffect(() => {
-    getData();
-  }, []);
-
-  const getData = async () => {
-    try {
-      const { data } = await axios.get("http://localhost:3000/barang"); // Mengubah URL menjadi "/barang"
-      setItems(data);
-      console.log(data);
-    } catch (error) {
-      console.error("Kesalahan saat mengambil data:", error);
-    }
   };
 
   const handleClickAdd = () => {
