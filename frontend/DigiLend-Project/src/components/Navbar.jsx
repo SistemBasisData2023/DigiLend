@@ -27,9 +27,10 @@ const Navbar = () => {
         <span className="font-Montserrat text-2xl font-bold">Digilend</span>
       </a>
       <div className="flex-none gap-2 mx-6">
-        <label className="btn btn-ghost h-fit" onClick={() => handleClick("/profile")}>
-          <BigHead {...getRandomOptions()} className="w-16" />
-          {userData && userData.nama ? userData.nama : "USER"}
+        <label className="btn btn-ghost h-fit text-xs md:text-base" onClick={() => handleClick("/profile")}>
+          <BigHead {...getRandomOptions()} className="w-8 md:w-16" />
+          <p className="hidden sm:block">{userData && userData.nama ? userData.nama : "USER"}</p>
+          <p className="sm:hidden"> {userData && userData.nama ? userData.nama.split(" ")[0] : "USER"}</p>
         </label>
       </div>
     </div>

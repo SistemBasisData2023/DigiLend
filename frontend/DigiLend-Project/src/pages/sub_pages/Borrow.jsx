@@ -422,7 +422,7 @@ const Borrow = () => {
                       className="w-1/6"
                     />
                     <h1 className="text-3xl text-center font-Montserrat w-1/3">Seems like you haven't borrowed anything from Digilend yet.</h1>
-                    <button class="btn btn-error font-Montserrat" onClick={() => handleClick("startBorrowing")}>
+                    <button className="btn btn-error font-Montserrat" onClick={() => handleClick("startBorrowing")}>
                       Borrow Something
                     </button>
                   </div>
