@@ -4,6 +4,8 @@ import { useLocation, Link } from "react-router-dom";
 import axios from "axios";
 import { AiOutlineSearch } from "react-icons/ai";
 import { BsArrowLeft } from "react-icons/bs";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import DeleteBorrow from "../../components/DeleteBorrow.jsx";
 import Pagination from "../../components/Pagination.jsx";
@@ -19,6 +21,7 @@ const Borrow = () => {
   const searchParams = new URLSearchParams(location.search);
   const itemId = searchParams.get("id");
   const [items, setItems] = useState([]);
+  const [notification, setNotification] = useState(null);
 
   useEffect(() => {
     getData();
@@ -57,8 +60,28 @@ const Borrow = () => {
 
   const [selectedButton, setSelectedButton] = useState("");
 
-  const handleClick = (button) => {
-    setSelectedButton(button);
+  const showNotifications = (notification) => {
+    notification.forEach((dataNotification) => {
+      const message = `Item: ${dataNotification.nama_barang} - Days Remaining: ${dataNotification.daysRemaining}`;
+
+      toast.warn(message, {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+    });
+  };
+
+  const handleClick = (buttonName) => {
+    if (buttonName === "borrowList") {
+      showNotifications(notification);
+    }
+    setSelectedButton(buttonName);
   };
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -77,6 +100,7 @@ const Borrow = () => {
     try {
       const { data } = await axios.get(`http://localhost:3000/peminjaman/${userData.id_akun}`);
       setUserBorrowTable(data.peminjaman);
+      setNotification(data.peminjamanNotification);
     } catch (error) {
       console.error("Kesalahan saat mengambil data peminjaman:", error);
     }
@@ -432,6 +456,7 @@ const Borrow = () => {
           </div>
         )}
       </div>
+      <ToastContainer position="bottom-right" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="dark" />{" "}
       <DeleteBorrow isVisible={showDeleteItem} onClose={() => setShowDeleteItem(false)} deleteItem={deleteItem} />
     </Fragment>
   );

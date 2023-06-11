@@ -93,30 +93,32 @@ const Sidebar = () => {
             </div>
           </span>
         </motion.li>
-        <motion.li
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{
-            delay: 0.7,
-            duration: 0.3,
-            ease: [0, 0.71, 0.2, 1.01],
-            scale: {
-              type: "spring",
-              damping: 5,
-              stiffness: 100,
-              restDelta: 0.001,
-            },
-          }}
-          onClick={() => handleClick("/group")}
-          className="flex flex-col items-center justify-center custom-button p-1 w-20 h-28 cursor-pointer shadow-2xl"
-          style={{ "--clr": "#45d2c6" }}>
-          <span className="flex flex-col items-center justify-center">
-            <BsPeopleFill className="text-3xl" />
-            <div className="font-Montserrat font-semibold text-center text-sm">
-              <p>GROUP</p>
-            </div>
-          </span>
-        </motion.li>
+        {userData.id_role === 1 && (
+          <motion.li
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{
+              delay: 0.7,
+              duration: 0.3,
+              ease: [0, 0.71, 0.2, 1.01],
+              scale: {
+                type: "spring",
+                damping: 5,
+                stiffness: 100,
+                restDelta: 0.001,
+              },
+            }}
+            onClick={() => handleClick("/group")}
+            className="flex flex-col items-center justify-center custom-button p-1 w-20 h-28 cursor-pointer shadow-2xl"
+            style={{ "--clr": "#45d2c6" }}>
+            <span className="flex flex-col items-center justify-center">
+              <BsPeopleFill className="text-3xl" />
+              <div className="font-Montserrat font-semibold text-center text-sm">
+                <p>GROUP</p>
+              </div>
+            </span>
+          </motion.li>
+        )}
       </ul>
       <motion.a
         href="/"

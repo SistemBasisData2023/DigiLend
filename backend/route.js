@@ -440,7 +440,7 @@ module.exports = (app, pool) => {
         peminjaman: peminjaman,
         peminjamanNotification: peminjamanNotification
       });
-  
+      
       client.release();
     } catch (error) {
       console.error('Kesalahan saat mengambil data peminjaman:', error);
