@@ -176,7 +176,7 @@ const EditProfile = () => {
                   <input type="text" name="telepon" value={profileData.telepon} onChange={handlePhoneNumberChange} className="input input-bordered w-full max-w-xs" />
                 </div>
                 {userData.id_role === 1 ? (
-                  <div>
+                  <div className="flex flex-col space-y-4">
                     <div className="flex flex-row gap-4 items-center">
                       <span className="w-48">Asistant Code</span>
                       <input type="text" name="kode_aslab" value={profileData.kode_aslab} onChange={handleChange} className="input input-bordered w-full max-w-xs" />
