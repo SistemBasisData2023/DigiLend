@@ -119,20 +119,21 @@ const EditProfile = () => {
   };
 
   useEffect(() => {
+    const navbarHeight = document.getElementById("navbar").offsetHeight;
     const sidebarWidth = document.getElementById("sidebar").offsetWidth;
     const editPage = document.getElementById("editPage");
     editPage.style.width = `calc(100vw - ${sidebarWidth}px)`;
+    editPage.style.height = `calc(100vh - ${navbarHeight}px)`;
   }, []);
   return (
     <div id="editPage" className="overflow-x-auto space-y-8">
-      <div className="pt-6 pl-5">
+      <div className="pt-6 pl-5 flex flex-col items-center">
         <h1 className="font-Montserrat text-accent sm:text-5xl text-3xl text-center font-bold">Edit Profile</h1>
-        <div className="flex flex-row m-8 bg-[#2d314c] md:px-28 font-Montserrat shadow-xl items-center">
+        <div className="flex md:flex-row flex-col md:justify-center m-8 font-Montserrat items-center h-auto w-10/12">
           <img src={profileImage} alt="Edit Profile" className="sm:h-56 md:h-96 m-12 bg-slate-600 rounded-[4rem]" />
-
           {isEditing ? (
-            <div className="m-12 flex flex-col space-y-4 text-white">
-              <div className="m-12 flex flex-col space-y-4 text-white">
+            <div className="flex flex-col space-y-4 text-white h-96 sm:w-96 md:w-fit">
+              <div className="md:mx-12 pl-20 md:pl-0 m-4 flex flex-col space-y-2 md:space-y-4 text-white">
                 <div className="flex flex-row gap-4 items-center">
                   <span className="w-48">Name</span>
                   <input type="text" name="nama" value={profileData.nama} onChange={handleChange} className="input input-bordered w-full max-w-xs" />
@@ -153,17 +154,17 @@ const EditProfile = () => {
                     </div>
                     <div className="flex flex-row gap-4 items-center">
                       <span className="w-48">Asistant Status</span>
-                      <select name="status_aslab" value={profileData.status_aslab} onChange={handleChange} className="select select-bordered w-full max-w-xs">
+                      <select name="status_aslab" value={profileData.status_aslab} onChange={handleChange} className="select select-bordered md:w-full max-w-xs">
                         <option>Active</option>
                         <option>Inactive</option>
                       </select>
                     </div>
                   </div>
                 ) : (
-                  <div className="flex flex-col space-y-4">
-                    <div className="flex flex-row gap-4 items-center">
+                  <div className="flex flex-col sm:space-y-2 md:space-y-4">
+                    <div className="flex flex-row gap-4 items-center justify-between">
                       <span className="w-48">Academic Year</span>
-                      <select name="tahun_ajaran" value={profileData.tahun_ajaran} onChange={handleChange} className="select select-bordered w-full max-w-xs">
+                      <select name="tahun_ajaran" value={profileData.tahun_ajaran} onChange={handleChange} className="select select-bordered md:w-full max-w-xs">
                         {tahunAjaran.map((getTahunAjaranData) => (
                           <option key={getTahunAjaranData}>{getTahunAjaranData}</option>
                         ))}
@@ -171,61 +172,61 @@ const EditProfile = () => {
                     </div>
 
                     {profileData.tahun_ajaran && (
-                      <div className="flex flex-row gap-4 items-center">
+                      <div className="flex flex-row gap-4 p-2 items-center justify-between">
                         <span className="w-48">Group Name</span>
-                        <select name="nama_kelompok" value={profileData.nama_kelompok} onChange={handleChange} className="select select-bordered w-full max-w-xs">
+                        <select name="nama_kelompok" value={profileData.nama_kelompok} onChange={handleChange} className="select select-bordered md:w-full max-w-xs">
                           {groupList.map((groupData) => (
                             <option key={groupData}>{groupData}</option>
                           ))}
                         </select>
                       </div>
                     )}
-                    <div className="flex flex-row gap-4 pt-8">
-                      <button className="btn btn-info h-16 w-56" onClick={handleSaveProfile}>
-                        save
-                      </button>
-                      <button className="btn btn-outline btn-info h-16 w-56" onClick={handleCancelEdit}>
-                        cancel
-                      </button>
-                    </div>
                   </div>
                 )}
+                <div className="flex flex-row md:gap-4 gap-2 pt-2 md:pt-4 justify-center">
+                  <button className="btn btn-info md:h-16 w-32 md:w-56" onClick={handleSaveProfile}>
+                    save
+                  </button>
+                  <button className="btn btn-outline btn-info w-32 md:h-16 md:w-56" onClick={handleCancelEdit}>
+                    cancel
+                  </button>
+                </div>
               </div>
             </div>
           ) : (
-            <div className="m-12 flex flex-col space-y-4 text-white">
-              <div className="m-12 flex flex-col space-y-4 text-white">
+            <div className="flex flex-col space-y-4 text-white h-96 md:text-left text-center">
+              <div className="mx-12 m-4 flex flex-col space-y-4 text-white w-[464px]">
                 <div className="space-y-2">
-                  <p className="font-bold text-lg">Name:</p>
-                  <p className="text-lg text-[#b8c1f6] font-semibold">{userData.nama}</p>
+                  <p className="font-bold ">Name:</p>
+                  <p className=" text-[#b8c1f6] ">{userData.nama}</p>
                 </div>
                 <div className="space-y-2">
-                  <p className="font-bold text-lg">Student ID:</p>
-                  <p className="text-lg text-[#b8c1f6] font-semibold">{userData.npm}</p>
+                  <p className="font-bold ">Student ID:</p>
+                  <p className=" text-[#b8c1f6] ">{userData.npm}</p>
                 </div>
                 <div className="space-y-2">
-                  <p className="font-bold text-lg">Telephone Number:</p>
-                  <p className="text-lg text-[#b8c1f6] font-semibold">{userData.telepon}</p>
+                  <p className="font-bold ">Telephone Number:</p>
+                  <p className=" text-[#b8c1f6] ">{userData.telepon}</p>
                 </div>
 
                 {userData.id_role === 1 ? (
                   <div>
                     <div className="space-y-2">
-                      <p className="font-bold text-lg">Asistant Code:</p>
-                      <p className="text-lg text-[#b8c1f6] font-semibold">{data.kode_aslab}</p>
+                      <p className="font-bold ">Asistant Code:</p>
+                      <p className=" text-[#b8c1f6] ">{data.kode_aslab}</p>
                     </div>
                     <div className="space-y-2">
-                      <p className="font-bold text-lg">Asistant Status :</p>
-                      <p className="text-lg text-[#b8c1f6] font-semibold">{data.status_aslab}</p>
+                      <p className="font-bold ">Asistant Status :</p>
+                      <p className=" text-[#b8c1f6] ">{data.status_aslab}</p>
                     </div>
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    <p className="font-bold text-lg">Group Name:</p>
-                    <p className="text-lg text-[#b8c1f6] font-semibold">{data.nama_kelompok}</p>
+                    <p className="font-bold ">Group Name:</p>
+                    <p className=" text-[#b8c1f6] ">{data.nama_kelompok}</p>
                   </div>
                 )}
-                <div className="pt-3">
+                <div className="pt-3 flex flex-row justify-center sm:justify-start">
                   <button className="flex flex-row items-center btn btn-outline btn-info h-16 w-56 gap-5" onClick={handleEditProfile}>
                     <BsFillPencilFill />
                     Edit Profile
