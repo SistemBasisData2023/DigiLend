@@ -26,6 +26,7 @@ const EditProfile = () => {
 
   useEffect(() => {
     getData();
+    getAsistenData();
   }, []);
 
   const getData = async () => {
@@ -35,9 +36,22 @@ const EditProfile = () => {
         ...prevData,
         nama_kelompok: response.data.nama_kelompok,
       }));
-      console.log("profile:", profileData);
+      console.log("profile:", data);
     } catch (error) {
       console.error("Kesalahan saat mengambil data:", error);
+    }
+  };
+
+  const getAsistenData = async () => {
+    try {
+      const response = await axios.get(`http://localhost:3000/kode_aslab`);
+      setData((prevData) => ({
+        ...prevData,
+        kode_aslab: response.data.kode_aslab,
+      }));
+      console.log("kode:", response.data);
+    } catch (error) {
+      console.error("Kesalahan saat mengambil kode aslab:", error);
     }
   };
 
@@ -150,7 +164,7 @@ const EditProfile = () => {
                   <div>
                     <div className="flex flex-row gap-4 items-center">
                       <span className="w-48">Asistant Code</span>
-                      <input type="text" name="kode_aslab" value={profileData.kode_aslab} onChange={handleStudentIdChange} className="input input-bordered w-full max-w-xs" />
+                      <input type="text" name="kode_aslab" value={profileData.kode_aslab} onChange={handleChange} className="input input-bordered w-full max-w-xs" />
                     </div>
                     <div className="flex flex-row gap-4 items-center">
                       <span className="w-48">Asistant Status</span>
