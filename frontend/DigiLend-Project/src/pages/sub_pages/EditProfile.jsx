@@ -19,7 +19,7 @@ const EditProfile = () => {
     jurusan: userData.jurusan,
     nama_kelompok: "",
     kode_aslab: "",
-    status_aslab: "",
+    status_aslab: "active",
     tahun_ajaran: "",
   });
   console.log("profile:", profileData);
@@ -48,6 +48,7 @@ const EditProfile = () => {
       setData((prevData) => ({
         ...prevData,
         kode_aslab: response.data.kode_aslab,
+        status_aslab: response.data.status_aslab,
       }));
       console.log("kode:", response.data);
     } catch (error) {

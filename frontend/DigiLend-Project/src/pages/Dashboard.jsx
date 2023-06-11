@@ -10,6 +10,7 @@ import Group from "./sub_pages/Group.jsx";
 import ErrorPage from "./ErrorPage.jsx";
 
 const Dashboard = () => {
+  const userData = JSON.parse(localStorage.getItem("akun"));
   const location = useLocation();
   const currentPath = location.pathname.replace("/dashboard", "");
   return (
@@ -22,8 +23,8 @@ const Dashboard = () => {
         {currentPath === "/borrow" && <Borrow />}
         {currentPath === "/return" && <Return />}
         {currentPath === "/profile" && <EditProfile />}
-        {currentPath === "/group" && <Group />}
-        {currentPath !== "/item-list" && currentPath !== "/borrow" && currentPath !== "/return" && currentPath !== "/profile" && currentPath !== "/group" && <ErrorPage />}
+        {currentPath === "/group" && userData.id_role === 1 && <Group />}
+        {/* {currentPath !== "/item-list" && currentPath !== "/borrow" && currentPath !== "/return" && currentPath !== "/profile" && currentPath !== "/group" && <Redirect to="/error" />} */}
       </div>
     </div>
   );

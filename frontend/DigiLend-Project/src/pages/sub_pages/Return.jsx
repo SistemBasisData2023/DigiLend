@@ -212,7 +212,7 @@ const Return = () => {
                       <td>Rp{data.total_sanksi}</td>
                       <td>{data.bukti_pembayaran}</td>
                       <td>
-                        <button class="btn btn-error text-xs" onClick={() => handleClickDelete(data)}>
+                        <button className="btn btn-error text-xs" onClick={() => handleClickDelete(data)}>
                           Delete
                         </button>
                       </td>
