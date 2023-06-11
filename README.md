@@ -168,6 +168,22 @@ The following are tables that is used in DigiLend's database.
 4. nama_barang
 ```
 
+
+## UML
+![Digilend-UML](https://github.com/SistemBasisData2023/DigiLend/assets/102280666/1c3d8706-6464-4b9a-a608-446153ecf59e)
+
+
+
+## Flowchart
+![Digilend-FlowChart](https://github.com/SistemBasisData2023/DigiLend/assets/102280666/e0f20a34-9352-4fe3-ad80-31a72b10074b)
+
+
+
+## ERD
+![DigiLend-ERD](https://github.com/SistemBasisData2023/DigiLend/assets/102280666/133635c3-a388-4142-84ab-a80af037db2b)
+
+
+
 ## Badges
 
 Add badges from somewhere like: [shields.io](https://shields.io/)
