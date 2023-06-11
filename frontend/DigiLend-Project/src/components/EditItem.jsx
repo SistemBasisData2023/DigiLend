@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const EditItem = ({ isVisible, onClose, selectedItem }) => {
-  const userData = window.userData;
   const [editData, setEditData] = useState({
     nama_barang: "",
     jumlah_tersedia: "",

@@ -1,4 +1,5 @@
 import React from "react";
+import axios from "axios";
 
 const DeleteGroup = ({ isVisible, onClose, selectedGroup }) => {
   const handleButtonClick = () => {
@@ -29,14 +30,21 @@ const DeleteGroup = ({ isVisible, onClose, selectedGroup }) => {
                 <p>Group's ID: </p>
                 <p>{selectedGroup.id_kelompok}</p>
               </div>
-
+              <div className="flex flex-row justify-between">
+                <p>Group's Name: </p>
+                <p>{selectedGroup.nama_kelompok}</p>
+              </div>
               <div className="flex flex-row justify-between">
                 <p>Lab Assistant: </p>
                 <p>{selectedGroup.asisten_pendamping}</p>
               </div>
               <div className="flex flex-row justify-between">
-                <p>Item's Price: </p>
-                <p>{selectedItem.harga}</p>
+                <p>Semester: </p>
+                <p>{selectedGroup.semester}</p>
+              </div>
+              <div className="flex flex-row justify-between">
+                <p>Academic Year: </p>
+                <p>{selectedGroup.tahun_ajaran}</p>
               </div>
             </div>
             <div className="flex flex-row justify-center items-center gap-8 pt-4">

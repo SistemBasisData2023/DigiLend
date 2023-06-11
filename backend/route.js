@@ -1,6 +1,8 @@
 module.exports = (app, pool) => {
 
   const { generateToken } = require('./server');
+  const jwt = require('./server');
+
 
   const bcrypt = require('bcrypt');
   let lastInsertedId = 0; // Menyimpan ID terakhir yang diinsert
@@ -705,7 +707,7 @@ module.exports = (app, pool) => {
   /// KELOMPOK ///
   ///          ///
 
-  app.post('/kelompok', verifyToken, async (req, res) => {
+  app.post('/kelompok', async (req, res) => {
     const { kode_aslab, tahun1, tahun2, nama_kelompok } = req.body;
   
     // Validasi tahun2 harus lebih besar dari tahun1
@@ -757,9 +759,9 @@ module.exports = (app, pool) => {
       const client = await pool.connect();
   
       const getKelompokQuery = `
-        SELECT k.*, a.nama AS asisten_pendamping
+        SELECT k.*, asis.kode_aslab AS kode_aslab
         FROM kelompok k
-        JOIN akun a ON k.id_asisten = a.id_akun
+        JOIN asisten asis ON k.id_asisten = asis.id_akun
         WHERE k.id_kelompok <> 0
       `;
       const kelompokResult = await client.query(getKelompokQuery);

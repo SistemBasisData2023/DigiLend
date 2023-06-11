@@ -56,6 +56,21 @@ const Group = () => {
     }
   };
 
+  const handleClickAdd = () => {
+    setShowAddGroup((prevState) => !prevState);
+  };
+
+  const handleClickEdit = (data) => {
+    setSelectedGroup(data);
+    setShowEditGroup((prevState) => !prevState);
+    setIsDropdownOpen(false);
+  };
+
+  const handleClickDelete = (data) => {
+    setSelectedGroup(data);
+    setShowDeleteGroup((prevState) => !prevState);
+    setIsDropdownOpen(false);
+  };
   const handleDropdownToggle = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
@@ -98,7 +113,7 @@ const Group = () => {
                 <tr key={data.id_kelompok} className="text-white">
                   <td>{data.id_kelompok}</td>
                   <td>{data.nama_kelompok}</td>
-                  <td>{data.asisten_pendamping}</td>
+                  <td>{data.kode_aslab}</td>
                   <td>{data.semester}</td>
                   <td>{data.tahun_ajaran}</td>
                   <td>
