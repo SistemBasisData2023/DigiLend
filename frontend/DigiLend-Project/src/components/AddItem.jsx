@@ -9,7 +9,6 @@ const AddItem = ({ isVisible, onClose }) => {
     jumlah_tersedia: "",
     harga: "",
   });
-  console.log(addData);
 
   const handleButtonClick = () => {
     axios

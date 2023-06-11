@@ -36,7 +36,7 @@ const DeleteGroup = ({ isVisible, onClose, selectedGroup }) => {
               </div>
               <div className="flex flex-row justify-between">
                 <p>Lab Assistant: </p>
-                <p>{selectedGroup.asisten_pendamping}</p>
+                <p>{selectedGroup.kode_aslab}</p>
               </div>
               <div className="flex flex-row justify-between">
                 <p>Semester: </p>
