@@ -1044,7 +1044,7 @@ module.exports = (app, pool) => {
       const client = await pool.connect();
   
       const query = `
-        SELECT kode_aslab FROM asisten
+        SELECT kode_aslab, status_aslab FROM asisten
         WHERE id_akun = $1
       `;
       const values = [id_akun];
