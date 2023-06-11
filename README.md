@@ -50,22 +50,29 @@ Halaman profil memungkinkan praktikan dan asisten untuk melihat dan mengedit det
 ## Getting Started
 
 To get started with DigiLend, follow these simple steps:
+`git clone https://github.com/SistemBasisData2023/DigiLend`
+1. Backend
+```
+cd backend
+npm install
+node server.js
+```
+2. Front End
+```
+cd frontend/Digilend-Project
+npm install
+npm run dev
+```
 
+## Tools
 
-1. Clone the repository: `git clone https://github.com/SistemBasisData2023/DigiLend`
-2. Install dependencies: `npm install`
-3. Start the application: `npm start`
-4. Visit `http://localhost:3000` in your browser to access DigiLend.
-
-## Technologies Used
-
-- Node.js
+- Node JS
 - Express
 - PostgreSQL
-- EJS
 - HTML
 - CSS
 - JavaScript
+- React JS
 
 <h3 align="left">Languages and Tools:</h3>
 <p align="left"> <a href="https://expressjs.com" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/express/express-original-wordmark.svg" alt="express" width="40" height="40"/> </a> <a href="https://www.w3.org/html/" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/html5/html5-original-wordmark.svg" alt="html5" width="40" height="40"/> </a> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg" alt="javascript" width="40" height="40"/> </a> <a href="https://nodejs.org" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/nodejs/nodejs-original-wordmark.svg" alt="nodejs" width="40" height="40"/> </a> <a href="https://www.postgresql.org" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/postgresql/postgresql-original-wordmark.svg" alt="postgresql" width="40" height="40"/> </a> </p>
@@ -75,7 +82,7 @@ To get started with DigiLend, follow these simple steps:
 
 The following are tables that is used in DigiLend's database.
 
-### 1. `Pengembalian`
+### 1. `Return Table`
 
 ```
 1. id_pengembalian
@@ -88,7 +95,7 @@ The following are tables that is used in DigiLend's database.
 8. bukti_pembayaran
 ```
 
-### 2. `Peminjaman`
+### 2. `Borrow Table`
 
 ```
 1. id_peminjaman
@@ -101,14 +108,14 @@ The following are tables that is used in DigiLend's database.
 8. id_pengembalian
 ```
 
-### 3. `Praktikan`
+### 3. `Practician Table`
 
 ```
 1. id_akun
 2. id_kelompok 
 ```
 
-### 4. `kelompok`
+### 4. `Group Table`
 
 ```
 1. id_kelompok
@@ -118,7 +125,7 @@ The following are tables that is used in DigiLend's database.
 5. semester
 ```
 
-### 5. `Asisten`
+### 5. `Lab Assistant Table`
 
 ```
 1. id_akun
@@ -126,7 +133,7 @@ The following are tables that is used in DigiLend's database.
 3. status_aslab
 ```
 
-### 6. `Akun`
+### 6. `Account Table`
 
 ```
 1. id_akun
@@ -140,7 +147,7 @@ The following are tables that is used in DigiLend's database.
 9. angkatan
 ```
 
-### 7. `Role`
+### 7. `Role Table`
 
 ```
 1. id_role
@@ -148,7 +155,7 @@ The following are tables that is used in DigiLend's database.
 ```
 
 
-### 8. `Barang`
+### 8. `Items Table`
 
 ```
 1. id_barang
