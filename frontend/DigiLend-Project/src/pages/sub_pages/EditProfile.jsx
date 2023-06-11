@@ -44,7 +44,7 @@ const EditProfile = () => {
 
   const getAsistenData = async () => {
     try {
-      const response = await axios.get(`http://localhost:3000/kode_aslab`);
+      const response = await axios.get(`http://localhost:3000/kode_aslab/${userData.id_akun}`);
       setData((prevData) => ({
         ...prevData,
         kode_aslab: response.data.kode_aslab,
@@ -124,6 +124,8 @@ const EditProfile = () => {
       const akun = response.data.akunAfterEditData;
       localStorage.setItem("akun", JSON.stringify(akun));
       getData(); // Panggil getData setelah berhasil memperbarui data akun
+      getAsistenData();
+
       setIsEditing(false); // Kembali ke tampilan profil setelah berhasil memperbarui data akun
       // Lakukan tindakan lain setelah berhasil memperbarui data akun
     } catch (error) {
@@ -169,8 +171,8 @@ const EditProfile = () => {
                     <div className="flex flex-row gap-4 items-center">
                       <span className="w-48">Asistant Status</span>
                       <select name="status_aslab" value={profileData.status_aslab} onChange={handleChange} className="select select-bordered md:w-full max-w-xs">
-                        <option>Active</option>
-                        <option>Inactive</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
                       </select>
                     </div>
                   </div>
@@ -224,7 +226,7 @@ const EditProfile = () => {
                 </div>
 
                 {userData.id_role === 1 ? (
-                  <div>
+                  <div className="space-y-4">
                     <div className="space-y-2">
                       <p className="font-bold ">Asistant Code:</p>
                       <p className=" text-[#b8c1f6] ">{data.kode_aslab}</p>
