@@ -75,64 +75,86 @@ To get started with DigiLend, follow these simple steps:
 
 The following are tables that is used in DigiLend's database.
 
-### 1. `Praktikan`
-
-[description here]
+### 1. `Pengembalian`
 
 ```
-1. 
-2. 
-3. 
-4. 
-5. 
+1. id_pengembalian
+2. id_peminjaman
+3. jumlah_dikembalikan
+4. waktu_pengembalian
+5. denda
+6. ganti_rugi
+7. total_sanksi
+8. bukti_pembayaran
 ```
 
-### 2. `Asisten`
-
-[description here]
+### 2. `Peminjaman`
 
 ```
-1. 
-2. 
-3. 
-4. 
-5. 
+1. id_peminjaman
+2. id_barang
+3. jumlah_dipinjam
+4. id_praktikan
+5. waktu_peminjaman
+6. tenggat_waktu
+7. returned
+8. id_pengembalian
 ```
 
-### 3. `Barang`
-
-[description here]
+### 3. `Praktikan`
 
 ```
-1. 
-2. 
-3. 
-4. 
-5. 
+1. id_akun
+2. id_kelompok 
 ```
 
-### 4. `Peminjaman`
-
-[description here]
+### 4. `kelompok`
 
 ```
-1. 
-2. 
-3. 
-4. 
-5. 
+1. id_kelompok
+2. id_asisten
+3. nama_kelompok
+4. tahun_ajaran
+5. semester
 ```
 
-### 5. `Pengembalian`
-
-[description here]
+### 5. `Asisten`
 
 ```
-1. 
-2. 
-3. 
-4. 
-5. 
+1. id_akun
+2. kode_aslab
+3. status_aslab
+```
+
+### 6. `Akun`
+
+```
+1. id_akun
+2. id_role
+3. nama
+4. npm
+5. username
+6. password
+7. telepon
+8. jurusan
+9. angkatan
+```
+
+### 7. `Role`
+
+```
+1. id_role
+2. nama_role
+```
+
+
+### 8. `Barang`
+
+```
+1. id_barang
+2. harga
+3. jumlah_tersedia
+4. nama_barang
 ```
 
 ## Badges
