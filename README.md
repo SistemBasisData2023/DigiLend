@@ -1,4 +1,8 @@
-<!-- PROJECT LOGO -->
+<div align="center">
+  <img src="https://github.com/SistemBasisData2023/DigiLend/assets/102280666/38f0172f-2ddc-49fd-9547-680ba313f725" alt="logo-no-background" width="250" height="275">
+</div>
+
+
 <br />
 <div align="center">
   <h1 align="center">Welcome to DigiLend</h1>
@@ -7,7 +11,7 @@ DigiLend is An advanced platform for efficient and easy-to-use loan management.
 
 # DigiLend
 
-Sistem Peminjaman Barang adalah sebuah proyek yang bertujuan untuk mempermudah proses peminjaman dan pengembalian barang di lingkungan praktikum atau laboratorium. Proyek ini dirancang untuk memastikan kegiatan peminjaman barang menjadi lebih terstruktur, mudah dilacak, dan efisien.
+Digilend is a user-friendly website catering to Practician and Lab Assistant. Easily register and login to explore our inventory of available items. Practician can request and return items, with a maximum borrowing period of one month.Experience the convenience of Digilend for seamless borrowing and returning processes.
 
 ## Contributors
 
@@ -19,33 +23,33 @@ This is a final Database Management System project made by Group H8:
 
 ## Features
 
-### `Halaman Utama`
+### `Home Page`
 
-Halaman ini berfungsi sebagai pintu gerbang utama ke sistem peminjaman barang kami. Di halaman ini, pengguna akan menemukan informasi mengenai sistem peminjaman barang dan tautan yang mengarah ke halaman login atau registrasi. Tujuannya adalah untuk memberikan gambaran umum tentang sistem dan memberikan pengguna opsi untuk masuk atau mendaftar.
+This page serves as the main gateway to our item borrowing system. On this page, users will find information about the item borrowing system and links that direct them to the login or registration page. The goal is to provide an overview of the system and give users the option to sign in or register.
 
 ### `Login`
 
-Halaman ini dirancang khusus untuk praktikan atau asisten yang sudah memiliki akun terdaftar. Di halaman ini, pengguna dapat memasukkan informasi login mereka, seperti nama pengguna dan kata sandi, untuk mengakses sistem. Setelah login, pengguna akan diarahkan ke halaman yang sesuai dengan peran mereka.
+This page is specifically designed for registered users, such as students or assistants. On this page, users can enter their login information, such as username and password, to access the system. After logging in, users will be redirected to the appropriate page based on their role.
 
-### `Registrasi`
+### `Registration`
 
-Jika pengguna belum memiliki akun, mereka dapat menggunakan halaman registrasi ini untuk membuat akun baru. Halaman ini menyediakan formulir registrasi yang meminta pengguna untuk memasukkan informasi yang diperlukan, seperti nama lengkap, alamat email, dan kata sandi. Setelah mengisi formulir, pengguna akan memiliki akun terdaftar dan dapat menggunakan kredensial mereka untuk login ke sistem.
+If users don't have an account yet, they can use this registration page to create a new account. This page provides a registration form that asks users to enter required information, such as full name, student ID, department, and more. After filling out the form, users will have a registered account and can use their credentials to log in to the system.
 
-### `List Barang`
+### `Item List`
 
-Halaman ini memuat daftar barang yang tersedia beserta jumlahnya. Praktikan dapat melihat daftar ini untuk mengetahui barang-barang apa saja yang dapat mereka pinjam. Selain itu, asisten juga memiliki akses ke halaman ini untuk mengedit detail dari masing-masing barang. Mereka dapat mengubah informasi seperti deskripsi barang, jumlah yang tersedia, atau menambahkan informasi tambahan mengenai kondisi barang.
+This page displays a list of available items along with their quantities. Students can refer to this list to see what items they can borrow. Additionally, assistants also have access to this page to edit the details of each item. They can modify information such as item description, available quantity, and more.
 
-### `Peminjaman`
+### `Borrow`
 
-Praktikan dapat menggunakan halaman ini untuk membuat pengajuan peminjaman barang yang tersedia. Mereka dapat memilih barang yang ingin mereka pinjam dan memasukkan tanggal peminjaman. Halaman ini juga memberikan akses praktikan untuk melihat status peminjaman yang telah mereka lakukan, seperti apakah peminjaman mereka sudah disetujui atau masih dalam proses persetujuan. Di sisi asisten, halaman ini memungkinkan mereka untuk melihat status peminjaman dari seluruh praktikan, sehingga mereka dapat mengelola peminjaman secara efisien.
+Students can use this page to make item borrowing requests for available items. They can select the items they want to borrow and specify the quantity. This page also provides students with access to view the status of their borrowing requests. On the assistant's side, this page allows them to view the borrowing status of all students, enabling efficient management of borrowings
 
-### `Pengembalian`
+### `Return`
 
-Setelah praktikan menggunakan barang yang dipinjam, mereka dapat melaporkan pengembalian barang melalui halaman ini. Jika pengembalian dilakukan terlambat, praktikan akan dikenai denda yang perlu mereka bayar. Jika barang hilang atau rusak, praktikan harus membayar ganti rugi sesuai dengan kebijakan yang ditetapkan. Halaman ini juga memberikan akses praktikan untuk melihat status pengembalian yang telah mereka lakukan. Di sisi asisten, halaman ini memungkinkan mereka untuk melihat status pengembalian dari setiap peminjaman yang dilakukan oleh seluruh praktikan, sehingga mereka dapat mengawasi dan menangani masalah pengembalian dengan tepat.
+After using the borrowed items, students can report the return of the items through this page. If the return is made late, students may be charged a fine that they need to pay. If the items are lost or damaged, students are required to compensate according to the established policy. This page also provides students with access to view the status of their return requests. On the assistant's side, this page allows them to view the return status of each borrowing made by all students, enabling them to monitor and handle return issues appropriately.
 
-### `Profil`
+### `Profile`
 
-Halaman profil memungkinkan praktikan dan asisten untuk melihat dan mengedit detail dari akun mereka masing-masing. Praktikan dapat melihat informasi pribadi mereka, seperti nama, alamat, atau kontak, dan mengubahnya jika diperlukan. Asisten juga memiliki akses ke halaman ini untuk memperbarui informasi profil mereka. Halaman ini memastikan bahwa data pengguna tetap mutakhir dan akurat.
+The profile page allows students and assistants to view and edit their account details. Students can see their personal information, such as name, contact details, and more, and make changes if necessary. Assistants also have access to this page to update their profile information. This page ensures that user data remains up-to-date and accurate.
 
 ## Getting Started
 
