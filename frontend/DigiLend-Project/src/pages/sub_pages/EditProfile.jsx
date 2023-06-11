@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import { BsFillPencilFill } from "react-icons/bs";
 
@@ -132,6 +134,16 @@ const EditProfile = () => {
     } catch (error) {
       console.error("Kesalahan saat memperbarui data akun:", error);
       // Lakukan tindakan lain jika terjadi kesalahan saat memperbarui data akun
+      toast.error("Please fill all the required form!", {
+        position: "bottom-center",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
     }
   };
 
@@ -189,7 +201,7 @@ const EditProfile = () => {
                     </div>
 
                     {profileData.tahun_ajaran && (
-                      <div className="flex flex-row gap-4 p-2 items-center justify-between">
+                      <div className="flex flex-row gap-4 items-center justify-between">
                         <span className="w-48">Group Name</span>
                         <select name="nama_kelompok" value={profileData.nama_kelompok} onChange={handleChange} className="select select-bordered md:w-full max-w-xs">
                           {groupList.map((groupData) => (
@@ -254,6 +266,7 @@ const EditProfile = () => {
           )}
         </div>
       </div>
+      <ToastContainer position="bottom-center" autoClose={2000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="colored" />
     </div>
   );
 };

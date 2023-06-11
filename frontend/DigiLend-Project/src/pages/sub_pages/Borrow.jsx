@@ -62,7 +62,13 @@ const Borrow = () => {
 
   const showNotifications = (notification) => {
     notification.forEach((dataNotification) => {
-      const message = `Item: ${dataNotification.nama_barang} - Days Remaining: ${dataNotification.daysRemaining}`;
+      const message = (
+        <div>
+          Item: <span className="font-bold">{dataNotification.nama_barang}</span>
+          <br />
+          Days Remaining: <span className="font-bold"> {dataNotification.daysRemaining} Days</span>
+        </div>
+      );
 
       toast.warn(message, {
         position: "bottom-right",
@@ -185,23 +191,31 @@ const Borrow = () => {
   };
 
   const [borrowItem, setBorrowItem] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleNextClick = () => {
-    // Panggil API untuk mendapatkan data barang berdasarkan ID
-    axios
-      .get(`http://localhost:3000/barang/${formData.id_barang}`)
-      .then((response) => {
-        const data = response.data;
-        setBorrowItem(data); // Mengisi borrowItem dengan data respons dari API
+    if (currentPage === 1 && formData.id_barang && formData.jumlah_dipinjam) {
+      // Panggil API untuk mendapatkan data barang berdasarkan ID
+      axios
+        .get(`http://localhost:3000/barang/${formData.id_barang}`)
+        .then((response) => {
+          const data = response.data;
+          setBorrowItem(data); // Mengisi borrowItem dengan data respons dari API
+          setErrorMessage(""); // Reset pesan kesalahan jika berhasil
 
-        // Ubah halaman saat tombol "Next" diklik
-        setCurrentPage(currentPage + 1);
-      })
-      .catch((error) => {
-        console.error("Kesalahan saat mengambil data barang:", error);
-      });
+          // Ubah halaman saat tombol "Next" diklik
+          setCurrentPage(currentPage + 1);
+        })
+        .catch((error) => {
+          console.error("Kesalahan saat mengambil data barang:", error);
+          setErrorMessage("Item not found"); // Set pesan kesalahan jika terjadi kesalahan saat mengambil data barang
+        });
+    } else {
+      setErrorMessage("Please fill in all fields"); // Set pesan kesalahan jika ID barang dan jumlah dipinjam belum diisi
+    }
   };
 
+  const isNextButtonDisabled = currentPage === 1 && (!formData.id_barang || !formData.jumlah_dipinjam);
   const handleSubmit = () => {
     axios
       .post("http://localhost:3000/peminjaman", formData)
@@ -365,8 +379,9 @@ const Borrow = () => {
                       </div>
                     )}
                     {currentPage < 2 && (
-                      <div className="text-end px-8">
-                        <button className="btn btn-success" onClick={handleNextClick}>
+                      <div className={`flex flex-row ${errorMessage ? "justify-between" : "justify-end"} text-end px-8 items-center`}>
+                        {errorMessage && <p className="text-error font-extrabold">{errorMessage}</p>}
+                        <button className="btn btn-success" onClick={handleNextClick} disabled={isNextButtonDisabled}>
                           Next
                         </button>
                       </div>

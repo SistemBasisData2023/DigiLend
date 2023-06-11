@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 
 const AddItem = ({ isVisible, onClose }) => {
@@ -19,7 +21,16 @@ const AddItem = ({ isVisible, onClose }) => {
       })
       .catch((error) => {
         console.error("Kesalahan saat menambahkan data:", error);
-        // Lakukan penanganan kesalahan yang terjadi saat menambahkan data
+        toast.error("An error occurred while adding new item", {
+          position: "bottom-center",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
       });
   };
 
@@ -54,6 +65,7 @@ const AddItem = ({ isVisible, onClose }) => {
           </div>
         </div>
       </div>
+      <ToastContainer position="bottom-center" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="colored" />
     </div>
   );
 };

@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
 import digilendLogo from "../assets/logo-no-background.png";
 import Background from "../components/background/background.jsx";
@@ -15,6 +17,7 @@ const LoginPage = () => {
     username: "",
     password: "",
   });
+  const [errorMsg, setErrorMsg] = useState("");
 
   const [open, setOpen] = useState(false);
   const handleChange = (event) => {
@@ -30,27 +33,47 @@ const LoginPage = () => {
   };
   console.log(localStorage);
 
+  const [inputError, setInputError] = useState({
+    username: false,
+    password: false,
+  });
+
+  const [eyeButtonError, setEyeButtonError] = useState(false);
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
     axios
       .post("http://localhost:3000/login", formData)
       .then((response) => {
-        // Setelah menerima respons dari backend
         const token = response.data.token;
         const akun = response.data.akun;
         localStorage.setItem("token", token);
         localStorage.setItem("akun", JSON.stringify(akun));
-        // Tangani respons jika sukses
         console.log(response.data);
         navigate("/dashboard");
-        // Lakukan aksi lain yang diperlukan, seperti menyimpan token atau mengarahkan pengguna ke halaman lain
       })
       .catch((error) => {
-        // Tangani kesalahan jika terjadi
         console.error(error);
+        // Tangani kesalahan jika terjadi
+        setInputError({
+          username: true,
+          password: true,
+        });
+        setEyeButtonError(true); // Set eyeButtonError menjadi true
+        toast.error("Please check your username and password.", {
+          position: "bottom-center",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
       });
   };
+
   return (
     <motion.div className="w-full h-screen" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
       <Background></Background>
@@ -81,16 +104,17 @@ const LoginPage = () => {
                   type="text"
                   name="username"
                   id="username"
-                  className="input input-bordered input-info w-full max-w-xs bg-gray-50 placeholder:text-lg placeholder:sm:text-xl text-gray-900 font-Inter px-5 sm:px-8 sm:text-xl rounded-full"
+                  className={`input input-bordered input-info w-full max-w-xs bg-gray-50 placeholder:text-lg placeholder:sm:text-xl text-gray-900 font-Inter px-5 sm:px-8 sm:text-xl rounded-full ${inputError.username ? "input-error" : ""}`}
                   placeholder="Username"
                   required=""
                   value={formData.username}
                   onChange={handleChange}
                   onKeyUp={(e) => {
                     if (e.target.value !== "") {
-                      e.target.classList.add("border-2");
-                    } else {
-                      e.target.classList.remove("border-2");
+                      setInputError((prevInputError) => ({
+                        ...prevInputError,
+                        username: false,
+                      }));
                     }
                   }}
                 />
@@ -103,19 +127,23 @@ const LoginPage = () => {
                     name="password"
                     id="password"
                     placeholder="Password"
-                    className="input input-bordered input-info w-full max-w-xs bg-gray-50 placeholder:text-lg placeholder:sm:text-xl text-gray-900 font-Inter px-5 sm:px-8 sm:text-xl rounded-full"
+                    className={`input input-bordered input-info w-full max-w-xs bg-gray-50 placeholder:text-lg placeholder:sm:text-xl text-gray-900 font-Inter px-5 sm:px-8 sm:text-xl rounded-full ${
+                      inputError.password ? "input-error" : ""
+                    }`}
                     required=""
                     value={formData.password}
                     onChange={handleChange}
                     onKeyUp={(e) => {
                       if (e.target.value !== "") {
-                        e.target.classList.add("border-2");
-                      } else {
-                        e.target.classList.remove("border-2");
+                        setInputError((prevInputError) => ({
+                          ...prevInputError,
+                          password: false,
+                        }));
                       }
                     }}
                   />
-                  <button type="button" className="text-3xl absolute bottom-[20%] right-[15%]" onClick={toggle}>
+
+                  <button type="button" className={`text-3xl absolute bottom-[20%] right-[15%] ${eyeButtonError ? "text-error" : ""}`} onClick={toggle}>
                     {open === false ? <AiFillEye /> : <AiFillEyeInvisible />}
                   </button>
                 </div>
@@ -135,7 +163,7 @@ const LoginPage = () => {
           </div>
         </motion.div>
       </div>
-      <pre>{JSON.stringify(formData, null, 2)}</pre>
+      <ToastContainer position="bottom-center" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="colored" />
     </motion.div>
   );
 };

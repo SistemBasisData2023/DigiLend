@@ -10,6 +10,7 @@ import returnList from "../../assets/check-list.png";
 
 import DeleteReturn from "../../components/DeleteReturn.jsx";
 import Pagination from "../../components/Pagination.jsx";
+import confusePeople from "../../assets/confused-people-hehe.png";
 
 const Return = () => {
   const storedData = localStorage.getItem("akun");
@@ -153,18 +154,21 @@ const Return = () => {
     setShowDeleteItem((prevState) => !prevState);
   };
 
+  const [errorMessage, setErrorMessage] = useState("");
   const handleSubmit = () => {
     axios
       .post("http://localhost:3000/pengembalian", formData)
       .then((response) => {
-        // Tangani respons jika sukses
+        // Handle success response
         handleClick("returnList");
         console.log(response.data);
         getUserReturnTable();
       })
       .catch((error) => {
-        // Tangani kesalahan jika terjadi
+        // Handle error if any
         console.error(error);
+        setErrorMessage("An error occurred. Please try again."); // Set error message
+        console.log(formData);
       });
   };
 
@@ -306,7 +310,8 @@ const Return = () => {
                         />
                       </div>
                     </div>
-                    <div className="flex flex-row px-8 justify-end">
+                    <div className={`flex flex-row ${errorMessage ? "justify-between" : "justify-end"} text-end px-8 items-center`}>
+                      {errorMessage && <p className="text-error font-extrabold">{errorMessage}</p>}
                       <button className="btn btn-success" onClick={handleSubmit}>
                         Submit
                       </button>
@@ -375,9 +380,9 @@ const Return = () => {
                       alt="Empty Table"
                       className="w-1/6"
                     />
-                    <h1 className="text-3xl text-center font-Montserrat w-1/3">Seems like you haven't borrowed anything from Digilend yet.</h1>
+                    <h1 className="text-3xl text-center font-Montserrat w-1/3">Seems like you haven't return any item yet.</h1>
                     <button class="btn btn-error font-Montserrat" onClick={() => handleClick("startBorrowing")}>
-                      Borrow Something
+                      Return Item
                     </button>
                   </div>
                 )}

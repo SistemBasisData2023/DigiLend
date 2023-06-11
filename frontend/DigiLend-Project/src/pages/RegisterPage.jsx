@@ -3,6 +3,8 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { AiFillEyeInvisible, AiFillEye, AiFillRightCircle, AiFillLeftCircle } from "react-icons/ai";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Background from "../components/background/background.jsx";
 import digilendLogo from "../assets/logo-no-background.png";
 import assistant from "../assets/Laboratory-Assistant.png";
@@ -107,6 +109,23 @@ const RegisterPage = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+
+    // Cek apakah ada bidang yang kosong
+    const isFormEmpty = Object.values(formData).some((value) => value === "");
+
+    if (isFormEmpty) {
+      toast.error("Please fill in all fields.", {
+        position: "bottom-center",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+      return;
+    }
 
     axios
       .post("http://localhost:3000/register", formData)
@@ -294,7 +313,7 @@ const RegisterPage = () => {
           </div>
         </motion.div>
       </div>
-      <pre>{JSON.stringify(formData, null, 2)}</pre>
+      <ToastContainer position="bottom-center" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="colored" />
     </motion.div>
   );
 };
