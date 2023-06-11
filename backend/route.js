@@ -757,8 +757,10 @@ module.exports = (app, pool) => {
       const client = await pool.connect();
   
       const getKelompokQuery = `
-      SELECT * FROM kelompok
-      WHERE id_kelompok <> 0
+        SELECT k.*, a.nama AS asisten_pendamping
+        FROM kelompok k
+        JOIN akun a ON k.id_asisten = a.id_akun
+        WHERE k.id_kelompok <> 0
       `;
       const kelompokResult = await client.query(getKelompokQuery);
       const kelompok = kelompokResult.rows;
@@ -769,7 +771,7 @@ module.exports = (app, pool) => {
       console.error('Kesalahan saat mengambil data kelompok:', error);
       res.status(500).json({ error: 'Terjadi kesalahan server' });
     }
-  });    
+  });  
 
   app.get('/nama_kelompok/:tahun_ajaran', async (req, res) => {
     try {
