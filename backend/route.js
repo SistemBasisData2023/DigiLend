@@ -1037,6 +1037,33 @@ module.exports = (app, pool) => {
       }
   });    
 
+  app.get('/kode_aslab/:id_akun', async (req, res) => {
+    const { id_akun } = req.params;
+  
+    try {
+      const client = await pool.connect();
+  
+      const query = `
+        SELECT kode_aslab FROM asisten
+        WHERE id_akun = $1
+      `;
+      const values = [id_akun];
+  
+      const result = await client.query(query, values);
+      const kodeAslab = result.rows[0];
+  
+      if (!kodeAslab) {
+        return res.status(404).json({ error: 'Kode ASLAB tidak ditemukan' });
+      }
+  
+      res.status(200).json(kodeAslab);
+      client.release();
+    } catch (error) {
+      console.error('Kesalahan saat mendapatkan data kode_aslab:', error);
+      res.status(500).json({ error: 'Terjadi kesalahan server' });
+    }
+  });  
+
   app.get('/asisten', async (req, res) => {
     try {
       const client = await pool.connect();
